@@ -8,6 +8,7 @@ from data_handler import DataHandler
 from utils.validator import Validator
 from utils.logger import Logger
 
+
 class SignalGenerator:
     def __init__(self):
         self.pocket_client = PocketOptionClient()
