@@ -6,7 +6,7 @@ from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
 from data_handler import DataHandler
 from validator import Validator
-from logger import logger
+from logger import Logger
 
 class SignalGenerator:
     def __init__(self):
