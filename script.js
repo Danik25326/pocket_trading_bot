@@ -1,5 +1,6 @@
 class SignalDisplay {
     constructor() {
+        // Тепер шлях до даних відносно кореня
         this.signalsUrl = 'data/signals.json';
         this.updateInterval = 10000; // 10 секунд
         this.init();
@@ -12,12 +13,16 @@ class SignalDisplay {
 
     async loadSignals() {
         try {
-            const response = await fetch(this.signalsUrl + '?t=' + new Date().getTime());
+            // Додаємо timestamp, щоб уникнути кешування
+            const response = await fetch(`${this.signalsUrl}?t=${new Date().getTime()}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
             this.updateDisplay(data);
         } catch (error) {
             console.error('Помилка завантаження сигналів:', error);
-            this.showError('Не вдалося завантажити сигнали');
+            this.showError('Не вдалося завантажити сигнали. Спробуйте оновити сторінку.');
         }
     }
 
@@ -32,7 +37,22 @@ class SignalDisplay {
         }
 
         // Оновлюємо статистику
-        lastUpdate.textContent = new Date(data.last_update).toLocaleString('uk-UA');
+        if (data.last_update) {
+            const updateDate = new Date(data.last_update);
+            lastUpdate.textContent = updateDate.toLocaleString('uk-UA');
+            
+            // Показуємо, скільки часу тому
+            const now = new Date();
+            const diffMs = now - updateDate;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) {
+                lastUpdate.textContent += ' (щойно)';
+            } else {
+                lastUpdate.textContent += ` (${diffMins} хв. тому)`;
+            }
+        }
+        
         activeSignals.textContent = data.signals.length;
 
         // Генеруємо сигнали
@@ -44,23 +64,44 @@ class SignalDisplay {
         let html = '';
         data.signals.forEach(signal => {
             const confidencePercent = Math.round(signal.confidence * 100);
-            const time = new Date(signal.timestamp || signal.generated_at).toLocaleTimeString('uk-UA');
+            const time = new Date(signal.timestamp || signal.generated_at).toLocaleTimeString('uk-UA', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Визначаємо колір для впевненості
+            let confidenceClass = 'neutral';
+            if (confidencePercent >= 85) confidenceClass = 'high';
+            else if (confidencePercent >= 70) confidenceClass = 'medium';
             
             html += `
                 <div class="signal-card ${signal.direction.toLowerCase()}">
                     <div class="signal-header">
-                        <div class="asset">${signal.asset}</div>
-                        <div class="direction ${signal.direction.toLowerCase()}">${signal.direction}</div>
+                        <div class="asset">
+                            <i class="fas fa-chart-line"></i> ${signal.asset}
+                        </div>
+                        <div class="direction ${signal.direction.toLowerCase()}">
+                            ${signal.direction === 'UP' ? '📈 CALL' : '📉 PUT'}
+                        </div>
                     </div>
-                    <div class="confidence">
-                        Шанс успіху: <span class="confidence-value">${confidencePercent}%</span>
+                    <div class="signal-details">
+                        <div class="confidence ${confidenceClass}">
+                            <i class="fas fa-bullseye"></i> Впевненість: 
+                            <span class="confidence-value">${confidencePercent}%</span>
+                        </div>
+                        <div class="time">
+                            <i class="far fa-clock"></i> Час входу: <strong>${signal.entry_time || time}</strong>
+                        </div>
                     </div>
-                    <div class="time">
-                        <i class="far fa-clock"></i> Час входу: ${signal.entry_time} |
-                        <i class="far fa-calendar"></i> Створено: ${time}
-                    </div>
+                    ${signal.reason ? `
                     <div class="reason">
-                        <strong>Аналіз:</strong> ${signal.reason || 'Технічний аналіз показав перевагу напрямку'}
+                        <i class="fas fa-lightbulb"></i> <strong>Аналіз:</strong> ${signal.reason}
+                    </div>
+                    ` : ''}
+                    <div class="signal-footer">
+                        <span class="timestamp">
+                            <i class="far fa-calendar"></i> Створено: ${time}
+                        </span>
                     </div>
                 </div>
             `;
@@ -72,22 +113,44 @@ class SignalDisplay {
     showError(message) {
         const container = document.getElementById('signals-container');
         container.innerHTML = `
-            <div class="loading">
+            <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i>
+                <h3>Помилка завантаження</h3>
                 <p>${message}</p>
-                <button onclick="location.reload()" style="margin-top: 10px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                    Спробувати знову
+                <button onclick="location.reload()" class="retry-btn">
+                    <i class="fas fa-redo"></i> Спробувати знову
                 </button>
             </div>
         `;
     }
 
     startAutoUpdate() {
+        // Оновлюємо кожні 10 секунд
         setInterval(() => this.loadSignals(), this.updateInterval);
+        
+        // Також оновлюємо при поверненні на вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.loadSignals();
+            }
+        });
     }
 }
 
 // Запуск при завантаженні сторінки
 document.addEventListener('DOMContentLoaded', () => {
     new SignalDisplay();
+    
+    // Додаємо кнопку оновлення вручну
+    const updateBtn = document.createElement('button');
+    updateBtn.className = 'manual-update-btn';
+    updateBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Оновити';
+    updateBtn.onclick = () => {
+        updateBtn.classList.add('spinning');
+        setTimeout(() => updateBtn.classList.remove('spinning'), 1000);
+        new SignalDisplay().loadSignals();
+    };
+    
+    const header = document.querySelector('header');
+    header.appendChild(updateBtn);
 });
