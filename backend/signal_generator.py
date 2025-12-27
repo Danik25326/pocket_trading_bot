@@ -5,7 +5,12 @@ from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
 from data_handler import DataHandler
-sys.path.insert(0, str(Path(__file__).parent.parent))
+import sys
+from pathlib import Path
+# Додаємо корінь проекту до Python path
+current_file = Path(__file__).resolve()
+project_root = current_file.parent.parent
+sys.path.insert(0, str(project_root))
 from utils.validator import Validator
 from utils.logger import Logger
 
