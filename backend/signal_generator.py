@@ -23,6 +23,43 @@ class SignalGenerator:
         self.signals = []
         
     async def generate_signal(self, asset):
+        async def generate_signal(self, asset):
+    """Генерація одного сигналу"""
+    try:
+        logger.info(f"📈 Аналіз активу: {asset}")
+        
+        # Перевіряємо чи є клієнт
+        if not hasattr(self.pocket_client, 'client'):
+            logger.error("PocketOptionClient не ініціалізований")
+            return None
+        
+        # Підключаємося
+        if not self.pocket_client.connected:
+            await self.pocket_client.connect()
+        
+        # Отримуємо свічки
+        candles = await self.pocket_client.get_candles(
+            asset=asset,
+            timeframe=Config.TIMEFRAMES,
+            count=50
+        )
+        
+        if not candles:
+            logger.warning(f"Не вдалося отримати свічки для {asset}")
+            return None
+        
+        # Аналізуємо через AI
+        signal = self.analyzer.analyze_market(asset, candles)
+        
+        if signal and signal.get('confidence', 0) >= Config.MIN_CONFIDENCE:
+            signal['generated_at'] = datetime.now().isoformat()
+            logger.info(f"✅ Створено сигнал для {asset}")
+            return signal
+            
+    except Exception as e:
+        logger.error(f"Помилка генерації сигналу для {asset}: {e}")
+        
+    return None
         """Генерація одного сигналу"""
         try:
             logger.info(f"Генерація сигналу для {asset}")
