@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+
 class Validator:
     @staticmethod
     def validate_signal(signal):
