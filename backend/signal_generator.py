@@ -5,6 +5,7 @@ from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
 from data_handler import DataHandler
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from utils.validator import Validator
 from utils.logger import Logger
 
