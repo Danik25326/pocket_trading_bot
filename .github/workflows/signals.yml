@@ -1,4 +1,4 @@
-name: Generate Trading Signals
+name: Generate Trading Signals and Deploy
 
 on:
   schedule:
@@ -7,15 +7,22 @@ on:
   push:
     branches: [ main ]
 
+# Права для всього workflow
+permissions:
+  contents: write  # Дозволяє пушити зміни
+  pages: write
+  id-token: write
+
 jobs:
   generate-signals:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        persist-credentials: false
+        # Використовуємо токен з правами на запис
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -30,7 +37,6 @@ jobs:
       run: |
         mkdir -p data
         mkdir -p logs
-        # Створюємо базові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then echo '{"last_update": null, "signals": []}' > data/signals.json; fi
         if [ ! -f data/history.json ]; then echo '[]' > data/history.json; fi
     
@@ -47,7 +53,7 @@ jobs:
         cd backend
         python signal_generator.py
     
-    - name: Create .nojekyll file (для GitHub Pages)
+    - name: Create .nojekyll file
       run: |
         touch .nojekyll
     
@@ -58,4 +64,27 @@ jobs:
         git add data/
         git add logs/
         git add .nojekyll
-        git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update: New signals generated" && git push origin main)
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update: New signals generated [skip ci]" && git push origin main)
+
+  deploy:
+    needs: generate-signals  # Чекаємо на генерацію сигналів
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '.'  # Завантажуємо весь корінь
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
