@@ -1,9 +1,22 @@
 import json
 import re
-# ... інші імпорти
+import logging
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Ініціалізація логера
+logger = logging.getLogger("signal_bot")
+
+BASE_DIR = Path(__file__).parent.parent
 
 class Config:
-    # ... інші змінні ...
+    # Pocket Option
+    POCKET_SSID = os.getenv('POCKET_SSID')
+    POCKET_DEMO = os.getenv('POCKET_DEMO', 'true').lower() == 'true'
+    
+    # ... інші налаштування ...
     
     @staticmethod
     def validate_ssid_format(ssid):
@@ -14,7 +27,7 @@ class Config:
         # Перевірка формату
         pattern = r'^42\["auth",\{.*\}\]$'
         if not re.match(pattern, ssid):
-            return False, f"Неправильний формат SSID. Має бути: 42[\"auth\",{{\"session\":\"...\",...}}]"
+            return False, f"Неправильний формат SSID"
         
         return True, "SSID валідний"
     
@@ -23,13 +36,25 @@ class Config:
         """Повертає валідований SSID"""
         ssid = cls.POCKET_SSID
         
+        if not ssid:
+            logger.error("SSID не знайдено! Перевірте .env або GitHub Secrets")
+            return None
+        
         # Якщо SSID не у повному форматі, конвертуємо
         if ssid and not ssid.startswith('42["auth"'):
-            logger.warning("SSID не у повному форматі, конвертую...")
-            ssid = f'42["auth",{{"session":"{ssid}","isDemo":1,"uid":100000,"platform":1}}]'
+            logger.warning(f"SSID не у повному форматі, конвертую...")
+            logger.info(f"Оригінальний SSID: {ssid[:50]}...")
+            
+            # Конвертуємо у повний формат
+            ssid = f'42["auth",{{"session":"{ssid}","isDemo":1,"uid":12345,"platform":1}}]'
+            logger.info(f"Конвертований SSID: {ssid[:50]}...")
         
         is_valid, message = cls.validate_ssid_format(ssid)
-        if not is_valid:
-            logger.error(f"Помилка валідації SSID: {message}")
+        
+        if is_valid:
+            logger.info(f"✅ SSID валідний ({len(ssid)} символів)")
+        else:
+            logger.error(f"❌ Помилка валідації SSID: {message}")
+            logger.error(f"SSID: {ssid[:100]}...")
         
         return ssid
