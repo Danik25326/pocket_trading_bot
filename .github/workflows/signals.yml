@@ -6,10 +6,13 @@ on:
   workflow_dispatch:  # Ручний запуск
   push:
     branches: [ main ]
+    paths-ignore:  # Запобігає циклічним запускам
+      - 'data/**'
+      - 'logs/**'
+      - '*.md'
 
-# Права для всього workflow
 permissions:
-  contents: write  # Дозволяє пушити зміни
+  contents: write
   pages: write
   id-token: write
 
@@ -21,17 +24,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        # Використовуємо токен з правами на запис
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
     
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10'  # Python 3.10 стабільніший
     
-    - name: Install dependencies
+    - name: Upgrade pip and install dependencies
       run: |
+        python -m pip install --upgrade pip setuptools wheel
         pip install -r backend/requirements.txt
+        pip list  # Для дебагу - показує встановлені пакети
     
     - name: Create directories
       run: |
@@ -39,6 +44,14 @@ jobs:
         mkdir -p logs
         if [ ! -f data/signals.json ]; then echo '{"last_update": null, "signals": []}' > data/signals.json; fi
         if [ ! -f data/history.json ]; then echo '[]' > data/history.json; fi
+        if [ ! -f data/assets_config.json ]; then echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json; fi
+    
+    - name: Debug directory structure
+      run: |
+        echo "📁 Структура директорій:"
+        ls -la
+        echo "📁 backend/:"
+        ls -la backend/
     
     - name: Generate signals
       env:
@@ -47,15 +60,25 @@ jobs:
         POCKET_DEMO: 'true'
         SIGNAL_INTERVAL: '300'
         MIN_CONFIDENCE: '0.7'
-        ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
+        ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'  # БЕЗ слешів!
         TIMEFRAMES: '120'
+        LOG_LEVEL: 'INFO'
+        PYTHONPATH: ${{ github.workspace }}  # Додаємо корінь до Python path
       run: |
+        echo "🧪 Тест імпортів Python..."
+        python -c "import sys; print('Python path:', sys.path)"
+        python -c "from config import Config; print('✅ Config завантажено')"
+        python -c "from pocket_client import PocketOptionClient; print('✅ PocketOptionClient завантажено')"
+        python -c "from groq_analyzer import GroqAnalyzer; print('✅ GroqAnalyzer завантажено')"
+        
+        echo "🚀 Запуск генератора сигналів..."
         cd backend
         python signal_generator.py
     
     - name: Create .nojekyll file
       run: |
         touch .nojekyll
+        echo "Created .nojekyll for GitHub Pages"
     
     - name: Commit and push changes
       run: |
@@ -64,10 +87,19 @@ jobs:
         git add data/
         git add logs/
         git add .nojekyll
-        git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Auto-update: New signals generated [skip ci]" && git push origin main)
+        
+        # Перевіряємо, чи є зміни для коміту
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "⚠️ Немає змін для коміту"
+        else
+          git commit -m "🤖 Auto-update: New signals generated $(date +'%Y-%m-%d %H:%M') [skip ci]"
+          git push origin main
+          echo "✅ Зміни закомічено та запушено"
+        fi
 
   deploy:
     needs: generate-signals  # Чекаємо на генерацію сигналів
+    if: success()  # Запускаємо тільки якщо перший job успішний
     runs-on: ubuntu-latest
     environment:
       name: github-pages
