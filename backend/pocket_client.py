@@ -9,39 +9,44 @@ class PocketOptionClient:
     def __init__(self):
         self.client = None
         self.connected = False
-        self._initialized = False  # Додаємо прапорець ініціалізації
+        self._initialized = False
     
     async def initialize(self):
-        """Ініціалізація клієнта (викликається один раз)"""
         if self._initialized:
             return self
-            
+        
         try:
             if not Config.POCKET_SSID:
                 logger.error("❌ SSID не знайдено!")
                 return self
             
-            logger.info(f"🔗 Ініціалізація PocketOption клієнта...")
+            logger.info("🔗 Ініціалізація PocketOption клієнта...")
             
-            # Створюємо клієнт
+            # Отримуємо SSID у правильному форматі
+            ssid = Config.POCKET_SSID
+            # Якщо SSID не починається з 42["auth", то конвертуємо
+            if not ssid.startswith('42["auth"'):
+                # Конвертуємо в повний формат
+                ssid = f'42["auth",{{"session":"{ssid}","isDemo":1,"uid":102582216,"platform":1}}]'
+            
+            # Створюємо клієнт з параметрами згідно документації
             self.client = AsyncPocketOptionClient(
-                ssid=Config.POCKET_SSID,
-                is_demo=Config.POCKET_DEMO,
+                ssid=ssid,
+                demo=Config.POCKET_DEMO,  # можливо, is_demo -> demo
+                uid=102582216,  # це твій uid, можна взяти з конфига
                 enable_logging=True
             )
             
             self._initialized = True
             logger.info("✅ Клієнт ініціалізовано")
             return self
-            
+        
         except Exception as e:
             logger.error(f"❌ Помилка ініціалізації: {e}")
             return self
     
     async def connect(self):
-        """Підключення до Pocket Option"""
         try:
-            # Ініціалізуємо, якщо ще не було
             if not self._initialized:
                 await self.initialize()
             
@@ -49,16 +54,17 @@ class PocketOptionClient:
                 logger.error("❌ Клієнт не ініціалізований")
                 return False
             
-            logger.info(f"🔗 Підключення...")
+            logger.info("🔗 Підключення...")
             
             # Підключаємося
-            connection_result = await self.client.connect()
+            await self.client.connect()
             
-            if connection_result:
+            # Перевіряємо, чи підключення успішне
+            if self.client.connected:
                 logger.info("✅ Успішно підключено до PocketOption!")
                 self.connected = True
                 
-                # Тестуємо з'єднання
+                # Отримуємо баланс для підтвердження
                 try:
                     balance = await self.client.get_balance()
                     logger.info(f"💰 Баланс: {balance.balance} {balance.currency}")
@@ -70,20 +76,17 @@ class PocketOptionClient:
                 logger.error("❌ Не вдалося підключитися до PocketOption")
                 self.connected = False
                 return False
-                
+        
         except Exception as e:
             logger.error(f"❌ Помилка підключення: {e}")
             self.connected = False
             return False
     
     async def get_candles(self, asset, timeframe, count=50):
-        """Отримання свічок"""
         try:
-            # Перевіряємо ініціалізацію
             if not self._initialized:
                 await self.initialize()
             
-            # Якщо не підключені, підключаємося
             if not self.connected:
                 logger.warning(f"Спробую підключитися для {asset}...")
                 if not await self.connect():
@@ -92,7 +95,7 @@ class PocketOptionClient:
             
             logger.info(f"📊 Запит свічок: {asset}")
             
-            # Використовуємо правильний метод клієнта
+            # Використовуємо метод get_candles
             candles = await self.client.get_candles(
                 asset=asset,
                 timeframe=timeframe,
@@ -105,13 +108,12 @@ class PocketOptionClient:
             else:
                 logger.warning(f"Отримано 0 свічок для {asset}")
                 return None
-                
+        
         except Exception as e:
             logger.error(f"❌ Помилка отримання свічок для {asset}: {e}")
             return None
     
     async def disconnect(self):
-        """Відключення"""
         try:
             if self.client and self.connected:
                 await self.client.disconnect()
