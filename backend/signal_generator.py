@@ -83,7 +83,6 @@ class SignalGenerator:
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
             
-    try:
         # Підключення
         logger.info("🔗 Підключення до PocketOption...")
         if not await self.pocket_client.connect():
