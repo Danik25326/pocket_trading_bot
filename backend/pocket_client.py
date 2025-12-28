@@ -34,8 +34,8 @@ class PocketOptionClient:
             # Створюємо клієнта з обома параметрами
             self.client = AsyncPocketOptionClient(
                 ssid=ssid,
-                is_demo=Config.POCKET_DEMO,  # ← ДОДАЙ ЦЕ!
-                enable_logging=True  # ← Увімкнути для діагностики
+                is_demo=Config.POCKET_DEMO, 
+                enable_logging=True 
             )
             
             self._initialized = True
