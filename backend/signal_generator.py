@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 from datetime import datetime
@@ -27,12 +26,10 @@ class SignalGenerator:
                 logger.error("PocketOptionClient не ініціалізований")
                 return None
             
-            # Підключаємося
+            # Перевіряємо підключення
             if not self.pocket_client.connected:
                 logger.info(f"Спробую підключитися для {asset}...")
-                await self.pocket_client.connect()
-                
-                if not self.pocket_client.connected:
+                if not await self.pocket_client.connect():
                     logger.error(f"Не вдалося підключитися для {asset}")
                     return None
 
@@ -48,6 +45,14 @@ class SignalGenerator:
                 return None
 
             logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
+            
+            # Перевіряємо, чи свічки містять реальні дані
+            if len(candles) > 0:
+                first_candle = candles[0]
+                if hasattr(first_candle, 'close'):
+                    if first_candle.close == 0 or first_candle.open == 0:
+                        logger.warning(f"⚠️ Отримані нульові дані для {asset}")
+                        return None
             
             # Аналізуємо через AI
             signal = self.analyzer.analyze_market(asset, candles)
@@ -83,16 +88,15 @@ class SignalGenerator:
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
             
-        # Підключення
-        logger.info("🔗 Підключення до PocketOption...")
-        if not await self.pocket_client.connect():
-            logger.error("❌ Не вдалося підключитися до PocketOption")
-            logger.info("⏸️ Пропускаю генерацію сигналів...")
-            return []  # ← Повертаємо порожній список
-        
-        # Продовжуємо тільки якщо підключення успішне
-        logger.info("✅ Підключення успішне, генерую сигнали...")
-
+            # Підключення
+            logger.info("🔗 Підключення до PocketOption...")
+            if not await self.pocket_client.connect():
+                logger.error("❌ Не вдалося підключитися до PocketOption")
+                logger.info("⏸️ Пропускаю генерацію сигналів...")
+                return []  # Повертаємо порожній список
+            
+            # Продовжуємо тільки якщо підключення успішне
+            logger.info("✅ Підключення успішне, генерую сигнали...")
             
             valid_signals = []
             for asset in Config.ASSETS:
