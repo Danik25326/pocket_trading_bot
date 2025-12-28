@@ -2,8 +2,8 @@ name: Generate Trading Signals and Deploy
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Кожні 5 хвилин
-  workflow_dispatch:  # Ручний запуск
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths-ignore:
@@ -41,7 +41,7 @@ jobs:
     
     - name: Verify installation
       run: |
-        python -c "import pocketoptionapi_async; print(f'✅ pocketoptionapi: {pocketoptionapi_async.__version__}')"
+        python -c "import pocketoptionapi_async; print('✅ pocketoptionapi installed')"
         python -c "import groq; print('✅ groq installed')"
         python -c "import pytz; print('✅ pytz installed')"
     
@@ -60,21 +60,21 @@ jobs:
         POCKET_UID: '102582216'
         POCKET_DEMO: 'true'
         LOG_LEVEL: 'INFO'
-        PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}
+        PYTHONPATH: '${{ github.workspace }}/backend:${{ github.workspace }}'
       run: |
         echo "🧪 Тест імпортів Python..."
-        python -c "
+        python3 -c "
 import sys
 sys.path.insert(0, '.')
 sys.path.insert(0, 'backend')
 try:
     from config import Config
     print('✅ Config завантажено')
-    print(f'SSID: {\"✅\" if Config.POCKET_SSID else \"❌\"}')
-    print(f'GROQ_KEY: {\"✅\" if Config.GROQ_API_KEY else \"❌\"}')
-    print(f'Модель: {Config.GROQ_MODEL}')
+    print('SSID: ' + ('✅' if Config.POCKET_SSID else '❌'))
+    print('GROQ_KEY: ' + ('✅' if Config.GROQ_API_KEY else '❌'))
+    print('Модель: ' + Config.GROQ_MODEL)
 except Exception as e:
-    print(f'❌ Помилка: {e}')
+    print('❌ Помилка: ' + str(e))
     import traceback
     traceback.print_exc()
     sys.exit(1)
@@ -82,7 +82,7 @@ except Exception as e:
         
         echo "🚀 Запуск генератора сигналів..."
         cd backend
-        python signal_generator.py
+        python3 signal_generator.py
     
     - name: Create .nojekyll file
       run: |
