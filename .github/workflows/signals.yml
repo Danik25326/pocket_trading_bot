@@ -10,6 +10,9 @@ on:
       - 'data/**'
       - 'logs/**'
       - '*.md'
+      - '*.css'
+      - '*.js'
+      - '*.html'
 
 permissions:
   contents: write
@@ -32,24 +35,29 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Clean pip cache and install dependencies
+    - name: Install dependencies
       run: |
-        # Очистка кеша pip перед установкой
-        pip cache purge || echo "⚠️ Не удалось очистить кеш, продолжаем..."
-        
-        # Установка зависимостей БЕЗ кеширования
         python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt --no-cache-dir --force-reinstall
+        pip install -r backend/requirements.txt --no-cache-dir
     
-    - name: Create directories
+    - name: Create necessary directories
       run: |
         mkdir -p data
         mkdir -p logs
-        if [ ! -f data/signals.json ]; then echo '{"last_update": null, "signals": []}' > data/signals.json; fi
-        if [ ! -f data/history.json ]; then echo '[]' > data/history.json; fi
-        if [ ! -f data/assets_config.json ]; then echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json; fi
+        touch .nojekyll
+        
+        # Створюємо початкові файли, якщо їх немає
+        if [ ! -f data/signals.json ]; then 
+          echo '{"last_update": null, "signals": []}' > data/signals.json
+        fi
+        if [ ! -f data/history.json ]; then 
+          echo '[]' > data/history.json
+        fi
+        if [ ! -f data/assets_config.json ]; then 
+          echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
+        fi
     
-    - name: Generate signals
+    - name: Generate trading signals
       env:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -59,41 +67,35 @@ jobs:
         ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
-        PYTHONPATH: ${{ github.workspace }}/backend:${{ github.workspace }}
+        GROQ_MODEL: 'meta-llama/llama-4-maverick-17b-128e-instruct'
       run: |
-        echo "🧪 Тест імпортів Python..."
-        python -c "
-        import sys
-        sys.path.insert(0, '.')
-        sys.path.insert(0, 'backend')
-        from config import Config
-        print('✅ Config завантажено')
-        print(f'SSID присутній: {\"✅\" if Config.POCKET_SSID else \"❌\"}')
-        print(f'GROQ_API_KEY присутній: {\"✅\" if Config.GROQ_API_KEY else \"❌\"}')
-        "
+        echo "🚀 Початок генерації сигналів..."
+        echo "Активи: $ASSETS"
+        echo "Модель AI: $GROQ_MODEL"
         
-        echo "🚀 Запуск генератора сигналів..."
+        # Запускаємо генератор сигналів
         cd backend
         python signal_generator.py
+        
+        echo "✅ Генерація сигналів завершена"
     
-    - name: Create .nojekyll file
-      run: |
-        touch .nojekyll
-    
-    - name: Commit and push changes
+    - name: Commit and push generated data
       run: |
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
+        
+        # Додаємо змінені файли
         git add data/
         git add logs/
         git add .nojekyll
         
-        if git diff --quiet && git diff --staged --quiet; then
+        # Перевіряємо, чи є зміни для коміту
+        if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Auto-update: New signals generated $(date +'%Y-%m-%d %H:%M') [skip ci]"
+          git commit -m "🤖 Авто-оновлення: Нові сигнали $(date +'%Y-%m-%d %H:%M') [skip ci]"
           git push origin main
-          echo "✅ Зміни закомічено та запушено"
+          echo "✅ Зміни закомічено та відправлено"
         fi
 
   deploy:
