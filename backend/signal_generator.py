@@ -28,7 +28,7 @@ class SignalGenerator:
             candles = await self.pocket_client.get_candles(
                 asset=asset,
                 timeframe=Config.TIMEFRAMES,
-                count=20
+                count=25
             )
             
             if not candles or len(candles) < 10:
@@ -39,7 +39,7 @@ class SignalGenerator:
             signal = self.analyzer.analyze_market(asset, candles)
             
             if signal:
-                logger.info(f"✅ Сигнал для {asset}: {signal.get('direction')}")
+                logger.info(f"✅ Сигнал отримано: {signal.get('direction')}")
                 return signal
             else:
                 logger.warning(f"AI не дав сигнал для {asset}")
@@ -52,9 +52,10 @@ class SignalGenerator:
     async def generate_all_signals(self):
         """Генерація сигналів для всіх активів"""
         logger.info("=" * 50)
-        logger.info(f"🚀 Генерація сигналів - {datetime.now().strftime('%H:%M')}")
+        logger.info(f"🚀 Генерація сигналів")
         logger.info(f"📊 Активи: {', '.join(Config.ASSETS)}")
         logger.info(f"🧠 Модель: {Config.GROQ_MODEL}")
+        logger.info(f"🎯 Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
         logger.info("=" * 50)
         
         all_signals = []
@@ -62,6 +63,7 @@ class SignalGenerator:
         try:
             # Генерація для кожного активу
             for asset in Config.ASSETS:
+                logger.info(f"📈 Обробка: {asset}")
                 signal = await self.generate_signal_for_asset(asset)
                 if signal:
                     all_signals.append(signal)
@@ -69,6 +71,7 @@ class SignalGenerator:
                 else:
                     logger.warning(f"⚠️ Немає сигналу для {asset}")
                 
+                # Пауза між активами
                 await asyncio.sleep(1)
             
             # Збереження
@@ -76,6 +79,13 @@ class SignalGenerator:
                 success = self.data_handler.save_signals(all_signals)
                 if success:
                     logger.info(f"💾 Збережено {len(all_signals)} сигналів")
+                    
+                    # Вивід інформації
+                    for signal in all_signals:
+                        logger.info(
+                            f"   • {signal['asset']}: {signal['direction']} "
+                            f"({signal.get('confidence', 0)*100:.1f}%)"
+                        )
                 else:
                     logger.error("❌ Не вдалося зберегти")
             else:
