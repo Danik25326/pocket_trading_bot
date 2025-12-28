@@ -35,10 +35,9 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Upgrade pip and install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade setuptools wheel
         pip install -r backend/requirements.txt
     
     - name: Create necessary directories
@@ -47,15 +46,12 @@ jobs:
         mkdir -p logs
         touch .nojekyll
         
-        # Створюємо початкові файли, якщо їх немає
+        # Створюємо початкові файли
         if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": []}' > data/signals.json
+          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
         fi
         if [ ! -f data/history.json ]; then 
           echo '[]' > data/history.json
-        fi
-        if [ ! -f data/assets_config.json ]; then 
-          echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
         fi
     
     - name: Generate trading signals
@@ -69,18 +65,37 @@ jobs:
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'meta-llama/llama-4-maverick-17b-128e-instruct'
+        # Видаляємо змінні проксі
+        http_proxy: ''
+        https_proxy: ''
+        HTTP_PROXY: ''
+        HTTPS_PROXY: ''
       run: |
         echo "🚀 Початок генерації сигналів..."
         echo "📊 Активи: $ASSETS"
         echo "🧠 Модель AI: $GROQ_MODEL"
         echo "🎯 Мінімальна впевненість: 70%"
+        echo "⏰ Часовий пояс: Київ (UTC+2)"
         
         # Додаємо шляхи Python
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd)
         
+        # Тестуємо імпорти
+        echo "🧪 Тест імпортів Python..."
+        python3 -c "
+import sys
+sys.path.append('backend')
+sys.path.append('.')
+try:
+    from groq import Groq
+    print('✅ Groq доступний')
+except Exception as e:
+    print(f'❌ Помилка Groq: {e}')
+        "
+        
         # Запускаємо генератор сигналів
         cd backend
-        python signal_generator.py
+        python3 signal_generator.py
         
         echo "✅ Генерація сигналів завершена"
     
@@ -94,11 +109,11 @@ jobs:
         git add logs/
         git add .nojekyll
         
-        # Перевіряємо, чи є зміни для коміту
+        # Перевіряємо зміни
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Авто-оновлення: Нові сигнали $(date +'%Y-%m-%d %H:%M') [skip ci]"
+          git commit -m "🤖 Авто-оновлення: Нові сигнали $(date +'%Y-%m-%d %H:%M') (Київ) [skip ci]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
