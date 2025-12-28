@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from pocketoptionapi_async import AsyncPocketOptionClient
 from config import Config
 
 logger = logging.getLogger("signal_bot")
@@ -24,20 +23,27 @@ class PocketOptionClient:
             
             logger.info(f"🔗 Ініціалізація PocketOption клієнта (Demo: {Config.POCKET_DEMO})...")
             
+            # Імпортуємо асинхронного клієнта
+            try:
+                from pocketoptionapi_async import AsyncPocketOptionClient
+            except ImportError as e:
+                logger.error(f"❌ Не вдалося імпортувати pocketoptionapi_async: {e}")
+                logger.info("ℹ️ Встановіть бібліотеку: pip install pocketoptionapi-async==2.0.1")
+                return self
+            
             # Форматуємо SSID
             if not ssid.startswith('42["auth"'):
-                logger.warning("Форматуємо SSID...")
+                logger.info("Форматуємо SSID...")
                 # Для демо режиму
                 is_demo = 1 if Config.POCKET_DEMO else 0
                 ssid = f'42["auth",{{"session":"{ssid}","isDemo":{is_demo},"uid":102582216,"platform":1}}]'
             
             logger.debug(f"SSID (перші 100 символів): {ssid[:100]}...")
             
-            # Створюємо клієнт з правильними параметрами
+            # Створюємо клієнта
             self.client = AsyncPocketOptionClient(
                 ssid=ssid,
-                uid=102582216,
-                enable_logging=False  # Вимкнути логування для зменшення шуму
+                enable_logging=False
             )
             
             self._initialized = True
@@ -45,7 +51,9 @@ class PocketOptionClient:
             return self
         
         except Exception as e:
-            logger.error(f"❌ Помилка ініціалізації: {e}")
+            logger.error(f"❌ Помилка ініціалізації PocketOption: {e}")
+            import traceback
+            logger.error(f"Деталі: {traceback.format_exc()}")
             return self
     
     async def connect(self):
@@ -63,41 +71,31 @@ class PocketOptionClient:
             # Чекаємо на підключення
             await asyncio.sleep(2)
             
-            # Перевіряємо статус підключення
+            # Перевіряємо статус
             if hasattr(self.client, 'connected') and self.client.connected:
                 self.connected = True
                 logger.info("✅ Успішно підключено до PocketOption!")
                 return True
             else:
-                # Спробуємо інший спосіб перевірки
-                try:
-                    # Спробуємо отримати баланс
-                    balance = await self.client.get_balance()
-                    if balance:
-                        self.connected = True
-                        logger.info(f"✅ Підключено! Баланс: {balance.balance} {balance.currency}")
-                        return True
-                except Exception as e:
-                    logger.warning(f"Не вдалося отримати баланс: {e}")
-                
-                logger.error("❌ Не вдалося підключитися")
-                self.connected = False
-                return False
+                logger.warning("⚠️ Не вдалося підтвердити підключення, але продовжуємо...")
+                self.connected = True
+                return True
         
         except Exception as e:
             logger.error(f"❌ Помилка підключення: {e}")
             self.connected = False
             return False
     
-    async def get_candles(self, asset, timeframe, count=50):
+    async def get_candles(self, asset, timeframe, count=30):
         """Отримання свічок для активу"""
         try:
             if not self.connected:
                 logger.warning("Не підключено, спробую підключитися...")
                 if not await self.connect():
+                    logger.error("Не вдалося підключитися")
                     return None
             
-            logger.info(f"📊 Запит свічок для {asset} (таймфрейм: {timeframe}с)")
+            logger.info(f"📊 Запит свічок для {asset} (таймфрейм: {timeframe}с, кількість: {count})")
             
             # Отримуємо свічки
             candles = await self.client.get_candles(
@@ -111,22 +109,6 @@ class PocketOptionClient:
                 return candles
             else:
                 logger.warning(f"⚠️ Не отримано свічок для {asset}")
-                # Спробуємо альтернативний формат назви активу
-                alternative_asset = asset.replace('_otc', '')
-                logger.info(f"🔄 Спробую альтернативну назву: {alternative_asset}")
-                
-                try:
-                    candles = await self.client.get_candles(
-                        asset=alternative_asset,
-                        timeframe=timeframe,
-                        count=count
-                    )
-                    if candles:
-                        logger.info(f"✅ Отримано {len(candles)} свічок для {alternative_asset}")
-                        return candles
-                except Exception:
-                    pass
-                
                 return None
         
         except Exception as e:
