@@ -24,9 +24,9 @@ class Config:
     POCKET_SSID = os.getenv('POCKET_SSID')
     POCKET_DEMO = os.getenv('POCKET_DEMO', 'true').lower() == 'true'
     
-    # Groq AI - ОНОВЛЕНО НА НОВУ МОДЕЛЬ
+    # Groq AI - РОБОЧА МОДЕЛЬ
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-    GROQ_MODEL = os.getenv('GROQ_MODEL', 'meta-llama/llama-4-maverick-17b-128e-instruct')
+    GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')
     
     # Сигнали
     SIGNAL_INTERVAL = int(os.getenv('SIGNAL_INTERVAL', 300))
@@ -45,7 +45,6 @@ class Config:
     SIGNALS_FILE = DATA_DIR / 'signals.json'
     HISTORY_FILE = DATA_DIR / 'history.json'
     ASSETS_CONFIG_FILE = DATA_DIR / 'assets_config.json'
-    LOG_FILE = BASE_DIR / 'logs' / 'signals.log'
     
     @staticmethod
     def validate():
