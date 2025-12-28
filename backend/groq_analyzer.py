@@ -1,130 +1,149 @@
 import json
 import logging
-import os  # ДОДАВ ІМПОРТ OS
+import os
 from groq import Groq
-from datetime import datetime, timedelta
-import pytz
+from datetime import datetime
 from config import Config
 
 logger = logging.getLogger("signal_bot")
 
 class GroqAnalyzer:
     def __init__(self):
-        self.client = None
-        self.initialize()
-    
-    def initialize(self):
-        try:
-            if not Config.GROQ_API_KEY:
-                logger.error("❌ GROQ_API_KEY не знайдено!")
-                return
-            
-            # ФІКС: Видаляємо змінні проксі
+        # Перевіряємо наявність API ключа
+        if not Config.GROQ_API_KEY or Config.GROQ_API_KEY == 'your_groq_api_key_here':
+            logger.error("❌ GROQ_API_KEY не налаштовано! Перевірте GitHub Secrets")
+            self.client = None
+        else:
+            # Видаляємо змінні проксі з оточення
             proxy_vars = ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY']
             for var in proxy_vars:
                 os.environ.pop(var, None)
             
-            # ПРОСТА ІНІЦІАЛІЗАЦІЯ БЕЗ ЖОДНИХ ДОДАТКОВИХ ПАРАМЕТРІВ
             self.client = Groq(api_key=Config.GROQ_API_KEY)
             logger.info(f"✅ Groq AI ініціалізовано (модель: {Config.GROQ_MODEL})")
-            
-        except Exception as e:
-            logger.error(f"❌ Помилка ініціалізації Groq: {e}")
-            import traceback
-            logger.error(f"Деталі: {traceback.format_exc()}")
-    
+        
     def analyze_market(self, asset, candles_data):
-        """Аналіз ринку через Groq AI"""
+        """
+        Аналіз ринку через Groq AI
+        Повертає сигнал та впевненість
+        """
+        # Перевіряємо, чи ініціалізовано клієнт
         if not self.client:
-            logger.error("❌ Groq AI не ініціалізовано")
+            logger.error("Groq AI не ініціалізовано. Пропускаємо аналіз.")
             return None
+            
+        # Отримуємо історію успішних сигналів для навчання
+        feedback = self._get_learning_feedback(asset)
+        feedback_str = self._format_feedback_for_prompt(feedback)
+        
+        # Форматуємо дані для AI
+        candles_str = self._format_candles(candles_data)
+        
+        # Київський час
+        now_kyiv = Config.get_kyiv_time()
+        entry_time = now_kyiv.strftime('%H:%M')
+        
+        prompt = f"""
+        Ти експертний трейдер з бінарними опціонами. Проаналізуй наступні дані:
+        
+        Актив: {asset}
+        Таймфрейм: 2 хвилини
+        Поточний час (Київ): {now_kyiv.strftime('%H:%M')}
+        
+        Останні 50 свічок:
+        {candles_str}
+        
+        Історія успішних/невдалих сигналів для цього активу (для навчання):
+        {feedback_str}
+        
+        Проаналізуй:
+        1. Загальний тренд (вгору/вниз/флет)
+        2. Рівні підтримки та опору
+        3. Ключові технічні індикатори (RSI, MACD, Stochastic)
+        4. Волатильність
+        5. Японські свічкові паттерни
+        
+        Дай прогноз на наступні 2-5 хвилин:
+        - Напрямок (UP/DOWN)
+        - Впевненість у % (70-95%)
+        - Рекомендований час входу (HH:MM) - через 1-2 хвилини від поточного часу
+        - Тривалість угоди (1, 2, 3, 4 або 5 хвилин)
+        - Коротке обґрунтування
+        
+        ВАЖЛИВО:
+        - Якщо тренд неясний або ринок у флеті - не давай сигнал
+        - Мінімальна впевненість: 70%
+        - Час входу має бути в майбутньому
+        - Тривалість: 1-5 хвилин
+        
+        Відповідь дай у JSON форматі:
+        {{
+            "asset": "{asset}",
+            "direction": "UP/DOWN",
+            "confidence": 0.85,
+            "entry_time": "{entry_time}",
+            "duration": 2,
+            "reason": "Короткий опис аналізу",
+            "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
+        }}
+        """
         
         try:
-            # Форматуємо свічки
-            candles_str = self._format_candles(candles_data)
-            
-            # Поточний час Київ
-            kyiv_tz = pytz.timezone('Europe/Kiev')
-            now_kyiv = datetime.now(kyiv_tz)
-            entry_time = (now_kyiv + timedelta(minutes=1)).strftime('%H:%M')
-            
-            prompt = f"""Актив: {asset}
-Час: {now_kyiv.strftime('%H:%M')} (Київ)
-
-Останні 15 свічок:
-{candles_str}
-
-Проаналізуй технічний аналіз та дай торговий сигнал бінарним опціоном.
-Відповідь у форматі JSON:
-{{
-    "direction": "UP" або "DOWN",
-    "confidence": число від 0.7 до 0.95,
-    "entry_time": "{entry_time}",
-    "duration": 2,
-    "reason": "коротке обґрунтування",
-    "asset": "{asset}"
-}}"""
-            
-            logger.info(f"🧠 Аналізую {asset}...")
-            
             completion = self.client.chat.completions.create(
                 model=Config.GROQ_MODEL,
                 messages=[
-                    {"role": "system", "content": "Ти професійний трейдер. Давай точні торгові сигнали."},
+                    {"role": "system", "content": "Ти професійний трейдер бінарних опціонів. Використовуй історію для покращення точності."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.3,
-                max_tokens=300
+                max_tokens=1024,
+                response_format={"type": "json_object"}
             )
             
-            response_text = completion.choices[0].message.content
-            
-            # Чистимо від markdown
-            response_text = response_text.replace('```json', '').replace('```', '').strip()
-            
-            response = json.loads(response_text)
-            
-            # Додаємо обов'язкові поля
+            response = json.loads(completion.choices[0].message.content)
             response['generated_at'] = now_kyiv.isoformat()
-            response['timestamp'] = now_kyiv.strftime('%Y-%m-%d %H:%M:%S')
             
-            # Перевіряємо впевненість
-            if response.get('confidence', 0) < Config.MIN_CONFIDENCE:
-                logger.warning(f"⚠️ Низька впевненість: {response.get('confidence', 0)*100:.1f}%")
-                return None
-            
-            logger.info(f"✅ Сигнал: {response.get('direction')} ({response.get('confidence', 0)*100:.1f}%)")
             return response
             
         except Exception as e:
-            logger.error(f"❌ Помилка AI для {asset}: {e}")
+            logger.error(f"Groq AI error: {e}")
             return None
     
     def _format_candles(self, candles):
-        """Спрощене форматування свічок"""
+        """Форматування свічок для AI"""
         if not candles:
             return "Немає даних"
+            
+        formatted = []
+        for i, candle in enumerate(candles[-10:]):  # Беремо останні 10 свічок
+            formatted.append(f"""
+            Свічка {i+1}:
+            Час: {candle.timestamp}
+            Open: {candle.open}
+            High: {candle.high}
+            Low: {candle.low}
+            Close: {candle.close}
+            Volume: {candle.volume}
+            """)
+        return "\n".join(formatted)
+    
+    def _get_learning_feedback(self, asset):
+        """Отримання історії успішних/невдалих сигналів для навчання"""
+        try:
+            from data_handler import DataHandler
+            handler = DataHandler()
+            return handler.get_feedback_history(asset)
+        except:
+            return []
+    
+    def _format_feedback_for_prompt(self, feedback):
+        """Форматування зворотного зв'язку для prompt"""
+        if not feedback:
+            return "Немає історії для навчання."
         
         formatted = []
-        # Беремо останні 15 свічок
-        for i, candle in enumerate(candles[-15:]):
-            try:
-                # Спрощений парсинг
-                if hasattr(candle, 'close'):
-                    close = candle.close
-                    open_price = candle.open
-                elif isinstance(candle, dict):
-                    close = candle.get('close', 0)
-                    open_price = candle.get('open', 0)
-                elif isinstance(candle, (list, tuple)) and len(candle) >= 5:
-                    open_price = candle[1]
-                    close = candle[4]
-                else:
-                    continue
-                
-                direction = "🟢" if close > open_price else "🔴"
-                formatted.append(f"{i+1}. {direction} O:{float(open_price):.5f} C:{float(close):.5f}")
-            except Exception:
-                continue
+        for item in feedback[-5:]:  # Останні 5 записів
+            result = "✅ УСПІШНО" if item.get('success') else "❌ НЕУСПІШНО"
+            formatted.append(f"- {item.get('asset')}: {item.get('direction')} ({result}) - {item.get('reason', '')}")
         
-        return "\n".join(formatted) if formatted else "Немає даних"
+        return "\n".join(formatted)
