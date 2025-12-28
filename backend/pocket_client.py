@@ -16,24 +16,26 @@ class PocketOptionClient:
             return self
         
         try:
-            if not Config.POCKET_SSID:
+            # Отримуємо SSID з конфігурації
+            ssid = Config.POCKET_SSID
+            if not ssid:
                 logger.error("❌ SSID не знайдено!")
                 return self
             
-            logger.info("🔗 Ініціалізація PocketOption клієнта...")
+            logger.info(f"🔗 Ініціалізація PocketOption клієнта (Demo: {Config.POCKET_DEMO})...")
             
-            # Отримуємо SSID у правильному форматі
-            ssid = Config.POCKET_SSID
-            # Якщо SSID не починається з 42["auth", то конвертуємо
+            # Форматуємо SSID
             if not ssid.startswith('42["auth"'):
-                # Конвертуємо в повний формат
-                ssid = f'42["auth",{{"session":"{ssid}","isDemo":1,"uid":102582216,"platform":1}}]'
+                logger.warning("Форматуємо SSID...")
+                ssid = f'42["auth",{{"session":"{ssid}","isDemo":{1 if Config.POCKET_DEMO else 0},"uid":102582216,"platform":1}}]'
             
-            # Створюємо клієнт з параметрами згідно документації
+            logger.debug(f"SSID (перші 100 символів): {ssid[:100]}...")
+            
+            # Створюємо клієнт
             self.client = AsyncPocketOptionClient(
                 ssid=ssid,
-                demo=Config.POCKET_DEMO,  # можливо, is_demo -> demo
-                uid=102582216,  # це твій uid, можна взяти з конфига
+                demo=Config.POCKET_DEMO,
+                uid=102582216,
                 enable_logging=True
             )
             
@@ -54,26 +56,18 @@ class PocketOptionClient:
                 logger.error("❌ Клієнт не ініціалізований")
                 return False
             
-            logger.info("🔗 Підключення...")
-            
-            # Підключаємося
+            logger.info("🔗 Підключення до PocketOption...")
             await self.client.connect()
             
-            # Перевіряємо, чи підключення успішне
+            # Чекаємо на підключення
+            await asyncio.sleep(2)
+            
             if self.client.connected:
                 logger.info("✅ Успішно підключено до PocketOption!")
                 self.connected = True
-                
-                # Отримуємо баланс для підтвердження
-                try:
-                    balance = await self.client.get_balance()
-                    logger.info(f"💰 Баланс: {balance.balance} {balance.currency}")
-                except Exception as e:
-                    logger.warning(f"Баланс не отримано: {e}")
-                
                 return True
             else:
-                logger.error("❌ Не вдалося підключитися до PocketOption")
+                logger.error("❌ Не вдалося підключитися")
                 self.connected = False
                 return False
         
@@ -83,30 +77,27 @@ class PocketOptionClient:
             return False
     
     async def get_candles(self, asset, timeframe, count=50):
+        """Отримання свічок для активу"""
         try:
-            if not self._initialized:
-                await self.initialize()
-            
             if not self.connected:
-                logger.warning(f"Спробую підключитися для {asset}...")
+                logger.warning("Не підключено, спробую підключитися...")
                 if not await self.connect():
-                    logger.error(f"Не вдалося підключитися для {asset}")
                     return None
             
-            logger.info(f"📊 Запит свічок: {asset}")
+            logger.info(f"📊 Запит свічок для {asset} (таймфрейм: {timeframe}с, кількість: {count})")
             
-            # Використовуємо метод get_candles
+            # Використовуємо правильний метод API
             candles = await self.client.get_candles(
                 asset=asset,
                 timeframe=timeframe,
                 count=count
             )
             
-            if candles and len(candles) > 0:
+            if candles:
                 logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
                 return candles
             else:
-                logger.warning(f"Отримано 0 свічок для {asset}")
+                logger.warning(f"⚠️ Не отримано свічок для {asset}")
                 return None
         
         except Exception as e:
