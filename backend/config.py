@@ -5,51 +5,61 @@ import re
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import datetime
+import pytz
 
-# Додаємо шляхи для коректних імпортів
-current_dir = Path(__file__).parent
-project_root = current_dir.parent
-
-sys.path.insert(0, str(current_dir))
-sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / "utils"))
+# Додаємо шлях до кореня проекту для імпортів
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 load_dotenv()
 
+# Ініціалізація логера
 logger = logging.getLogger("signal_bot")
 
+# Корінь проекту
+BASE_DIR = Path(__file__).parent.parent
 
 class Config:
-    # Корінь проекту
-    BASE_DIR = project_root
-    
     # Pocket Option
     POCKET_SSID = os.getenv('POCKET_SSID')
     POCKET_DEMO = os.getenv('POCKET_DEMO', 'true').lower() == 'true'
     
-    # Groq AI - ОНОВЛЕНО НА МОДЕЛЬ ЯКА ПРАЦЮЄ
+    # Groq AI
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-    GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')  # Твоя робоча модель!
+    GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.3-70b-versatile')
     
     # Сигнали
     SIGNAL_INTERVAL = int(os.getenv('SIGNAL_INTERVAL', 300))
     MIN_CONFIDENCE = float(os.getenv('MIN_CONFIDENCE', 0.7))
+    MAX_SIGNALS_HISTORY = int(os.getenv('MAX_SIGNALS_HISTORY', 100))
+    ACTIVE_SIGNAL_TIMEOUT = int(os.getenv('ACTIVE_SIGNAL_TIMEOUT', 5))  # хвилин
     
     # Актив
-    ASSETS_RAW = os.getenv('ASSETS', 'GBPJPY_otc,EURUSD_otc,USDJPY_otc')
-    ASSETS = [asset.strip() for asset in ASSETS_RAW.split(',')]
+    ASSETS = [asset.strip() for asset in os.getenv('ASSETS', 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc').split(',')]
     TIMEFRAMES = int(os.getenv('TIMEFRAMES', 120))
     
-    # Логування
-    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+    # Навчання
+    FEEDBACK_ENABLED = os.getenv('FEEDBACK_ENABLED', 'true').lower() == 'true'
     
     # Шляхи до файлів
     DATA_DIR = BASE_DIR / 'data'
     SIGNALS_FILE = DATA_DIR / 'signals.json'
     HISTORY_FILE = DATA_DIR / 'history.json'
+    FEEDBACK_FILE = DATA_DIR / 'feedback.json'
     ASSETS_CONFIG_FILE = DATA_DIR / 'assets_config.json'
+    
+    # Налаштування логування
+    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     LOG_FILE = BASE_DIR / 'logs' / 'signals.log'
     
+    # Часовий пояс
+    KYIV_TZ = pytz.timezone('Europe/Kiev')
+
+    @staticmethod
+    def get_kyiv_time():
+        """Отримання поточного часу в Києві"""
+        return datetime.now(Config.KYIV_TZ)
+
     @staticmethod
     def validate_ssid_format(ssid):
         """Перевіряє чи SSID у правильному форматі"""
@@ -91,18 +101,18 @@ class Config:
         
         return ssid
     
-    @staticmethod
-    def validate():
+    @classmethod
+    def validate(cls):
         """Перевірка конфігурації"""
         errors = []
         
-        if not Config.POCKET_SSID:
+        if not cls.POCKET_SSID:
             errors.append("❌ POCKET_SSID не встановлено")
         
-        if not Config.GROQ_API_KEY:
+        if not cls.GROQ_API_KEY:
             errors.append("❌ GROQ_API_KEY не встановлено")
         
-        if not Config.ASSETS:
+        if not cls.ASSETS:
             errors.append("❌ Не вказано активи")
         
         if errors:
@@ -110,8 +120,3 @@ class Config:
                 logger.error(error)
             return False
         return True
-
-
-# Перевірка при імпорті
-if __name__ != "__main__":
-    Config.validate()
