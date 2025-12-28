@@ -13,110 +13,80 @@ class DataHandler:
         self.create_data_dir()
     
     def create_data_dir(self):
-        """Створення директорій для даних"""
-        os.makedirs(self.data_dir, exist_ok=True)
-    
-    def get_current_kyiv_time(self):
-        """Повертає поточний час в Києві"""
-        return datetime.now(self.kyiv_tz)
+        if not os.path.exists(self.data_dir):
+            os.makedirs(self.data_dir)
     
     def load_signals(self):
-        """Завантаження сигналів з файлу"""
         try:
             if os.path.exists(self.signals_file):
                 with open(self.signals_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    return data
+                    return json.load(f)
             return {"last_update": None, "signals": []}
         except Exception as e:
-            print(f"❌ Помилка завантаження сигналів: {e}")
+            print(f"Error loading signals: {e}")
             return {"last_update": None, "signals": []}
     
     def save_signals(self, signals):
-        """Збереження сигналів з Київським часом"""
+        # Київський час
+        kyiv_time = datetime.now(self.kyiv_tz)
+        
+        data = {
+            "last_update": kyiv_time.isoformat(),
+            "last_update_str": kyiv_time.strftime('%Y-%m-%d %H:%M:%S'),
+            "timezone": "Europe/Kiev (UTC+2)",
+            "signals": signals
+        }
+        
         try:
-            # Отримуємо поточний час в Києві
-            current_time = self.get_current_kyiv_time()
-            
-            # Фільтруємо сигнали з достатньою впевненістю
-            valid_signals = []
-            for signal in signals:
-                # Переконуємося, що в сигналі вказаний часовий пояс
-                if 'timezone' not in signal:
-                    signal['timezone'] = 'Europe/Kiev (UTC+2)'
-                
-                # Додаємо час збереження
-                signal['saved_at_kyiv'] = current_time.isoformat()
-                
-                valid_signals.append(signal)
-            
-            if not valid_signals:
-                print("⚠️ Немає сигналів для збереження")
-                return False
-            
-            # Створюємо структуру даних
-            data = {
-                "last_update": current_time.isoformat(),
-                "last_update_human": current_time.strftime('%Y-%m-%d %H:%M:%S'),
-                "timezone": "Europe/Kiev (UTC+2)",
-                "signals": valid_signals
-            }
-            
-            # Зберігаємо
             with open(self.signals_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(data, f, indent=2, ensure_ascii=False)
             
-            print(f"💾 Збережено {len(valid_signals)} сигналів ({current_time.strftime('%H:%M:%S')} Київ)")
+            self.add_to_history(signals)
             
-            # Додаємо в історію
-            self._add_to_history(valid_signals)
-            
-            # Очищаємо застарілі сигнали
-            self._clean_old_signals(hours=1)
+            # Очищаємо застарілі сигнали (старіші 1 години)
+            self.clean_old_signals(hours=1)
             
             return True
-            
         except Exception as e:
-            print(f"❌ Помилка збереження сигналів: {e}")
+            print(f"Error saving signals: {e}")
             return False
     
-    def _add_to_history(self, signals):
-        """Додавання сигналів до історії"""
+    def add_to_history(self, signals):
         try:
             history = []
             if os.path.exists(self.history_file):
                 with open(self.history_file, 'r', encoding='utf-8') as f:
                     history = json.load(f)
             
-            current_time = self.get_current_kyiv_time()
-            
+            kyiv_time = datetime.now(self.kyiv_tz)
             for signal in signals:
-                history_entry = signal.copy()
-                history_entry['history_saved_at'] = current_time.isoformat()
-                history.append(history_entry)
+                signal_with_time = {
+                    **signal,
+                    "saved_at": kyiv_time.isoformat(),
+                    "saved_at_str": kyiv_time.strftime('%Y-%m-%d %H:%M:%S')
+                }
+                history.append(signal_with_time)
             
-            # Обмежуємо історію 500 записами
-            if len(history) > 500:
-                history = history[-500:]
+            if len(history) > 1000:
+                history = history[-1000:]
             
             with open(self.history_file, 'w', encoding='utf-8') as f:
-                json.dump(history, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(history, f, indent=2, ensure_ascii=False)
                 
         except Exception as e:
-            print(f"❌ Помилка додавання в історію: {e}")
+            print(f"Error adding to history: {e}")
     
-    def _clean_old_signals(self, hours=1):
-        """Очищення застарілих сигналів (старіші за hours годин)"""
+    def clean_old_signals(self, hours=1):
         try:
             data = self.load_signals()
             if not data.get("signals"):
                 return
             
-            current_time = self.get_current_kyiv_time()
-            
+            current_time = datetime.now(self.kyiv_tz)
             filtered_signals = []
+            
             for signal in data["signals"]:
-                signal_time_str = signal.get("generated_at")
+                signal_time_str = signal.get("generated_at") or signal.get("timestamp")
                 if not signal_time_str:
                     continue
                 
@@ -125,30 +95,26 @@ class DataHandler:
                     if signal_time.tzinfo is None:
                         signal_time = self.kyiv_tz.localize(signal_time)
                     
-                    # Залишаємо сигнали не старіші ніж hours годин
                     if current_time - signal_time <= timedelta(hours=hours):
                         filtered_signals.append(signal)
-                except Exception:
+                except:
                     continue
             
             data["signals"] = filtered_signals
             
             with open(self.signals_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(data, f, indent=2, ensure_ascii=False)
                 
         except Exception as e:
-            print(f"❌ Помилка очищення старих сигналів: {e}")
+            print(f"Error cleaning old signals: {e}")
     
     def get_active_signals(self, max_minutes_old=10):
-        """Отримання активних сигналів (не старіші за max_minutes_old хвилин)"""
+        """Повертає сигнали, які не старіші за max_minutes_old хвилин"""
         try:
             data = self.load_signals()
             signals = data.get("signals", [])
             
-            if not signals:
-                return []
-            
-            current_time = self.get_current_kyiv_time()
+            current_time = datetime.now(self.kyiv_tz)
             
             active_signals = []
             for signal in signals:
@@ -157,83 +123,52 @@ class DataHandler:
                     continue
                 
                 try:
-                    # Парсимо час входу (HH:MM)
-                    entry_time = datetime.strptime(entry_time_str, "%H:%M").time()
                     today = current_time.date()
+                    entry_time = datetime.strptime(entry_time_str, "%H:%M").time()
                     entry_datetime = self.kyiv_tz.localize(datetime.combine(today, entry_time))
                     
-                    # Розраховуємо різницю
                     time_diff = current_time - entry_datetime
-                    
-                    # Сигнал активний, якщо час входу в майбутньому або не старіший за max_minutes_old
-                    if time_diff < timedelta(minutes=0):
-                        # Сигнал в майбутньому
-                        signal['status'] = 'pending'
+                    if time_diff <= timedelta(minutes=max_minutes_old) and time_diff >= timedelta(minutes=0):
                         active_signals.append(signal)
-                    elif timedelta(minutes=0) <= time_diff <= timedelta(minutes=max_minutes_old):
-                        # Сигнал не старіший за max_minutes_old
-                        signal['status'] = 'active'
+                    elif time_diff < timedelta(minutes=0):
                         active_signals.append(signal)
-                        
                 except Exception as e:
-                    print(f"❌ Помилка парсингу часу {entry_time_str}: {e}")
+                    print(f"Error parsing entry_time {entry_time_str}: {e}")
                     continue
             
             return active_signals
-            
         except Exception as e:
-            print(f"❌ Помилка отримання активних сигналів: {e}")
+            print(f"Error getting active signals: {e}")
             return []
     
     def get_statistics(self):
-        """Статистика сигналів"""
         try:
-            if not os.path.exists(self.history_file):
+            if os.path.exists(self.history_file):
+                with open(self.history_file, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+                
+                if not history:
+                    return {"total_signals": 0, "success_rate": 0}
+                
+                total = len(history)
+                successful = sum(1 for s in history if s.get("actual_result") == "win")
+                
                 return {
-                    "total_signals": 0,
-                    "success_rate": 0,
-                    "last_update": None,
-                    "timezone": "Europe/Kiev"
+                    "total_signals": total,
+                    "successful_signals": successful,
+                    "success_rate": successful / total if total > 0 else 0,
+                    "last_week_count": len([s for s in history if self.is_recent(s.get("saved_at"), days=7)])
                 }
-            
-            with open(self.history_file, 'r', encoding='utf-8') as f:
-                history = json.load(f)
-            
-            if not history:
-                return {
-                    "total_signals": 0,
-                    "success_rate": 0,
-                    "last_update": None,
-                    "timezone": "Europe/Kiev"
-                }
-            
-            total = len(history)
-            successful = sum(1 for s in history if s.get("actual_result") == "win")
-            
-            return {
-                "total_signals": total,
-                "successful_signals": successful,
-                "success_rate": successful / total if total > 0 else 0,
-                "last_update": self.get_current_kyiv_time().strftime('%Y-%m-%d %H:%M:%S'),
-                "timezone": "Europe/Kiev (UTC+2)",
-                "last_24h": len([s for s in history if self._is_recent(s.get("history_saved_at"), hours=24)])
-            }
-            
+            return {"total_signals": 0, "success_rate": 0}
         except Exception as e:
-            print(f"❌ Помилка отримання статистики: {e}")
-            return {
-                "total_signals": 0,
-                "success_rate": 0,
-                "last_update": None,
-                "timezone": "Europe/Kiev"
-            }
+            print(f"Error getting statistics: {e}")
+            return {"total_signals": 0, "success_rate": 0}
     
-    def _is_recent(self, timestamp, hours=24):
-        """Перевірка чи timestamp не старіший за hours годин"""
+    def is_recent(self, timestamp, days=7):
         try:
             if not timestamp:
                 return False
             signal_time = datetime.fromisoformat(timestamp)
-            return (datetime.now() - signal_time).total_seconds() <= hours * 3600
-        except Exception:
+            return (datetime.now() - signal_time).days <= days
+        except:
             return False
