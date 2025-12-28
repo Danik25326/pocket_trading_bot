@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
-from fallback_analyzer import FallbackAnalyzer
 from data_handler import DataHandler
 
 # Налаштування логування
@@ -26,11 +25,10 @@ class SignalGenerator:
     def __init__(self):
         self.pocket_client = PocketOptionClient()
         self.analyzer = GroqAnalyzer()
-        self.fallback_analyzer = FallbackAnalyzer()
         self.data_handler = DataHandler()
     
     async def generate_signal_for_asset(self, asset):
-        """Генерація сигналу для одного активу"""
+        """Генерація сигналу для одного активу - ТІЛЬКИ через AI"""
         try:
             logger.info(f"🔍 Аналіз активу: {asset}")
             
@@ -38,7 +36,7 @@ class SignalGenerator:
             if not self.pocket_client.connected:
                 logger.info("Підключаюся до PocketOption...")
                 if not await self.pocket_client.connect():
-                    logger.error(f"Не вдалося підключитися для {asset}")
+                    logger.error(f"❌ Не вдалося підключитися для {asset}")
                     return None
             
             # Отримання свічок
@@ -50,78 +48,38 @@ class SignalGenerator:
             )
             
             if not candles:
-                logger.warning(f"⚠️ Не вдалося отримати свічки для {asset}")
-                # Спробуємо резервний метод без даних свічок
-                logger.info("🔄 Використовую резервний метод без свічок...")
-                return self._generate_basic_signal(asset)
+                logger.error(f"❌ Не вдалося отримати свічки для {asset}")
+                return None
             
             logger.info(f"📊 Отримано {len(candles)} свічок для {asset}")
             
-            # Перевіряємо, чи є дані для аналізу
-            if len(candles) < 5:
-                logger.warning(f"Недостатньо свічок для аналізу {asset}: {len(candles)}")
-                return self.fallback_analyzer.analyze_market(asset, candles)
+            # Перевіряємо, чи є достатньо даних для аналізу
+            if len(candles) < 10:
+                logger.error(f"❌ Недостатньо свічок для аналізу {asset}: {len(candles)} < 10")
+                return None
             
-            # Спершу намагаємося через AI
+            # Аналіз ВИКЛЮЧНО через AI
             signal = self.analyzer.analyze_market(asset, candles)
             
             if signal:
-                # Додаємо час генерації
+                # Додаємо час генерації (Київ)
                 signal['generated_at'] = Config.get_kyiv_time().isoformat()
                 signal['asset'] = asset
                 
-                logger.info(f"✅ AI сигнал для {asset}: {signal['direction']} (впевненість: {signal['confidence']*100:.1f}%)")
+                logger.info(f"✅ AI сигнал для {asset}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
                 return signal
             else:
-                # Якщо AI не дав сигнал, використовуємо резервний метод
-                logger.warning(f"AI не повернув сигнал для {asset}, використовую резервний метод")
-                fallback_signal = self.fallback_analyzer.analyze_market(asset, candles)
-                if fallback_signal and fallback_signal.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                    return fallback_signal
+                logger.warning(f"⚠️ AI не дав сигнал для {asset} (ринок нечіткий або критерії не виконані)")
                 return None
             
         except Exception as e:
-            logger.error(f"❌ Помилка генерації сигналу для {asset}: {e}")
+            logger.error(f"❌ КРИТИЧНА помилка генерації сигналу для {asset}: {e}")
             import traceback
-            logger.error(f"Деталі помилки: {traceback.format_exc()}")
-            # На останок пробуємо базовий сигнал
-            return self._generate_basic_signal(asset)
-    
-    def _generate_basic_signal(self, asset):
-        """Створення базового сигналу без даних"""
-        try:
-            now_kyiv = Config.get_kyiv_time()
-            
-            # Простий рандомний сигнал
-            import random
-            direction = "UP" if random.random() > 0.5 else "DOWN"
-            confidence = 0.7 + random.random() * 0.2
-            
-            # Час входу (поточний час + 2-3 хвилини)
-            from datetime import timedelta
-            entry_time = (now_kyiv + timedelta(minutes=2)).strftime("%H:%M")
-            
-            signal = {
-                "asset": asset,
-                "direction": direction,
-                "confidence": round(confidence, 2),
-                "entry_time": entry_time,
-                "duration": 2,
-                "reason": "Базовий сигнал через проблеми з отриманням даних",
-                "timestamp": now_kyiv.strftime('%Y-%m-%d %H:%M:%S'),
-                "generated_at": now_kyiv.isoformat(),
-                "timezone": "Europe/Kiev (UTC+2)",
-                "emergency": True
-            }
-            
-            logger.warning(f"🚨 Екстрений базовий сигнал для {asset}: {direction}")
-            return signal
-        except Exception as e:
-            logger.error(f"❌ Помилка створення базового сигналу: {e}")
+            logger.error(f"Трейс помилки: {traceback.format_exc()}")
             return None
     
     async def generate_all_signals(self):
-        """Генерація сигналів для всіх активів"""
+        """Генерація сигналів для всіх активів - ТІЛЬКИ AI"""
         now_kyiv = Config.get_kyiv_time()
         
         logger.info("=" * 60)
@@ -132,11 +90,14 @@ class SignalGenerator:
         logger.info(f"  • Модель AI: {Config.GROQ_MODEL}")
         logger.info(f"  • Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
         logger.info(f"  • Таймфрейм: {Config.TIMEFRAMES} секунд")
+        logger.info(f"  • Режим: ТІЛЬКИ AI (без резервів)")
         logger.info("=" * 60)
         
         # Перевірка ініціалізації AI
         if not self.analyzer.client:
-            logger.error("❌ Groq AI не ініціалізовано. Використовуються резервні методи")
+            logger.error("❌ КРИТИЧНА ПОМИЛКА: Groq AI не ініціалізовано")
+            logger.error("🚫 Система не може працювати без AI")
+            return []
         
         all_signals = []
         
@@ -144,8 +105,8 @@ class SignalGenerator:
             # Підключення до PocketOption
             logger.info("🔗 Підключення до PocketOption...")
             if not await self.pocket_client.connect():
-                logger.error("❌ Не вдалося підключитися до PocketOption")
-                logger.info("🔄 Продовжую з резервними методами...")
+                logger.error("❌ КРИТИЧНА ПОМИЛКА: Не вдалося підключитися до PocketOption")
+                return []
             
             # Генерація сигналів для кожного активу
             for asset in Config.ASSETS:
@@ -153,41 +114,39 @@ class SignalGenerator:
                 signal = await self.generate_signal_for_asset(asset)
                 if signal:
                     all_signals.append(signal)
-                    logger.info(f"✅ Додано сигнал для {asset}")
+                    logger.info(f"✅ Додано AI сигнал для {asset}")
                 else:
-                    logger.warning(f"⚠️ Не створено сигнал для {asset}")
+                    logger.warning(f"⚠️ AI не дав сигнал для {asset}")
                 
                 # Невелика пауза між активами
                 await asyncio.sleep(1)
             
-            # Збереження сигналів
+            # Збереження сигналів (тільки якщо є)
             if all_signals:
                 success = self.data_handler.save_signals(all_signals)
                 if success:
-                    logger.info(f"💾 Успішно збережено {len(all_signals)} сигналів")
+                    logger.info(f"💾 Успішно збережено {len(all_signals)} AI сигналів")
                     
                     # Вивід інформації про сигнали
-                    logger.info("📋 Згенеровані сигнали:")
+                    logger.info("📋 Згенеровані AI сигнали:")
                     for signal in all_signals:
-                        source = "🔄 Резерв" if signal.get('fallback') else "🤖 AI"
-                        if signal.get('emergency'):
-                            source = "🚨 Екстрений"
                         logger.info(
-                            f"   • {signal['asset']}: {signal['direction']} "
+                            f"   🤖 {signal['asset']}: {signal['direction']} "
                             f"({signal['confidence']*100:.1f}%) "
-                            f"о {signal.get('entry_time', 'N/A')} {source}"
+                            f"о {signal.get('entry_time', 'N/A')} "
+                            f"[Київ: {now_kyiv.strftime('%H:%M')}]"
                         )
                 else:
                     logger.error("❌ Не вдалося зберегти сигнали")
             else:
-                logger.warning("⚠️  Не створено жодного сигналу")
+                logger.warning("⚠️ AI не згенерував жодного сигналу для всіх активів")
             
             # Відключення
             await self.pocket_client.disconnect()
             
             # Статистика
             stats = self.data_handler.get_statistics()
-            logger.info(f"📈 Статистика: {stats.get('total_signals', 0)} сигналів в історії")
+            logger.info(f"📈 Статистика: {stats.get('total_signals', 0)} AI сигналів в історії")
             
             return all_signals
             
@@ -205,19 +164,17 @@ class SignalGenerator:
             return []
 
 async def main():
-    """Головна функція"""
+    """Головна функція - ТІЛЬКИ AI"""
     generator = SignalGenerator()
     signals = await generator.generate_all_signals()
     
     if signals:
-        print(f"\n🎯 ЗГЕНЕРОВАНО {len(signals)} СИГНАЛІВ:")
+        print(f"\n🎯 ЗГЕНЕРОВАНО {len(signals)} AI СИГНАЛІВ:")
         for signal in signals:
-            source = "Резерв" if signal.get('fallback') else "AI"
-            if signal.get('emergency'):
-                source = "Екстрений"
-            print(f"   • {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%) - {signal.get('entry_time', 'N/A')} [{source}]")
+            print(f"   🤖 {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%) - {signal.get('entry_time', 'N/A')} Київ")
     else:
-        print("\n⚠️  СИГНАЛІВ НЕ ЗНАЙДЕНО")
+        print("\n⚠️ AI НЕ ЗНАЙШОВ ЖОДНОГО СИГНАЛУ")
+        print("   Причина: ринок нечіткий або не виконані критерії")
     
     return signals
 
