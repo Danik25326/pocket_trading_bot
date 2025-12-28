@@ -1,82 +1,18 @@
-name: Generate Trading Signals and Deploy
-
-on:
-  schedule:
-    - cron: '*/5 * * * *'  # Кожні 5 хвилин
-  workflow_dispatch:  # Ручний запуск
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - 'data/**'
-      - 'logs/**'
-      - '*.md'
-      - '*.css'
-      - '*.js'
-      - '*.html'
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-jobs:
-  generate-signals:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
-    
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Upgrade pip and install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade setuptools wheel
-        pip install -r backend/requirements.txt
-    
-    - name: Create necessary directories
-      run: |
-        mkdir -p data
-        mkdir -p logs
-        touch .nojekyll
-        
-        # Створюємо початкові файли, якщо їх немає
-        if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": []}' > data/signals.json
-        fi
-        if [ ! -f data/history.json ]; then 
-          echo '[]' > data/history.json
-        fi
-        if [ ! -f data/assets_config.json ]; then 
-          echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
-        fi
-    
     - name: Generate trading signals (ТІЛЬКИ AI)
       env:
-        # Вимкнути проксі ПОВНІСТЮ (тільки один раз!)
-        HTTP_PROXY: ""
-        HTTPS_PROXY: ""
-        NO_PROXY: "*"
-        # Вимкнути попередження про HTTPS
-        PYTHONWARNINGS: "ignore:Unverified HTTPS request"
+        # НІЯКИХ ПРОКСІ ЗМІННИХ - ВИДАЛЯЄМО ПОВНІСТЮ
+        # Просто не визначаємо їх взагалі
         
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         POCKET_DEMO: 'true'
         SIGNAL_INTERVAL: '300'
-        MIN_CONFIDENCE: '0.75'  # Підвищена мінімальна впевненість
+        MIN_CONFIDENCE: '0.75'
         ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
-        GROQ_MODEL: 'llama-3.3-70b-versatile'  # Стабільна потужна модель
-        TZ: 'Europe/Kiev'  # Київський час
+        GROQ_MODEL: 'llama-3.3-70b-versatile'
+        TZ: 'Europe/Kiev'
       run: |
         echo "🚀 ПОЧАТОК ГЕНЕРАЦІЇ AI СИГНАЛІВ"
         echo "📊 Активи: $ASSETS"
@@ -84,10 +20,12 @@ jobs:
         echo "🎯 Мін. впевненість: 75%"
         echo "🌍 Часова зона: Київ (UTC+2)"
         echo "⚡ Режим: ТІЛЬКИ AI (без резервів)"
-        echo "🔧 Проксі: ВИМКНЕНО"
         
         # Встановлюємо київську часову зону
         export TZ='Europe/Kiev'
+        
+        # Явно видаляємо всі змінні проксі в середині скрипта
+        unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
         
         # Додаємо шляхи Python
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd)
@@ -97,46 +35,3 @@ jobs:
         python signal_generator.py
         
         echo "✅ Генерація AI сигналів завершена"
-    
-    - name: Commit and push generated data
-      run: |
-        git config --global user.name 'GitHub Actions Bot'
-        git config --global user.email 'actions@github.com'
-        
-        # Додаємо змінені файли
-        git add data/
-        git add logs/
-        git add .nojekyll
-        
-        # Перевіряємо, чи є зміни для коміту
-        if git diff --staged --quiet; then
-          echo "⚠️ Немає змін для коміту (AI не знайшов сигналів)"
-        else
-          git commit -m "🤖 AI-оновлення: Нові сигнали $(date +'%Y-%m-%d %H:%M') Київ [skip ci]"
-          git push origin main
-          echo "✅ AI сигнали закомічено та відправлено"
-        fi
-
-  deploy:
-    needs: generate-signals
-    if: success()
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: '.'
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
