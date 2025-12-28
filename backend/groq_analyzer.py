@@ -9,151 +9,135 @@ logger = logging.getLogger("signal_bot")
 
 class GroqAnalyzer:
     def __init__(self):
-        self.client = None
-        self.initialize()
-    
-    def initialize(self):
-        try:
-            if not Config.GROQ_API_KEY:
-                logger.error("❌ GROQ_API_KEY не знайдено!")
-                return
-            
-            # Створюємо клієнта БЕЗ зайвих параметрів
-            self.client = Groq(api_key=Config.GROQ_API_KEY)
-            logger.info(f"✅ Groq AI ініціалізовано (модель: {Config.GROQ_MODEL})")
-        except Exception as e:
-            logger.error(f"❌ Помилка ініціалізації Groq: {e}")
-    
+        # Перевіряємо наявність API ключа
+        if not Config.GROQ_API_KEY or Config.GROQ_API_KEY == 'your_groq_api_key_here':
+            logger.error("❌ GROQ_API_KEY не налаштовано! Перевірте GitHub Secrets")
+            self.client = None
+        else:
+            try:
+                self.client = Groq(api_key=Config.GROQ_API_KEY)
+                logger.info(f"✅ Groq AI ініціалізовано (модель: {Config.GROQ_MODEL})")
+            except Exception as e:
+                logger.error(f"❌ Помилка ініціалізації Groq: {e}")
+                self.client = None
+        
     def analyze_market(self, asset, candles_data):
-        """Аналіз ринку через Groq AI"""
+        """
+        Аналіз ринку через Groq AI
+        Повертає сигнал та впевненість
+        """
+        # Перевіряємо, чи ініціалізовано клієнт
         if not self.client:
-            logger.error("Groq AI не ініціалізовано")
+            logger.error("Groq AI не ініціалізовано. Пропускаємо аналіз.")
             return None
+            
+        # Форматуємо дані для AI
+        candles_str = self._format_candles(candles_data)
         
-        # Форматуємо дані
-        candles_str = self._format_candles_for_analysis(candles_data)
-        
-        # Поточний час
+        # Київський час
         kyiv_tz = pytz.timezone('Europe/Kiev')
         now_kyiv = datetime.now(kyiv_tz)
         
         prompt = f"""
-        Ти - професійний трейдер бінарних опціонів з 10-річним досвідом.
+        Ти експертний трейдер з бінарними опціонами. Проаналізуй наступні дані:
         
-        ЗАВДАННЯ: Проаналізуй наступні дані та дай торговий сигнал.
-        
-        АКТИВ: {asset}
-        ТАЙМФРЕЙМ: 2 хвилини (120 секунд)
-        ПОТОЧНИЙ ЧАС (Київ UTC+2): {now_kyiv.strftime('%H:%M')}
-        
-        ОСТАННІ 50 СВІЧОК (формат: Час | Open | High | Low | Close):
+        Актив: {asset}
+        Таймфрейм: 2 хвилини
+        Останні 50 свічок:
         {candles_str}
         
-        ПРОАНАЛІЗУЙ:
-        1. ТРЕНД: Визнач загальний тренд (вгору/вниз/флет)
-        2. КЛЮЧОВІ РІВНІ: Знайди рівні підтримки та опору
-        3. ТЕХНІЧНІ ІНДИКАТОРИ: RSI, MACD, Stochastic
-        4. ПАТЕРНИ: Шукай японські свічкові паттерни
-        5. ВОЛАТИЛЬНІСТЬ: Оціни амплітуду коливань
+        Проаналізуй:
+        1. Загальний тренд
+        2. Рівні підтримки та опору
+        3. Ключові технічні індикатори (RSI, MACD, Stochastic тощо)
+        4. Волатильність
         
-        ДАЙ СИГНАЛ:
-        - Напрямок: ТОЛЬКИ "UP" або "DOWN"
-        - Впевненість: від 70 до 95% (десятичний дріб)
-        - Час входу: поточний час + 1-2 хвилини (формат HH:MM)
-        - Тривалість: 2 або 5 хвилин
-        - Причина: коротке обґрунтування
+        Дай прогноз на наступні 2-5 хвилин:
+        - Напрямок (UP або DOWN)
+        - Впевненість у % (від 70 до 95%)
+        - Час входу в форматі HH:MM (за київським часом UTC+2)
+        - Тривалість угоди (2 або 5 хвилин)
+        - Причина
         
-        ВАЖЛИВО:
-        - Якщо тренд неясний - не давай сигнал
-        - Мінімальна впевненість: 70%
+        Поточний київський час: {now_kyiv.strftime('%H:%M')}
         
-        ФОРМАТ ВІДПОВІДІ (JSON):
+        Відповідь дай у JSON форматі:
         {{
             "asset": "{asset}",
             "direction": "UP",
             "confidence": 0.85,
-            "entry_time": "{now_kyiv.strftime('%H:%M')}",
+            "entry_time": "14:25",
             "duration": 2,
-            "reason": "Чіткий паттерн поглинання на рівні підтримки. RSI показує перепроданість з розворотом вгору.",
+            "reason": "Короткий опис аналізу",
             "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
         }}
         """
         
         try:
-            logger.info(f"🧠 Аналізую {asset} через Groq AI...")
-            
             completion = self.client.chat.completions.create(
                 model=Config.GROQ_MODEL,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": "Ти експертний трейдер бінарних опціонів. Даєш тільки чіткі, обґрунтовані сигнали."
-                    },
+                    {"role": "system", "content": "Ти професійний трейдер бінарних опціонів. Аналізуй технічні індикатори та дай чіткий сигнал."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.2,
-                max_tokens=500,
+                temperature=0.3,
+                max_tokens=1024,
                 response_format={"type": "json_object"}
             )
             
             response = json.loads(completion.choices[0].message.content)
-            
-            # Додаємо asset, якщо його немає
-            if 'asset' not in response:
-                response['asset'] = asset
-            
-            # Перевіряємо впевненість
-            if response.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                logger.info(f"✅ Отримано сигнал для {asset}: {response['direction']} ({response['confidence']*100:.1f}%)")
-                return response
-            else:
-                logger.warning(f"⚠️ Сигнал для {asset} має низьку впевненість: {response.get('confidence', 0)*100:.1f}%")
-                return None
+            # Додаємо час генерації
+            response['generated_at'] = now_kyiv.isoformat()
+            return response
             
         except Exception as e:
-            logger.error(f"❌ Помилка Groq AI для {asset}: {e}")
+            logger.error(f"Groq AI error: {e}")
             return None
     
-    def _format_candles_for_analysis(self, candles):
-        """Форматування свічок для аналізу"""
+    def _format_candles(self, candles):
+        """Форматування свічок для AI"""
         if not candles:
             return "Немає даних"
-        
+            
         formatted = []
-        # Беремо останні 20 свічок для аналізу
-        for i, candle in enumerate(candles[-20:]):
+        for i, candle in enumerate(candles[-10:]):  # Беремо останні 10 свічок
             try:
-                # Обробляємо різні формати свічок
-                if hasattr(candle, 'close'):
-                    close = candle.close
+                # Спроба отримати дані з об'єкта (якщо це об'єкт)
+                if hasattr(candle, 'timestamp'):
+                    timestamp = candle.timestamp
                     open_price = candle.open
                     high = candle.high
                     low = candle.low
-                    timestamp = getattr(candle, 'timestamp', 'N/A')
-                elif isinstance(candle, dict):
-                    close = candle.get('close', 0)
-                    open_price = candle.get('open', 0)
-                    high = candle.get('high', 0)
-                    low = candle.get('low', 0)
-                    timestamp = candle.get('timestamp', 'N/A')
+                    close = candle.close
+                    volume = getattr(candle, 'volume', 'N/A')
                 elif isinstance(candle, (list, tuple)) and len(candle) >= 5:
+                    # Якщо це список: [timestamp, open, high, low, close, volume?]
                     timestamp = candle[0]
                     open_price = candle[1]
                     high = candle[2]
                     low = candle[3]
                     close = candle[4]
+                    volume = candle[5] if len(candle) > 5 else 'N/A'
+                elif isinstance(candle, dict):
+                    timestamp = candle.get('timestamp', 'N/A')
+                    open_price = candle.get('open', 'N/A')
+                    high = candle.get('high', 'N/A')
+                    low = candle.get('low', 'N/A')
+                    close = candle.get('close', 'N/A')
+                    volume = candle.get('volume', 'N/A')
                 else:
                     continue
                 
-                # Форматуємо
-                formatted.append(
-                    f"{i+1:2d}. {timestamp} | "
-                    f"O:{float(open_price):.5f} "
-                    f"H:{float(high):.5f} "
-                    f"L:{float(low):.5f} "
-                    f"C:{float(close):.5f}"
-                )
-            except Exception:
-                continue
+                formatted.append(f"""
+                Свічка {i+1}:
+                Час: {timestamp}
+                Open: {open_price}
+                High: {high}
+                Low: {low}
+                Close: {close}
+                Volume: {volume}
+                """)
+            except Exception as e:
+                formatted.append(f"Свічка {i+1}: помилка форматування - {e}")
         
         return "\n".join(formatted) if formatted else "Немає коректних даних свічок"
