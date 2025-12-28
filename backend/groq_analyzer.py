@@ -1,8 +1,6 @@
 import json
 import logging
 from groq import Groq
-from datetime import datetime
-import pytz
 from config import Config
 
 logger = logging.getLogger("signal_bot")
@@ -21,8 +19,24 @@ class GroqAnalyzer:
             # Створюємо клієнта БЕЗ зайвих параметрів
             self.client = Groq(api_key=Config.GROQ_API_KEY)
             logger.info(f"✅ Groq AI ініціалізовано (модель: {Config.GROQ_MODEL})")
+            
+            # Додаємо тест запиту для перевірки підключення
+            try:
+                test_response = self.client.chat.completions.create(
+                    model=Config.GROQ_MODEL,
+                    messages=[
+                        {"role": "system", "content": "Тест підключення"},
+                        {"role": "user", "content": "Привіт"}
+                    ],
+                    max_tokens=10
+                )
+                logger.info("✅ Успішне підключення до Groq AI")
+            except Exception as test_error:
+                logger.warning(f"⚠️ Проблема з підключенням до Groq: {test_error}")
+                
         except Exception as e:
             logger.error(f"❌ Помилка ініціалізації Groq: {e}")
+            logger.error("Попробуйте перевірити API ключ або мережеве підключення")
     
     def analyze_market(self, asset, candles_data):
         """Аналіз ринку через Groq AI"""
@@ -33,9 +47,8 @@ class GroqAnalyzer:
         # Форматуємо дані
         candles_str = self._format_candles_for_analysis(candles_data)
         
-        # Поточний час
-        kyiv_tz = pytz.timezone('Europe/Kiev')
-        now_kyiv = datetime.now(kyiv_tz)
+        # Поточний час Київ
+        now_kyiv = Config.get_kyiv_time()
         
         prompt = f"""
         Ти - професійний трейдер бінарних опціонів з 10-річним досвідом.
@@ -45,8 +58,9 @@ class GroqAnalyzer:
         АКТИВ: {asset}
         ТАЙМФРЕЙМ: 2 хвилини (120 секунд)
         ПОТОЧНИЙ ЧАС (Київ UTC+2): {now_kyiv.strftime('%H:%M')}
+        ДАТА (Київ): {now_kyiv.strftime('%Y-%m-%d')}
         
-        ОСТАННІ 50 СВІЧОК (формат: Час | Open | High | Low | Close):
+        ОСТАННІ 20 СВІЧОК (формат: Час | Open | High | Low | Close):
         {candles_str}
         
         ПРОАНАЛІЗУЙ:
@@ -59,13 +73,14 @@ class GroqAnalyzer:
         ДАЙ СИГНАЛ:
         - Напрямок: ТОЛЬКИ "UP" або "DOWN"
         - Впевненість: від 70 до 95% (десятичний дріб)
-        - Час входу: поточний час + 1-2 хвилини (формат HH:MM)
+        - Час входу: поточний час + 1-2 хвилини (формат HH:MM) ВИКОРИСТОВУЙ КИЇВСЬКИЙ ЧАС
         - Тривалість: 2 або 5 хвилин
         - Причина: коротке обґрунтування
         
         ВАЖЛИВО:
         - Якщо тренд неясний - не давай сигнал
         - Мінімальна впевненість: 70%
+        - Використовуй ТІЛЬКИ київський час (UTC+2)
         
         ФОРМАТ ВІДПОВІДІ (JSON):
         {{
@@ -75,7 +90,8 @@ class GroqAnalyzer:
             "entry_time": "{now_kyiv.strftime('%H:%M')}",
             "duration": 2,
             "reason": "Чіткий паттерн поглинання на рівні підтримки. RSI показує перепроданість з розворотом вгору.",
-            "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
+            "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}",
+            "timezone": "Europe/Kiev (UTC+2)"
         }}
         """
         
@@ -87,7 +103,7 @@ class GroqAnalyzer:
                 messages=[
                     {
                         "role": "system",
-                        "content": "Ти експертний трейдер бінарних опціонів. Даєш тільки чіткі, обґрунтовані сигнали."
+                        "content": "Ти експертний трейдер бінарних опціонів. Даєш тільки чіткі, обґрунтовані сигнали. Використовуй київський час (UTC+2)."
                     },
                     {"role": "user", "content": prompt}
                 ],
@@ -102,12 +118,16 @@ class GroqAnalyzer:
             if 'asset' not in response:
                 response['asset'] = asset
             
+            # Додаємо часовий пояс
+            response['timezone'] = 'Europe/Kiev (UTC+2)'
+            
             # Перевіряємо впевненість
-            if response.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                logger.info(f"✅ Отримано сигнал для {asset}: {response['direction']} ({response['confidence']*100:.1f}%)")
+            confidence = response.get('confidence', 0)
+            if confidence >= Config.MIN_CONFIDENCE:
+                logger.info(f"✅ Отримано сигнал для {asset}: {response['direction']} ({confidence*100:.1f}%)")
                 return response
             else:
-                logger.warning(f"⚠️ Сигнал для {asset} має низьку впевненість: {response.get('confidence', 0)*100:.1f}%")
+                logger.warning(f"⚠️ Сигнал для {asset} має низьку впевненість: {confidence*100:.1f}%")
                 return None
             
         except Exception as e:
