@@ -35,11 +35,20 @@ jobs:
       with:
         python-version: '3.10'
     
+    - name: Clear all caches
+      run: |
+        echo "🧹 Очищення кешу..."
+        pip cache purge
+        rm -rf ~/.cache/pip
+        rm -rf ~/.cache/apt
+        sudo apt-get clean
+        echo "✅ Кеш очищено"
+    
     - name: Upgrade pip and install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel
-        pip install -r backend/requirements.txt
+        pip install --no-cache-dir -r backend/requirements.txt
     
     - name: Create necessary directories
       run: |
@@ -84,8 +93,11 @@ jobs:
         try:
             from config import Config
             print('✅ config.py завантажено')
+            print('GROQ_MODEL:', Config.GROQ_MODEL)
         except Exception as e:
             print(f'❌ Помилка завантаження config.py: {e}')
+            import traceback
+            print(traceback.format_exc())
         "
         
         # Додаємо шляхи Python
