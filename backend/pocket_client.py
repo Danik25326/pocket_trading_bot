@@ -58,7 +58,7 @@ class PocketOptionClient:
             logger.error(f"Деталі: {traceback.format_exc()}")
             return self
     
-async def connected(self):
+async def connect(self):
     try:
         if not self._initialized:
             await self.initialize()
@@ -70,7 +70,7 @@ async def connected(self):
         logger.info("🔗 Підключення до PocketOption...")
         # Скидаємо стан підключення перед спробою
         self.connected = False
-        await self.client.connect()
+        await self.client.connected()
 
         # Чекаємо на підключення трохи довше
         for i in range(5):
