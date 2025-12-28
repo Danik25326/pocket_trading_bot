@@ -58,7 +58,7 @@ class PocketOptionClient:
             logger.error(f"Деталі: {traceback.format_exc()}")
             return self
     
-async def connect(self):
+async def connected(self):
     try:
         if not self._initialized:
             await self.initialize()
