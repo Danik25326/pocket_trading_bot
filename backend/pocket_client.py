@@ -80,7 +80,6 @@ class PocketOptionClient:
                 return True
             else:
                 logger.warning("⚠️ Не вдалося підтвердити підключення, але продовжуємо...")
-                self.connected = True
                 return True
         
         except Exception as e:
