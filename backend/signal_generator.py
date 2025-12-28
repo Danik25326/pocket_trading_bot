@@ -85,7 +85,7 @@ class SignalGenerator:
             
             # Підключаємося
             logger.info("🔗 Підключення до PocketOption...")
-            await self.pocket_client.connect()
+            await self.pocket_client.connected()
 
             if not self.pocket_client.connected:
                 logger.error("❌ Не вдалося підключитися до PocketOption")
