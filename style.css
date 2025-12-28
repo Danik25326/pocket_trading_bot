@@ -1,5 +1,336 @@
-/* Додай ці стилі в кінець файлу style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0c2461, #1e3799);
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(to right, #2c3e50, #4a6491);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-bottom: 5px solid #3498db;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+.status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+}
+
+.status-indicator i {
+    color: #f1c40f;
+}
+
+.status-indicator.connected i {
+    color: #2ecc71;
+}
+
+.last-update {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 20px;
+    border-radius: 50px;
+}
+
+main {
+    padding: 30px;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+input[type="range"] {
+    width: 200px;
+}
+
+select {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid #3498db;
+    background: white;
+    font-size: 1rem;
+}
+
+.signals-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border: 2px solid #dfe6e9;
+}
+
+.signals-container h2 {
+    color: #2c3e50;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.8rem;
+}
+
+.signals-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.signal-card {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    padding: 25px;
+    border-left: 6px solid;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.signal-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.signal-card.up {
+    border-left-color: #2ecc71;
+}
+
+.signal-card.down {
+    border-left-color: #e74c3c;
+}
+
+.signal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pair {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.timeframe {
+    background: #3498db;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.signal-body {
+    margin-bottom: 20px;
+}
+
+.direction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.direction.up {
+    color: #27ae60;
+}
+
+.direction.down {
+    color: #c0392b;
+}
+
+.probability {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.prob-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.high {
+    color: #27ae60;
+}
+
+.medium {
+    color: #f39c12;
+}
+
+.time {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.no-signals {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #7f8c8d;
+}
+
+.no-signals i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: #bdc3c7;
+}
+
+.no-signals p {
+    font-size: 1.5rem;
+}
+
+#countdown {
+    font-weight: 700;
+    color: #3498db;
+}
+
+.info-box {
+    background: #e3f2fd;
+    border-radius: 15px;
+    padding: 25px;
+    border-left: 6px solid #2196f3;
+}
+
+.info-box h3 {
+    color: #1565c0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.5rem;
+}
+
+.info-box ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.info-box li {
+    padding: 10px 0;
+    padding-left: 30px;
+    position: relative;
+}
+
+.info-box li:before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #2196f3;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #2c3e50;
+    color: white;
+    border-top: 5px solid #3498db;
+}
+
+footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.disclaimer {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 15px;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .signals-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+}
 /* Кнопка оновлення */
 .manual-update-btn {
     background: #4CAF50;
