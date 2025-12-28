@@ -1,17 +1,9 @@
 import json
 import logging
-import os
+from groq import Groq
 from datetime import datetime
 import pytz
 from config import Config
-
-# Спрощений імпорт Groq без проксі
-try:
-    from groq import Groq
-    GROQ_AVAILABLE = True
-except Exception as e:
-    logging.error(f"Помилка імпорту Groq: {e}")
-    GROQ_AVAILABLE = False
 
 logger = logging.getLogger("signal_bot")
 
@@ -21,87 +13,78 @@ class GroqAnalyzer:
         self.initialize()
     
     def initialize(self):
-        """Ініціалізація Groq клієнта без проксі"""
         try:
-            if not Config.GROQ_API_KEY or Config.GROQ_API_KEY == 'your_groq_api_key_here':
-                logger.error("❌ GROQ_API_KEY не налаштовано!")
+            if not Config.GROQ_API_KEY:
+                logger.error("❌ GROQ_API_KEY не знайдено!")
                 return
             
-            if not GROQ_AVAILABLE:
-                logger.error("❌ Бібліотека Groq недоступна")
-                return
-            
-            logger.info(f"🧠 Ініціалізація Groq AI (модель: {Config.GROQ_MODEL})...")
-            
-            # Створюємо клієнта без будь-яких додаткових параметрів
+            # Ініціалізація Groq БЕЗ зайвих параметрів
             self.client = Groq(api_key=Config.GROQ_API_KEY)
-            logger.info("✅ Groq AI успішно ініціалізовано")
-            
+            logger.info(f"✅ Groq AI ініціалізовано (модель: {Config.GROQ_MODEL})")
         except Exception as e:
             logger.error(f"❌ Помилка ініціалізації Groq: {e}")
+            # Додаємо додаткову інформацію для налагодження
+            import traceback
+            logger.error(f"Деталі помилки: {traceback.format_exc()}")
     
     def analyze_market(self, asset, candles_data):
-        """Аналіз ринку через Groq AI з Київським часом"""
+        """Аналіз ринку через Groq AI"""
         if not self.client:
-            logger.error("Groq AI не ініціалізовано")
+            logger.error("❌ Groq AI не ініціалізовано")
             return None
         
-        # Отримуємо Київський час
-        kyiv_tz = pytz.timezone('Europe/Kiev')
-        now_kyiv = datetime.now(kyiv_tz)
-        current_time_str = now_kyiv.strftime("%H:%M")
-        current_date_str = now_kyiv.strftime("%Y-%m-%d")
-        
-        # Форматуємо дані свічок
+        # Форматуємо дані
         candles_str = self._format_candles_for_analysis(candles_data)
         
-        # ОБНОВЛЕНИЙ ПРОМПТ з акцентом на Київський час
+        # Поточний час
+        kyiv_tz = pytz.timezone('Europe/Kiev')
+        now_kyiv = datetime.now(kyiv_tz)
+        
+        # Обчислюємо час входу (поточний час + 1-2 хвилини)
+        from datetime import timedelta
+        import random
+        entry_delta = random.randint(1, 2)  # 1-2 хвилини
+        entry_time = (now_kyiv + timedelta(minutes=entry_delta)).strftime('%H:%M')
+        
         prompt = f"""
-        Ти - професійний трейдер бінарних опціонів з 15-річним досвідом.
-        Твоє завдання - проаналізувати ринкові дані та дати торговий сигнал.
+        Ти - професійний трейдер бінарних опціонів з 10-річним досвідом.
         
-        ВАЖЛИВО: ВСІ ЧАСИ МАЮТЬ БУТИ В КИЇВСЬКОМУ ЧАСІ (UTC+2)!
+        ЗАВДАННЯ: Проаналізуй наступні дані та дай торговий сигнал.
         
-        ІНФОРМАЦІЯ:
-        - Актив: {asset}
-        - Таймфрейм: 2 хвилини
-        - Поточний київський час: {current_time_str}
-        - Поточна дата: {current_date_str}
+        АКТИВ: {asset}
+        ТАЙМФРЕЙМ: 2 хвилини (120 секунд)
+        ПОТОЧНИЙ ЧАС (Київ UTC+2): {now_kyiv.strftime('%H:%M')}
         
-        ДАНІ СВІЧОК (останні 20):
+        ОСТАННІ 50 СВІЧОК (формат: Час | Open | High | Low | Close):
         {candles_str}
         
         ПРОАНАЛІЗУЙ:
-        1. ЗАГАЛЬНИЙ ТРЕНД: Визнач основний тренд (вгору/вниз/боковик)
+        1. ТРЕНД: Визнач загальний тренд (вгору/вниз/флет)
         2. КЛЮЧОВІ РІВНІ: Знайди рівні підтримки та опору
-        3. ТЕХНІЧНІ ІНДИКАТОРИ: 
-           - RSI: чи є перекупленість/перепроданість
-           - MACD: напрямок тренду
-           - Stochastic: сигнали купівлі/продажу
-        4. СВІЧКОВІ ПАТЕРНИ: Поглинання, молот, падаюча зірка тощо
-        5. ВОЛАТИЛЬНІСТЬ: Активність ринку
+        3. ТЕХНІЧНІ ІНДИКАТОРИ: RSI, MACD, Stochastic
+        4. ПАТЕРНИ: Шукай японські свічкові паттерни
+        5. ВОЛАТИЛЬНІСТЬ: Оціни амплітуду коливань
         
-        НА ОСНОВІ АНАЛІЗУ ДАЙ СИГНАЛ:
-        - Напрямок: UP (купувати) або DOWN (продавати)
-        - Впевненість: від 70 до 95% (десятичний дріб)
-        - Час входу: наступні 1-2 хвилини (формат HH:MM, Київський час!)
-        - Тривалість: 2 або 5 хвилин (обери оптимальну)
-        - Причина: коротке обґрунтування (2-3 речення)
+        ДАЙ СИГНАЛ:
+        - Напрямок: ТОЛЬКИ "UP" або "DOWN"
+        - Впевненість: від 70 до 95% (десятковий дріб)
+        - Час входу: {entry_time} (формат HH:MM)
+        - Тривалість: 2 або 5 хвилин
+        - Причина: коротке обґрунтування (максимум 2 речення)
         
-        ВИМОГИ:
-        1. Якщо тренд неясний - не давай сигнал
-        2. Мінімальна впевненість: 70%
-        3. Час входу має бути в майбутньому відносно поточного часу
-        4. Всі часи тільки в Київському часі (UTC+2)
+        ВАЖЛИВО:
+        - Якщо тренд неясний або ринок у флеті - не давай сигнал
+        - Мінімальна впевненість: 70%
+        - Тривалість має бути 2 або 5 хвилин
         
-        ПРИКЛАД ВІДПОВІДІ (JSON):
+        ФОРМАТ ВІДПОВІДІ (JSON):
         {{
             "asset": "{asset}",
-            "direction": "UP",
-            "confidence": 0.82,
-            "entry_time": "{(now_kyiv.replace(second=0, microsecond=0).replace(minute=now_kyiv.minute + 1)).strftime('%H:%M')}",
-            "duration": 2,
-            "reason": "Чіткий паттерн поглинання на ключовому рівні підтримки 231.50. RSI показує перепроданість з розворотом вгору, MACD готується до перетину в позитивну зону.",
+            "direction": "UP або DOWN",
+            "confidence": 0.85,
+            "entry_time": "{entry_time}",
+            "duration": 2 або 5,
+            "reason": "Коротке обґрунтування тут",
             "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
         }}
         """
@@ -114,34 +97,58 @@ class GroqAnalyzer:
                 messages=[
                     {
                         "role": "system",
-                        "content": "Ти професійний трейдер бінарних опціонів. Твої аналізи точні та обґрунтовані. Ти використовуєш технічний аналіз та свічкові паттерни. Всі часи вказуєш в Київському часовому поясі (UTC+2)."
+                        "content": "Ти експертний трейдер бінарних опціонів. Даєш тільки чіткі, обґрунтовані сигнали. Відповідай ТІЛЬКИ у форматі JSON."
                     },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
-                max_tokens=800,
-                response_format={"type": "json_object"}
+                temperature=0.2,
+                max_tokens=500
             )
             
-            response = json.loads(completion.choices[0].message.content)
+            response_text = completion.choices[0].message.content
             
-            # Перевірка та доповнення відповіді
-            response['asset'] = asset
+            # Видаляємо можливі markdown коди
+            response_text = response_text.replace('```json', '').replace('```', '').strip()
             
-            # Додаємо Київський час генерації
-            response['generated_at'] = now_kyiv.isoformat()
-            response['timezone'] = 'Europe/Kiev (UTC+2)'
+            response = json.loads(response_text)
+            
+            # Додаємо asset, якщо його немає
+            if 'asset' not in response:
+                response['asset'] = asset
+            
+            # Перевіряємо та виправляємо напрямок
+            direction = str(response.get('direction', '')).upper()
+            if direction not in ['UP', 'DOWN']:
+                # Спроба виправити
+                if 'CALL' in direction or 'ВГОРУ' in direction or 'ВВЕРХ' in direction:
+                    response['direction'] = 'UP'
+                elif 'PUT' in direction or 'ВНИЗ' in direction or 'ВНИЗ' in direction:
+                    response['direction'] = 'DOWN'
+                else:
+                    logger.warning(f"⚠️ Невірний напрямок для {asset}: {direction}")
+                    return None
             
             # Перевіряємо впевненість
-            if response.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                logger.info(f"✅ Сигнал для {asset}: {response['direction']} ({response['confidence']*100:.1f}%) на {response.get('entry_time', 'N/A')}")
-                return response
-            else:
-                logger.warning(f"⚠️ Низька впевненість для {asset}: {response.get('confidence', 0)*100:.1f}%")
+            confidence = float(response.get('confidence', 0))
+            if confidence < Config.MIN_CONFIDENCE:
+                logger.warning(f"⚠️ Сигнал для {asset} має низьку впевненість: {confidence*100:.1f}%")
                 return None
             
+            # Додаємо час генерації
+            response['generated_at'] = now_kyiv.isoformat()
+            response['direction'] = response['direction'].upper()  # Забезпечуємо великі літери
+            
+            logger.info(f"✅ Отримано сигнал для {asset}: {response['direction']} ({confidence*100:.1f}%)")
+            return response
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ Помилка парсингу JSON від Groq для {asset}: {e}")
+            logger.error(f"Відповідь AI: {response_text[:200] if 'response_text' in locals() else 'Немає відповіді'}")
+            return None
         except Exception as e:
             logger.error(f"❌ Помилка Groq AI для {asset}: {e}")
+            import traceback
+            logger.error(f"Деталі помилки: {traceback.format_exc()}")
             return None
     
     def _format_candles_for_analysis(self, candles):
@@ -175,18 +182,21 @@ class GroqAnalyzer:
                 else:
                     continue
                 
-                # Форматуємо для читабельності
+                # Форматуємо timestamp
+                if isinstance(timestamp, (int, float)):
+                    from datetime import datetime
+                    timestamp = datetime.fromtimestamp(timestamp).strftime('%H:%M')
+                
+                # Форматуємо
                 formatted.append(
-                    f"{i+1:2d}. Час: {timestamp} | "
-                    f"Відкриття: {float(open_price):.5f} | "
-                    f"Максимум: {float(high):.5f} | "
-                    f"Мінімум: {float(low):.5f} | "
-                    f"Закриття: {float(close):.5f}"
+                    f"{i+1:2d}. {timestamp} | "
+                    f"O:{float(open_price):.5f} "
+                    f"H:{float(high):.5f} "
+                    f"L:{float(low):.5f} "
+                    f"C:{float(close):.5f}"
                 )
             except Exception as e:
+                logger.warning(f"Не вдалося форматувати свічку: {e}")
                 continue
         
-        if formatted:
-            return "\n".join(formatted)
-        else:
-            return "Немає коректних даних свічок"
+        return "\n".join(formatted) if formatted else "Немає коректних даних свічок"
