@@ -1,7 +1,8 @@
 import asyncio
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
 from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
@@ -53,7 +54,10 @@ class SignalGenerator:
             signal = self.analyzer.analyze_market(asset, candles)
             
             if signal and signal.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                signal['generated_at'] = datetime.now().isoformat()
+                # Додаємо час генерації в UTC+2 (Київ)
+                kyiv_tz = pytz.timezone('Europe/Kiev')
+                generated_at = datetime.now(kyiv_tz).isoformat()
+                signal['generated_at'] = generated_at
                 signal['asset'] = asset
                 logger.info(f"✅ Створено сигнал для {asset}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
                 return signal
