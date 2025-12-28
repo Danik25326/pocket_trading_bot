@@ -1,7 +1,8 @@
 import json
 import logging
 from groq import Groq
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytz
 from config import Config
 
 logger = logging.getLogger("signal_bot")
@@ -29,6 +30,11 @@ class GroqAnalyzer:
         # Форматуємо дані для AI
         candles_str = self._format_candles(candles_data)
         
+        # Поточний час в UTC+2 (Київ)
+        kyiv_tz = pytz.timezone('Europe/Kiev')
+        now_kyiv = datetime.now(kyiv_tz)
+        current_time_str = now_kyiv.strftime("%H:%M")
+        
         prompt = f"""
         Ти експертний трейдер з бінарними опціонами. Проаналізуй наступні дані:
         
@@ -40,23 +46,27 @@ class GroqAnalyzer:
         Проаналізуй:
         1. Загальний тренд
         2. Рівні підтримки та опору
-        3. Ключові технічні індикатори
+        3. Ключові технічні індикатори (RSI, MACD, Stochastic тощо)
         4. Волатильність
         
         Дай прогноз на наступні 2-5 хвилин:
-        - Напрямок (UP/DOWN)
-        - Впевненість у % (70-95%)
-        - Рекомендований час входу (HH:MM)
+        - Напрямок (UP або DOWN)
+        - Впевненість у % (від 70 до 95%)
+        - Час входу в форматі HH:MM (за київським часом UTC+2)
+        - Тривалість угоди (2 або 5 хвилин)
         - Причина
+        
+        Поточний київський час: {current_time_str}
         
         Відповідь дай у JSON форматі:
         {{
             "asset": "{asset}",
-            "direction": "UP/DOWN",
+            "direction": "UP",
             "confidence": 0.85,
-            "entry_time": "22:20",
+            "entry_time": "14:25",
+            "duration": 2,
             "reason": "Короткий опис аналізу",
-            "timestamp": "2024-01-01 22:15:00"
+            "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
         }}
         """
         
@@ -64,7 +74,7 @@ class GroqAnalyzer:
             completion = self.client.chat.completions.create(
                 model=Config.GROQ_MODEL,
                 messages=[
-                    {"role": "system", "content": "Ти професійний трейдер бінарних опціонів."},
+                    {"role": "system", "content": "Ти професійний трейдер бінарних опціонів. Аналізуй технічні індикатори та дай чіткий сигнал."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.3,
@@ -86,13 +96,43 @@ class GroqAnalyzer:
             
         formatted = []
         for i, candle in enumerate(candles[-10:]):  # Беремо останні 10 свічок
-            formatted.append(f"""
-            Свічка {i+1}:
-            Час: {candle.timestamp}
-            Open: {candle.open}
-            High: {candle.high}
-            Low: {candle.low}
-            Close: {candle.close}
-            Volume: {candle.volume}
-            """)
-        return "\n".join(formatted)
+            try:
+                # Спроба отримати дані з об'єкта (якщо це об'єкт)
+                if hasattr(candle, 'timestamp'):
+                    timestamp = candle.timestamp
+                    open_price = candle.open
+                    high = candle.high
+                    low = candle.low
+                    close = candle.close
+                    volume = getattr(candle, 'volume', 'N/A')
+                elif isinstance(candle, (list, tuple)) and len(candle) >= 5:
+                    # Якщо це список: [timestamp, open, high, low, close, volume?]
+                    timestamp = candle[0]
+                    open_price = candle[1]
+                    high = candle[2]
+                    low = candle[3]
+                    close = candle[4]
+                    volume = candle[5] if len(candle) > 5 else 'N/A'
+                elif isinstance(candle, dict):
+                    timestamp = candle.get('timestamp', 'N/A')
+                    open_price = candle.get('open', 'N/A')
+                    high = candle.get('high', 'N/A')
+                    low = candle.get('low', 'N/A')
+                    close = candle.get('close', 'N/A')
+                    volume = candle.get('volume', 'N/A')
+                else:
+                    continue
+                
+                formatted.append(f"""
+                Свічка {i+1}:
+                Час: {timestamp}
+                Open: {open_price}
+                High: {high}
+                Low: {low}
+                Close: {close}
+                Volume: {volume}
+                """)
+            except Exception as e:
+                formatted.append(f"Свічка {i+1}: помилка форматування - {e}")
+        
+        return "\n".join(formatted) if formatted else "Немає коректних даних свічок"
