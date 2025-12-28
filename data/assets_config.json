@@ -1,10 +1,10 @@
 {
   "preferred_assets": [
-    "GBP/JPY_otc",
-    "EUR/USD_otc",
-    "USD/JPY_otc",
-    "EUR/JPY_otc",
-    "GBP/USD_otc"
+    "GBPJPY_otc",
+    "EURUSD_otc",
+    "USDJPY_otc",
+    "EURJPY_otc",
+    "GBPUSD_otc"
   ],
   "timeframes": {
     "primary": 120,
