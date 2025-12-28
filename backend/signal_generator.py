@@ -1,13 +1,24 @@
 import asyncio
 import logging
+import sys
+from pathlib import Path
 from datetime import datetime
-import pytz
+
+# Додаємо шляхи для імпортів
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Імпорти після додавання шляхів
 from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
 from data_handler import DataHandler
 
 # Налаштування логування
+logging.basicConfig(
+    level=getattr(logging, Config.LOG_LEVEL),
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger("signal_bot")
 
 class SignalGenerator:
@@ -15,124 +26,150 @@ class SignalGenerator:
         self.pocket_client = PocketOptionClient()
         self.analyzer = GroqAnalyzer()
         self.data_handler = DataHandler()
-        self.signals = []
-        
-    async def generate_signal(self, asset):
-        """Генерація одного сигналу"""
+    
+    async def generate_signal_for_asset(self, asset):
+        """Генерація сигналу для одного активу"""
         try:
-            logger.info(f"📈 Аналіз активу: {asset}")
+            logger.info(f"🔍 Аналіз активу: {asset}")
             
-            # Перевіряємо чи є клієнт
-            if not hasattr(self.pocket_client, 'client'):
-                logger.error("PocketOptionClient не ініціалізований")
-                return None
-            
-            # Підключаємося
+            # Перевірка підключення
             if not self.pocket_client.connected:
-                logger.info(f"Спробую підключитися для {asset}...")
-                await self.pocket_client.connect()
-                
-                if not self.pocket_client.connected:
+                logger.info("Підключаюся до PocketOption...")
+                if not await self.pocket_client.connect():
                     logger.error(f"Не вдалося підключитися для {asset}")
                     return None
             
-            # Отримуємо свічки
+            # Отримання свічок
+            logger.info(f"📥 Отримую свічки для {asset}...")
             candles = await self.pocket_client.get_candles(
                 asset=asset,
                 timeframe=Config.TIMEFRAMES,
-                count=50
+                count=30  # Зменшимо кількість для швидкості
             )
             
             if not candles:
-                logger.warning(f"Не вдалося отримати свічки для {asset}")
+                logger.warning(f"⚠️ Не вдалося отримати свічки для {asset}")
                 return None
             
-            logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
+            logger.info(f"📊 Отримано {len(candles)} свічок для {asset}")
             
-            # Аналізуємо через AI
+            # Перевіряємо, чи є дані для аналізу
+            if len(candles) < 10:
+                logger.warning(f"Недостатньо свічок для аналізу {asset}: {len(candles)}")
+                return None
+            
+            # Аналіз через AI
             signal = self.analyzer.analyze_market(asset, candles)
             
-            if signal and signal.get('confidence', 0) >= Config.MIN_CONFIDENCE:
-                logger.info(f"✅ Створено сигнал для {asset}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
+            if signal:
+                # Додаємо час генерації
+                import pytz
+                kyiv_tz = pytz.timezone('Europe/Kiev')
+                signal['generated_at'] = datetime.now(kyiv_tz).isoformat()
+                signal['asset'] = asset
+                
+                logger.info(f"✅ Сигнал для {asset}: {signal['direction']} (впевненість: {signal['confidence']*100:.1f}%)")
                 return signal
-            elif signal:
-                logger.warning(f"Сигнал для {asset} має низьку впевненість: {signal.get('confidence', 0)*100:.1f}%")
             else:
                 logger.warning(f"AI не повернув сигнал для {asset}")
-                
-        except Exception as e:
-            logger.error(f"Помилка генерації сигналу для {asset}: {e}")
+                return None
             
-        return None
+        except Exception as e:
+            logger.error(f"❌ Помилка генерації сигналу для {asset}: {e}")
+            import traceback
+            logger.error(f"Деталі помилки: {traceback.format_exc()}")
+            return None
     
     async def generate_all_signals(self):
         """Генерація сигналів для всіх активів"""
-        logger.info("=" * 50)
-        logger.info(f"🚀 Початок генерації сигналів - {Config.format_kyiv_time()}")
+        logger.info("=" * 60)
+        logger.info(f"🚀 ПОЧАТОК ГЕНЕРАЦІЇ СИГНАЛІВ")
+        logger.info(f"📅 Час: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info(f"⚙️ Конфігурація:")
+        logger.info(f"  • Активи: {', '.join(Config.ASSETS)}")
+        logger.info(f"  • Модель AI: {Config.GROQ_MODEL}")
+        logger.info(f"  • Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
+        logger.info(f"  • Таймфрейм: {Config.TIMEFRAMES} секунд")
+        logger.info("=" * 60)
+        
+        all_signals = []
         
         try:
-            # Виводимо конфігурацію
-            logger.info(f"⚙️ Конфігурація:")
-            logger.info(f"  - Демо режим: {Config.POCKET_DEMO}")
-            logger.info(f"  - Активи: {Config.ASSETS}")
-            logger.info(f"  - Таймфрейм: {Config.TIMEFRAMES} сек")
-            logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
-            logger.info(f"  - Часовий пояс: Київ (UTC+2)")
-            
-            # Підключаємося
+            # Підключення
             logger.info("🔗 Підключення до PocketOption...")
-            await self.pocket_client.connect()
-            
-            if not self.pocket_client.connected:
-                logger.error("❌ Не вдалося підключитися до PocketOption")
+            if not await self.pocket_client.connect():
+                logger.error("❌ Критична помилка: Не вдалося підключитися до PocketOption")
+                logger.info("🔄 Продовжую без підключення до PocketOption...")
+                # Можемо продовжити з мок-даними або повернути порожній список
                 return []
             
-            logger.info("✅ Успішно підключено!")
-            
-            valid_signals = []
+            # Генерація сигналів для кожного активу
             for asset in Config.ASSETS:
-                signal = await self.generate_signal(asset)
+                logger.info(f"📈 Обробка активу: {asset}")
+                signal = await self.generate_signal_for_asset(asset)
                 if signal:
-                    valid_signals.append(signal)
+                    all_signals.append(signal)
+                    logger.info(f"✅ Додано сигнал для {asset}")
                 else:
-                    logger.warning(f"Не створено сигнал для {asset}")
-            
-            # Зберігаємо сигнали
-            if valid_signals:
-                self.data_handler.save_signals(valid_signals)
-                logger.info(f"💾 Збережено {len(valid_signals)} сигналів")
+                    logger.warning(f"⚠️ Не створено сигнал для {asset}")
                 
-                # Виводимо інформацію про сигнали
-                for signal in valid_signals:
-                    logger.info(f"   📊 {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%) - {signal.get('reason', '')[:50]}...")
+                # Невелика пауза між активами
+                await asyncio.sleep(1)
+            
+            # Збереження сигналів
+            if all_signals:
+                success = self.data_handler.save_signals(all_signals)
+                if success:
+                    logger.info(f"💾 Успішно збережено {len(all_signals)} сигналів")
+                    
+                    # Вивід інформації про сигнали
+                    logger.info("📋 Згенеровані сигнали:")
+                    for signal in all_signals:
+                        logger.info(
+                            f"   • {signal['asset']}: {signal['direction']} "
+                            f"({signal['confidence']*100:.1f}%) "
+                            f"о {signal.get('entry_time', 'N/A')}"
+                        )
+                else:
+                    logger.error("❌ Не вдалося зберегти сигнали")
             else:
                 logger.warning("⚠️  Не створено жодного сигналу")
             
+            # Відключення
             await self.pocket_client.disconnect()
             
-            # Оновлюємо статистику
+            # Статистика
             stats = self.data_handler.get_statistics()
-            logger.info(f"📈 Статистика: {stats.get('total_signals', 0)} сигналів, "
-                       f"Успішність: {stats.get('success_rate', 0)*100:.1f}%")
+            logger.info(f"📈 Статистика: {stats.get('total_signals', 0)} сигналів в історії")
             
-            return valid_signals
+            return all_signals
             
         except Exception as e:
-            logger.error(f"💥 Критична помилка: {e}")
+            logger.error(f"💥 КРИТИЧНА ПОМИЛКА: {e}")
             import traceback
-            logger.error(f"Трейс: {traceback.format_exc()}")
+            logger.error(f"Трейс помилки: {traceback.format_exc()}")
+            
+            # Намагаємося відключитися навіть при помилці
+            try:
+                await self.pocket_client.disconnect()
+            except:
+                pass
+            
             return []
 
 async def main():
+    """Головна функція"""
     generator = SignalGenerator()
     signals = await generator.generate_all_signals()
     
     if signals:
-        print(f"\n🎯 Згенеровано {len(signals)} сигналів:")
+        print(f"\n🎯 ЗГЕНЕРОВАНО {len(signals)} СИГНАЛІВ:")
         for signal in signals:
-            print(f"   • {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%) о {signal.get('entry_time', 'N/A')} Київ")
+            print(f"   • {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%) - {signal.get('entry_time', 'N/A')}")
     else:
-        print("\n⚠️  Сигналів не знайдено")
+        print("\n⚠️  СИГНАЛІВ НЕ ЗНАЙДЕНО")
+    
+    return signals
 
 if __name__ == "__main__":
     asyncio.run(main())
