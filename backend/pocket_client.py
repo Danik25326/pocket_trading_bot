@@ -49,7 +49,7 @@ class PocketOptionClient:
             return self
     
     async def connect(self):
-    """Виправлений метод підключення"""
+        """Виправлений метод підключення"""
         try:
             if not self._initialized:
                 await self.initialize()
