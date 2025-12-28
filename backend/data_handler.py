@@ -1,8 +1,6 @@
-
 import json
 import os
 from datetime import datetime, timedelta
-import pytz
 from config import Config
 
 class DataHandler:
@@ -10,11 +8,77 @@ class DataHandler:
         self.data_dir = Config.DATA_DIR
         self.signals_file = Config.SIGNALS_FILE
         self.history_file = Config.HISTORY_FILE
+        self.feedback_file = Config.FEEDBACK_FILE
         self.create_data_dir()
     
     def create_data_dir(self):
         """Створення директорій для даних"""
         os.makedirs(self.data_dir, exist_ok=True)
+    
+    def save_signals(self, signals):
+        """Збереження сигналів"""
+        try:
+            # Фільтруємо сигнали з достатньою впевненістю
+            valid_signals = [
+                s for s in signals 
+                if s.get('confidence', 0) >= Config.MIN_CONFIDENCE
+            ]
+            
+            if not valid_signals:
+                print("⚠️ Немає сигналів з достатньою впевненістю для збереження")
+                return False
+            
+            # Додаємо київський час
+            now_kyiv = Config.get_kyiv_time()
+            
+            for signal in valid_signals:
+                if 'generated_at' not in signal:
+                    signal['generated_at'] = now_kyiv.isoformat()
+                if 'timestamp' not in signal:
+                    signal['timestamp'] = now_kyiv.strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Читаємо існуючі сигнали
+            existing_data = self.load_signals()
+            existing_signals = existing_data.get('signals', [])
+            
+            # Фільтруємо тільки активні сигнали (не старіші ніж ACTIVE_SIGNAL_TIMEOUT хвилин)
+            active_signals = []
+            for signal in existing_signals:
+                signal_time = datetime.fromisoformat(signal.get('generated_at', ''))
+                if now_kyiv - signal_time <= timedelta(minutes=Config.ACTIVE_SIGNAL_TIMEOUT):
+                    active_signals.append(signal)
+            
+            # Додаємо нові сигнали
+            all_signals = active_signals + valid_signals
+            
+            # Обмежуємо кількість сигналів
+            if len(all_signals) > Config.MAX_SIGNALS_HISTORY:
+                all_signals = all_signals[-Config.MAX_SIGNALS_HISTORY:]
+            
+            # Оновлюємо дані
+            data = {
+                "last_update": now_kyiv.isoformat(),
+                "signals": all_signals,
+                "timezone": "Europe/Kiev (UTC+2)",
+                "total_signals": len(all_signals),
+                "active_signals": len([s for s in all_signals if self._is_signal_active(s)])
+            }
+            
+            # Зберігаємо
+            with open(self.signals_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+            
+            # Додаємо в історію
+            self._add_to_history(valid_signals)
+            
+            print(f"💾 Збережено {len(valid_signals)} сигналів. Активних: {data['active_signals']}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Помилка збереження сигналів: {e}")
+            import traceback
+            print(f"Деталі: {traceback.format_exc()}")
+            return False
     
     def load_signals(self):
         """Завантаження сигналів з файлу"""
@@ -27,55 +91,35 @@ class DataHandler:
             print(f"❌ Помилка завантаження сигналів: {e}")
             return {"last_update": None, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}
     
-    def save_signals(self, signals):
-        """Збереження сигналів та оновлення історії"""
+    def _is_signal_active(self, signal):
+        """Перевірка чи сигнал ще активний"""
         try:
-            # Фільтруємо сигнали з достатньою впевненістю
-            valid_signals = [
-                s for s in signals 
-                if s.get('confidence', 0) >= Config.MIN_CONFIDENCE
-            ]
+            now_kyiv = Config.get_kyiv_time()
             
-            if not valid_signals:
-                print("⚠️ Немає сигналів з достатньою впевненістю для збереження")
-                return False
+            # Час генерації сигналу
+            generated_at = datetime.fromisoformat(signal.get('generated_at', ''))
             
-            # Додаємо час генерації якщо його немає
-            kyiv_tz = pytz.timezone('Europe/Kiev')
-            current_time = datetime.now(kyiv_tz)
+            # Час входу
+            entry_time_str = signal.get('entry_time', '')
+            if ':' in entry_time_str:
+                hour, minute = map(int, entry_time_str.split(':'))
+                entry_date = generated_at.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                
+                # Якщо час входу в минулому відносно часу генерації
+                if entry_date < generated_at:
+                    entry_date = entry_date.replace(day=entry_date.day + 1)
+                
+                # Тривалість угоди
+                duration = int(signal.get('duration', 2))
+                
+                # Час закінчення угоди
+                end_time = entry_date + timedelta(minutes=duration)
+                
+                # Сигнал активний, якщо поточний час між часом входу і закінченням
+                return entry_date <= now_kyiv <= end_time
             
-            for signal in valid_signals:
-                if 'generated_at' not in signal:
-                    signal['generated_at'] = current_time.isoformat()
-                if 'timestamp' not in signal:
-                    signal['timestamp'] = current_time.strftime('%Y-%m-%d %H:%M:%S')
-            
-            # Оновлюємо дані
-            data = {
-                "last_update": current_time.isoformat(),
-                "signals": valid_signals,
-                "timezone": "Europe/Kiev (UTC+2)",
-                "total_signals": len(valid_signals)
-            }
-            
-            # Зберігаємо
-            with open(self.signals_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
-            
-            print(f"💾 Збережено {len(valid_signals)} сигналів")
-            
-            # Додаємо в історію
-            self._add_to_history(valid_signals)
-            
-            # Очищаємо застарілі сигнали
-            self._clean_old_signals(minutes=10)  # Тільки останні 10 хвилин
-            
-            return True
-            
-        except Exception as e:
-            print(f"❌ Помилка збереження сигналів: {e}")
-            import traceback
-            print(f"Деталі: {traceback.format_exc()}")
+            return False
+        except:
             return False
     
     def _add_to_history(self, signals):
@@ -86,15 +130,16 @@ class DataHandler:
                 with open(self.history_file, 'r', encoding='utf-8') as f:
                     history = json.load(f)
             
-            kyiv_tz = pytz.timezone('Europe/Kiev')
+            now_kyiv = Config.get_kyiv_time()
             for signal in signals:
                 history_entry = signal.copy()
-                history_entry['saved_at'] = datetime.now(kyiv_tz).isoformat()
+                history_entry['saved_at'] = now_kyiv.isoformat()
+                history_entry['id'] = f"{signal['asset']}_{now_kyiv.strftime('%Y%m%d%H%M%S')}"
                 history.append(history_entry)
             
-            # Обмежуємо історію 1000 записами
-            if len(history) > 1000:
-                history = history[-1000:]
+            # Обмежуємо історію
+            if len(history) > Config.MAX_SIGNALS_HISTORY:
+                history = history[-Config.MAX_SIGNALS_HISTORY:]
             
             with open(self.history_file, 'w', encoding='utf-8') as f:
                 json.dump(history, f, indent=2, ensure_ascii=False, default=str)
@@ -102,148 +147,70 @@ class DataHandler:
         except Exception as e:
             print(f"❌ Помилка додавання в історію: {e}")
     
-    def _clean_old_signals(self, minutes=10):
-        """Очищення застарілих сигналів (старіші за minutes хвилин)"""
+    def save_feedback(self, signal_id, success, user_comment=""):
+        """Збереження відгуку про результат угоди"""
         try:
-            data = self.load_signals()
-            if not data.get("signals"):
-                return
+            if not Config.FEEDBACK_ENABLED:
+                return False
             
-            kyiv_tz = pytz.timezone('Europe/Kiev')
-            current_time = datetime.now(kyiv_tz)
+            feedback = []
+            if os.path.exists(self.feedback_file):
+                with open(self.feedback_file, 'r', encoding='utf-8') as f:
+                    feedback = json.load(f)
             
-            filtered_signals = []
-            for signal in data["signals"]:
-                signal_time_str = signal.get("generated_at")
-                if not signal_time_str:
-                    # Якщо немає часу генерації, пропускаємо
-                    continue
-                
-                try:
-                    # Конвертуємо час
-                    if isinstance(signal_time_str, str):
-                        if 'Z' in signal_time_str:
-                            signal_time_str = signal_time_str.replace('Z', '+00:00')
-                        signal_time = datetime.fromisoformat(signal_time_str)
-                    else:
-                        continue
-                    
-                    # Якщо немає часової зони, додаємо київську
-                    if signal_time.tzinfo is None:
-                        signal_time = kyiv_tz.localize(signal_time)
-                    
-                    # Залишаємо сигнали не старіші ніж minutes хвилин
-                    if current_time - signal_time <= timedelta(minutes=minutes):
-                        filtered_signals.append(signal)
-                        
-                except Exception as e:
-                    print(f"⚠️ Помилка обробки часу сигналу: {e}")
-                    continue
+            now_kyiv = Config.get_kyiv_time()
+            feedback_entry = {
+                'signal_id': signal_id,
+                'success': success,
+                'user_comment': user_comment,
+                'feedback_at': now_kyiv.isoformat(),
+                'learned': False
+            }
             
-            # Оновлюємо дані
-            data["signals"] = filtered_signals
-            data["total_signals"] = len(filtered_signals)
+            feedback.append(feedback_entry)
             
-            with open(self.signals_file, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False, default=str)
-                
-            if len(filtered_signals) < len(data.get("signals", [])):
-                print(f"🧹 Очищено застарілі сигнали. Залишилося: {len(filtered_signals)}")
-                
+            with open(self.feedback_file, 'w', encoding='utf-8') as f:
+                json.dump(feedback, f, indent=2, ensure_ascii=False, default=str)
+            
+            print(f"💾 Збережено відгук для сигналу {signal_id}: {'✅ Успіх' if success else '❌ Невдача'}")
+            return True
+            
         except Exception as e:
-            print(f"❌ Помилка очищення старих сигналів: {e}")
+            print(f"❌ Помилка збереження відгуку: {e}")
+            return False
     
-    def get_active_signals(self, max_minutes_old=5):
-        """Отримання активних сигналів (не старіші за max_minutes_old хвилин)"""
+    def get_feedback_history(self, asset=None):
+        """Отримання історії відгуків"""
         try:
-            data = self.load_signals()
-            signals = data.get("signals", [])
-            
-            if not signals:
+            if not os.path.exists(self.feedback_file):
                 return []
             
-            kyiv_tz = pytz.timezone('Europe/Kiev')
-            current_time = datetime.now(kyiv_tz)
+            with open(self.feedback_file, 'r', encoding='utf-8') as f:
+                feedback = json.load(f)
+            
+            if asset:
+                # Фільтруємо по активу
+                return [f for f in feedback if asset in f.get('signal_id', '')]
+            
+            return feedback
+            
+        except Exception as e:
+            print(f"❌ Помилка отримання історії відгуків: {e}")
+            return []
+    
+    def get_active_signals(self):
+        """Отримання активних сигналів"""
+        try:
+            data = self.load_signals()
+            signals = data.get('signals', [])
             
             active_signals = []
             for signal in signals:
-                signal_time_str = signal.get("generated_at")
-                if not signal_time_str:
-                    continue
-                
-                try:
-                    # Конвертуємо час генерації
-                    if 'Z' in signal_time_str:
-                        signal_time_str = signal_time_str.replace('Z', '+00:00')
-                    signal_time = datetime.fromisoformat(signal_time_str)
-                    
-                    if signal_time.tzinfo is None:
-                        signal_time = kyiv_tz.localize(signal_time)
-                    
-                    # Перевіряємо різницю часу
-                    time_diff = current_time - signal_time
-                    
-                    # Якщо сигнал не старіший за max_minutes_old хвилин
-                    if time_diff <= timedelta(minutes=max_minutes_old):
-                        active_signals.append(signal)
-                        
-                except Exception as e:
-                    print(f"❌ Помилка парсингу часу сигналу: {e}")
-                    continue
+                if self._is_signal_active(signal):
+                    active_signals.append(signal)
             
             return active_signals
             
         except Exception as e:
             print(f"❌ Помилка отримання активних сигналів: {e}")
             return []
-    
-    def get_statistics(self):
-        """Статистика сигналів"""
-        try:
-            if not os.path.exists(self.history_file):
-                return {
-                    "total_signals": 0, 
-                    "successful_signals": 0, 
-                    "success_rate": 0,
-                    "last_24h": 0
-                }
-            
-            with open(self.history_file, 'r', encoding='utf-8') as f:
-                history = json.load(f)
-            
-            if not history:
-                return {
-                    "total_signals": 0, 
-                    "successful_signals": 0, 
-                    "success_rate": 0,
-                    "last_24h": 0
-                }
-            
-            total = len(history)
-            successful = sum(1 for s in history if s.get("actual_result") == "win")
-            
-            return {
-                "total_signals": total,
-                "successful_signals": successful,
-                "success_rate": (successful / total * 100) if total > 0 else 0,
-                "last_24h": len([s for s in history if self._is_recent(s.get("saved_at"), hours=24)])
-            }
-            
-        except Exception as e:
-            print(f"❌ Помилка отримання статистики: {e}")
-            return {
-                "total_signals": 0, 
-                "successful_signals": 0, 
-                "success_rate": 0,
-                "last_24h": 0
-            }
-    
-    def _is_recent(self, timestamp, hours=24):
-        """Перевірка чи timestamp не старіший за hours годин"""
-        try:
-            if not timestamp:
-                return False
-            signal_time = datetime.fromisoformat(timestamp)
-            return (datetime.now() - signal_time).total_seconds() <= hours * 3600
-        except Exception:
-            return False
