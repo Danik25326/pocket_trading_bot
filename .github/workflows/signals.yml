@@ -66,6 +66,53 @@ jobs:
         if [ ! -f data/assets_config.json ]; then 
           echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
         fi
+        if [ ! -f data/lessons.json ]; then 
+          echo '[]' > data/lessons.json
+        fi
+    
+    - name: Clean old signals
+      run: |
+        echo "🧹 Очищення старих сигналів..."
+        python -c "
+        import json
+        from datetime import datetime, timedelta
+        import pytz
+        
+        kyiv_tz = pytz.timezone('Europe/Kiev')
+        now = datetime.now(kyiv_tz)
+        
+        # Завантажуємо сигнали
+        try:
+            with open('data/signals.json', 'r', encoding='utf-8') as f:
+                signals_data = json.load(f)
+        except:
+            signals_data = {'last_update': None, 'signals': [], 'timezone': 'Europe/Kiev (UTC+2)'}
+        
+        # Фільтруємо старі сигнали (більше 5 хвилин)
+        valid_signals = []
+        for signal in signals_data.get('signals', []):
+            try:
+                gen_time = datetime.fromisoformat(signal.get('generated_at', ''))
+                if now - gen_time <= timedelta(minutes=5):
+                    valid_signals.append(signal)
+            except:
+                continue
+        
+        # Обмежуємо кількість (максимум 3)
+        if len(valid_signals) > 3:
+            valid_signals = valid_signals[:3]
+        
+        # Оновлюємо дані
+        signals_data['signals'] = valid_signals
+        signals_data['active_signals'] = len(valid_signals)
+        signals_data['total_signals'] = len(valid_signals)
+        
+        # Зберігаємо
+        with open('data/signals.json', 'w', encoding='utf-8') as f:
+            json.dump(signals_data, f, indent=2, ensure_ascii=False)
+        
+        print(f'✅ Залишено {len(valid_signals)} актуальних сигналів')
+        "
     
     - name: Generate trading signals
       env:
@@ -74,7 +121,10 @@ jobs:
         POCKET_DEMO: 'true'
         SIGNAL_INTERVAL: '300'
         MIN_CONFIDENCE: '0.7'
-        ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
+        MAX_DURATION: '5.0'
+        SIGNAL_VALIDITY_MINUTES: '5'
+        SIGNAL_CLEANUP_COUNT: '9'
+        ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'llama-3.3-70b-versatile'
@@ -83,7 +133,8 @@ jobs:
         echo "📊 Активи: $ASSETS"
         echo "🧠 Модель AI: $GROQ_MODEL"
         echo "🎯 Мінімальна впевненість: 70%"
-        echo "⏰ Часовий пояс: Київ (UTC+2)"
+        echo "⏰ Максимальна тривалість: 5 хв"
+        echo "🕐 Часовий пояс: Київ (UTC+2)"
         
         echo "🧪 Тест імпортів Python..."
         python -c "
@@ -94,6 +145,7 @@ jobs:
             from config import Config
             print('✅ config.py завантажено')
             print('GROQ_MODEL:', Config.GROQ_MODEL)
+            print('MAX_DURATION:', Config.MAX_DURATION)
         except Exception as e:
             print(f'❌ Помилка завантаження config.py: {e}')
             import traceback
