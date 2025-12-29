@@ -163,7 +163,7 @@ jobs:
       uses: actions/configure-pages@v4
       
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@4
+      uses: actions/upload-pages-artifact@v3  # ВИПРАВЛЕНО: @v3 замість @3
       with:
         path: '.'
         
