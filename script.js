@@ -7,6 +7,15 @@ class SignalDisplay {
         this.lastGenerationTime = localStorage.getItem('last_generation_time');
         this.STORAGE_KEY = 'trading_signals_v2'; // Ключ для localStorage
         
+        // Додаємо нові властивості
+        this.ws = null;
+        this.wsConnected = false;
+        this.wsReconnectAttempts = 0;
+        this.maxWsReconnectAttempts = 5;
+        this.notificationCount = 0;
+        this.tradeHistoryKey = 'trading_history_v1';
+        this.feedbackHistoryKey = 'feedback_history_v1';
+        
         this.translations = {
             uk: {
                 title: "AI Trading Signals",
@@ -25,9 +34,9 @@ class SignalDisplay {
                 currentSignals: "Актуальні сигнали",
                 serverTime: "Поточний час:",
                 loadingSignals: "Завантаження сигналів...",
-                autoUpdate: "Сигнали оновлюються автоматично",
+                autoUpdate: "Сигнали оновлюються вручну",
                 noSignalsNow: "Наразі немає актуальних сигналів",
-                waitForUpdate: "Очікуйте наступного оновлення",
+                waitForUpdate: "Натисніть \"Пошук сигналів\" для генерації",
                 howItWorks: "Як працює система",
                 aiAnalysis: "AI Аналіз:",
                 aiAnalysisDesc: "GPT-OSS-120b для технічного аналізу",
@@ -36,7 +45,7 @@ class SignalDisplay {
                 filtering: "Фільтрація:",
                 filteringDesc: "Тільки сигнали >70% та не старіші 5 хв",
                 updates: "Оновлення:",
-                updatesDesc: "Кожні 5 хвилин для нових сигналів",
+                updatesDesc: "Тільки при натисканні кнопки \"Пошук сигналів\"",
                 important: "Важливо!",
                 disclaimer: "Торгівля містить високі ризики. Сигнали не є фінансовою рекомендацією.",
                 createdWith: "Створено з використанням",
@@ -58,7 +67,31 @@ class SignalDisplay {
                 updateAvailable: "Можна оновити",
                 updateCooldown: "Оновлення через:",
                 searchInProgress: "🔍 Пошук сигналів...",
-                generatingSignals: "Генеруються нові сигнали..."
+                generatingSignals: "Генеруються нові сигнали...",
+                historyTitle: "Історія торгів",
+                totalTrades: "Всього торгів:",
+                successRateHistory: "Успішних:",
+                profitability: "Прибутковість:",
+                noHistory: "Історія торгів поки порожня",
+                historyAsset: "Актив",
+                historyDirection: "Напрямок",
+                historyConfidence: "Впевненість",
+                historyTime: "Час",
+                historyDuration: "Тривалість",
+                historyResult: "Результат",
+                historyReason: "Аналіз",
+                notificationEnabled: "Сповіщення активовані!",
+                notificationNewSignal: "Новий сигнал:",
+                feedbackSaved: "Відгук збережено",
+                feedbackSuccess: "успішний",
+                feedbackFailed: "неуспішний",
+                searchStarted: "Початок пошуку сигналів",
+                searchCompleted: "Нові сигнали згенеровано!",
+                searchError: "Помилка генерації сигналів",
+                tryAgain: "Спробуйте ще раз через хвилину",
+                websocketConnected: "Підключено до сервера в реальному часі",
+                connectionError: "Помилка підключення WebSocket",
+                reconnecting: "Повторне підключення через"
             },
             ru: {
                 title: "AI Торговые Сигналы",
@@ -77,9 +110,9 @@ class SignalDisplay {
                 currentSignals: "Актуальные сигналы",
                 serverTime: "Текущее время:",
                 loadingSignals: "Загрузка сигналов...",
-                autoUpdate: "Сигналы обновляются автоматично",
+                autoUpdate: "Сигналы обновляются вручную",
                 noSignalsNow: "В настоящее время нет актуальных сигналов",
-                waitForUpdate: "Ожидайте следующего обновления",
+                waitForUpdate: "Нажмите \"Поиск сигналов\" для генерации",
                 howItWorks: "Как работает система",
                 aiAnalysis: "AI Анализ:",
                 aiAnalysisDesc: "GPT-OSS-120b для технического анализа",
@@ -88,7 +121,7 @@ class SignalDisplay {
                 filtering: "Фильтрация:",
                 filteringDesc: "Только сигналы >70% и не старше 5 мин",
                 updates: "Обновления:",
-                updatesDesc: "Каждые 5 минут для новых сигналов",
+                updatesDesc: "Только при нажатии кнопки \"Поиск сигналов\"",
                 important: "Важно!",
                 disclaimer: "Торговля содержит высокие риски. Сигналы не являются финансовой рекомендацией.",
                 createdWith: "Создано с использованием",
@@ -110,7 +143,31 @@ class SignalDisplay {
                 updateAvailable: "Можно обновить",
                 updateCooldown: "Обновление через:",
                 searchInProgress: "🔍 Поиск сигналов...",
-                generatingSignals: "Генерируются новые сигналы..."
+                generatingSignals: "Генерируются новые сигналы...",
+                historyTitle: "История торгов",
+                totalTrades: "Всего торгов:",
+                successRateHistory: "Успешных:",
+                profitability: "Прибыльность:",
+                noHistory: "История торгов пока пуста",
+                historyAsset: "Актив",
+                historyDirection: "Направление",
+                historyConfidence: "Уверенность",
+                historyTime: "Время",
+                historyDuration: "Длительность",
+                historyResult: "Результат",
+                historyReason: "Анализ",
+                notificationEnabled: "Уведомления активированы!",
+                notificationNewSignal: "Новый сигнал:",
+                feedbackSaved: "Отзыв сохранен",
+                feedbackSuccess: "успешный",
+                feedbackFailed: "неуспешный",
+                searchStarted: "Начало поиска сигналов",
+                searchCompleted: "Новые сигналы сгенерированы!",
+                searchError: "Ошибка генерации сигналов",
+                tryAgain: "Попробуйте еще раз через минуту",
+                websocketConnected: "Подключено к серверу в реальном времени",
+                connectionError: "Ошибка подключения WebSocket",
+                reconnecting: "Повторное подключение через"
             }
         };
         
@@ -124,13 +181,402 @@ class SignalDisplay {
         this.updateKyivTime();
         setInterval(() => this.updateKyivTime(), 1000);
         this.setupRefreshButton();
+        this.initWebSocket();
+        this.initNotifications();
+        this.setupHistoryModal();
         
         // Додаємо обробник для кнопки пошуку
         document.getElementById('search-btn').addEventListener('click', () => {
             this.searchSignals();
         });
+        
+        // Додаємо обробник для кнопки історії
+        document.getElementById('history-btn').addEventListener('click', () => {
+            this.showHistoryModal();
+        });
+        
+        // Додаємо обробник для кнопки сповіщень
+        document.getElementById('notifications-btn').addEventListener('click', () => {
+            this.clearNotifications();
+        });
     }
 
+    // ==================== WebSocket ====================
+    initWebSocket() {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            return;
+        }
+        
+        try {
+            // Для GitHub Pages потрібен wss (WebSocket Secure)
+            // Але без сервера це неможливо, тому використовуємо long-polling
+            // Якщо буде сервер - розкоментувати:
+            // this.ws = new WebSocket('wss://your-server.com/ws');
+            // this.setupWebSocketHandlers();
+            
+            console.log('ℹ️ WebSocket не підтримується на GitHub Pages без сервера');
+            console.log('ℹ️ Використовується long-polling кожні 30 секунд');
+        } catch (e) {
+            console.error('Помилка ініціалізації WebSocket:', e);
+        }
+    }
+
+    setupWebSocketHandlers() {
+        if (!this.ws) return;
+        
+        this.ws.onopen = () => {
+            console.log('✅ WebSocket підключено');
+            this.wsConnected = true;
+            this.wsReconnectAttempts = 0;
+            this.showNotification(this.translate('websocketConnected'), 'success');
+        };
+        
+        this.ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                this.handleWebSocketMessage(data);
+            } catch (e) {
+                console.error('Помилка обробки повідомлення WebSocket:', e);
+            }
+        };
+        
+        this.ws.onclose = () => {
+            console.log('🔌 WebSocket відключено');
+            this.wsConnected = false;
+            this.attemptWebSocketReconnect();
+        };
+        
+        this.ws.onerror = (error) => {
+            console.error('❌ Помилка WebSocket:', error);
+        };
+    }
+
+    attemptWebSocketReconnect() {
+        if (this.wsReconnectAttempts >= this.maxWsReconnectAttempts) {
+            console.log('⚠️ Досягнуто максимальну кількість спроб підключення WebSocket');
+            return;
+        }
+        
+        this.wsReconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, this.wsReconnectAttempts), 30000);
+        
+        console.log(`♻️ ${this.translate('reconnecting')} ${delay/1000} сек (спроба ${this.wsReconnectAttempts})`);
+        
+        setTimeout(() => {
+            this.initWebSocket();
+        }, delay);
+    }
+
+    handleWebSocketMessage(data) {
+        switch (data.type) {
+            case 'new_signal':
+                this.addNewSignal(data.signal);
+                this.showNotification(`${this.translate('notificationNewSignal')} ${data.signal.asset}`, 'info');
+                break;
+                
+            case 'signal_update':
+                this.updateSignal(data.signal);
+                break;
+                
+            case 'signal_expired':
+                this.removeSignal(data.signal_id);
+                break;
+                
+            case 'server_time':
+                this.updateServerTime(data.time);
+                break;
+                
+            default:
+                console.log('Невідомий тип повідомлення WebSocket:', data.type);
+        }
+    }
+
+    addNewSignal(signal) {
+        // Додати новий сигнал до списку
+        console.log('Додано новий сигнал через WebSocket:', signal);
+        // Тут можна реалізувати додавання сигналу до DOM
+    }
+
+    updateSignal(signal) {
+        // Оновити сигнал
+        console.log('Оновлено сигнал через WebSocket:', signal);
+    }
+
+    removeSignal(signalId) {
+        // Видалити сигнал
+        console.log('Видалено сигнал через WebSocket:', signalId);
+    }
+
+    updateServerTime(time) {
+        // Оновити час сервера
+        console.log('Оновлено час сервера:', time);
+    }
+
+    // ==================== Сповіщення ====================
+    initNotifications() {
+        if (!('Notification' in window)) {
+            console.log('ℹ️ Браузер не підтримує сповіщення');
+            return;
+        }
+        
+        // Перевіряємо дозвіл
+        if (Notification.permission === 'granted') {
+            console.log('✅ Сповіщення вже дозволені');
+        } else if (Notification.permission !== 'denied') {
+            // Запитуємо дозвіл
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('✅ Дозвіл на сповіщення отримано');
+                    this.showNotification(this.translate('notificationEnabled'), 'success');
+                }
+            });
+        }
+    }
+
+    showNotification(title, type = 'info', options = {}) {
+        // Оновлюємо лічильник сповіщень
+        this.notificationCount++;
+        this.updateNotificationBadge();
+        
+        // Браузерні сповіщення
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const defaultOptions = {
+                body: options.body || '',
+                icon: '/favicon.ico',
+                badge: '/favicon.ico'
+            };
+            
+            const notification = new Notification(title, { ...defaultOptions, ...options });
+            
+            // Автоматично закриваємо через 5 секунд
+            setTimeout(() => {
+                notification.close();
+            }, 5000);
+            
+            // Обробляємо клік на сповіщенні
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+        }
+        
+        // Власні сповіщення на сторінці
+        this.createPageNotification(title, type, options);
+    }
+
+    createPageNotification(title, type, options) {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+        
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">${title}</div>
+                ${options.body ? `<div class="notification-body">${options.body}</div>` : ''}
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Додаємо обробник закриття
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.remove();
+            this.notificationCount--;
+            this.updateNotificationBadge();
+        });
+        
+        // Автоматично видаляємо через 5 секунд
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+                this.notificationCount--;
+                this.updateNotificationBadge();
+            }
+        }, 5000);
+    }
+
+    updateNotificationBadge() {
+        const badge = document.getElementById('notification-count');
+        if (badge) {
+            badge.textContent = this.notificationCount > 99 ? '99+' : this.notificationCount;
+            badge.style.display = this.notificationCount > 0 ? 'flex' : 'none';
+        }
+    }
+
+    clearNotifications() {
+        const container = document.getElementById('notification-container');
+        if (container) {
+            container.innerHTML = '';
+        }
+        this.notificationCount = 0;
+        this.updateNotificationBadge();
+    }
+
+    // ==================== Історія торгів ====================
+    saveTradeToHistory(signal, outcome = null) {
+        try {
+            const history = this.getTradeHistory();
+            const trade = {
+                id: signal.id || `trade_${Date.now()}`,
+                asset: signal.asset,
+                direction: signal.direction,
+                confidence: signal.confidence,
+                entry_time: signal.entry_time_kyiv || signal.entry_time,
+                duration: signal.duration,
+                generated_at: signal.generated_at,
+                closed_at: new Date().toISOString(),
+                outcome: outcome, // 'win', 'loss', або 'unknown'
+                reason: signal.reason || ''
+            };
+            
+            history.unshift(trade); // Додаємо на початок
+            
+            // Обмежуємо історію 100 записами
+            if (history.length > 100) {
+                history.pop();
+            }
+            
+            localStorage.setItem(this.tradeHistoryKey, JSON.stringify(history));
+            console.log('💾 Торгівля збережена в історію:', trade.id);
+            
+            return trade;
+        } catch (e) {
+            console.error('Помилка збереження торгівлі в історію:', e);
+            return null;
+        }
+    }
+
+    getTradeHistory(limit = 20) {
+        try {
+            const history = localStorage.getItem(this.tradeHistoryKey);
+            if (!history) return [];
+            
+            const parsed = JSON.parse(history);
+            return limit ? parsed.slice(0, limit) : parsed;
+        } catch (e) {
+            console.error('Помилка читання історії торгів:', e);
+            return [];
+        }
+    }
+
+    getTradeStats() {
+        const history = this.getTradeHistory();
+        if (history.length === 0) {
+            return { total: 0, wins: 0, losses: 0, winRate: 0 };
+        }
+        
+        const wins = history.filter(t => t.outcome === 'win').length;
+        const losses = history.filter(t => t.outcome === 'loss').length;
+        const unknown = history.filter(t => !t.outcome || t.outcome === 'unknown').length;
+        const winRate = wins + losses > 0 ? (wins / (wins + losses) * 100) : 0;
+        
+        return {
+            total: history.length,
+            wins,
+            losses,
+            unknown,
+            winRate: winRate.toFixed(1)
+        };
+    }
+
+    setupHistoryModal() {
+        const modal = document.getElementById('history-modal');
+        const closeBtn = modal.querySelector('.close-modal');
+        
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    showHistoryModal() {
+        const modal = document.getElementById('history-modal');
+        const historyList = document.getElementById('history-list');
+        const totalTrades = document.getElementById('total-trades');
+        const winRate = document.getElementById('win-rate');
+        const profitability = document.getElementById('profitability');
+        
+        // Отримуємо статистику
+        const stats = this.getTradeStats();
+        totalTrades.textContent = stats.total;
+        winRate.textContent = `${stats.winRate}%`;
+        profitability.textContent = `${stats.winRate}%`; // Тут можна додати реальну прибутковість
+        
+        // Отримуємо історію
+        const history = this.getTradeHistory(20);
+        
+        // Очищуємо список
+        historyList.innerHTML = '';
+        
+        if (history.length === 0) {
+            historyList.innerHTML = `
+                <div class="empty-history">
+                    <i class="fas fa-history"></i>
+                    <p>${this.translate('noHistory')}</p>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            return;
+        }
+        
+        // Додаємо торгівлі до списку
+        history.forEach(trade => {
+            const item = document.createElement('div');
+            item.className = `history-item ${trade.outcome || 'unknown'}`;
+            
+            const time = new Date(trade.closed_at || trade.generated_at);
+            const timeStr = time.toLocaleTimeString('uk-UA', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            item.innerHTML = `
+                <div class="history-item-header">
+                    <span class="history-asset">${trade.asset}</span>
+                    <span class="history-direction ${trade.direction?.toLowerCase() || ''}">
+                        ${trade.direction === 'UP' ? 'CALL' : trade.direction === 'DOWN' ? 'PUT' : 'N/A'}
+                    </span>
+                </div>
+                <div class="history-details">
+                    <div class="history-detail-item">
+                        <span class="history-detail-label">${this.translate('historyConfidence')}:</span>
+                        <span class="history-detail-value">${Math.round(trade.confidence * 100)}%</span>
+                    </div>
+                    <div class="history-detail-item">
+                        <span class="history-detail-label">${this.translate('historyTime')}:</span>
+                        <span class="history-detail-value">${timeStr}</span>
+                    </div>
+                    <div class="history-detail-item">
+                        <span class="history-detail-label">${this.translate('historyDuration')}:</span>
+                        <span class="history-detail-value">${trade.duration} хв</span>
+                    </div>
+                    <div class="history-detail-item">
+                        <span class="history-detail-label">${this.translate('historyResult')}:</span>
+                        <span class="history-detail-value">
+                            ${trade.outcome === 'win' ? '✅' : trade.outcome === 'loss' ? '❌' : '❓'}
+                        </span>
+                    </div>
+                </div>
+                ${trade.reason ? `<div class="history-reason">${trade.reason}</div>` : ''}
+            `;
+            
+            historyList.appendChild(item);
+        });
+        
+        modal.style.display = 'flex';
+    }
+
+    // ==================== Основний функціонал ====================
     async loadSignals(force = false) {
         try {
             // Пытаемся загрузить из localStorage в первую очередь
@@ -268,6 +714,11 @@ class SignalDisplay {
         searchBtn.disabled = true;
         searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + this.translate('searchInProgress');
         
+        // Показуємо сповіщення про початок пошуку
+        this.showNotification(this.translate('searchStarted'), 'info', {
+            body: 'Генерація сигналів розпочата. Зачекайте ~30 секунд.'
+        });
+        
         try {
             // Запускаємо GitHub Actions workflow
             await this.triggerGitHubWorkflow();
@@ -282,8 +733,17 @@ class SignalDisplay {
             localStorage.setItem('last_generation_time', Date.now().toString());
             this.setupRefreshButton();
             
+            // Після успішного пошуку
+            const signalsCount = document.getElementById('total-signals').textContent;
+            this.showNotification(this.translate('searchCompleted'), 'success', {
+                body: `Знайдено ${signalsCount} сигналів. Оновіть сторінку.`
+            });
+            
         } catch (error) {
             console.error('Помилка пошуку сигналів:', error);
+            this.showNotification(this.translate('searchError'), 'error', {
+                body: this.translate('tryAgain')
+            });
             this.showError('Не вдалося запустити пошук сигналів');
         } finally {
             searchBtn.disabled = false;
@@ -376,6 +836,9 @@ class SignalDisplay {
         if (data.last_update) {
             localStorage.setItem('last_generation_time', Date.now().toString());
         }
+        
+        // Оновлюємо статистику торгів
+        this.updateTradeStats();
     }
 
     createSignalHTML(signal, signalId) {
@@ -394,8 +857,19 @@ class SignalDisplay {
             generatedTime = this.formatTimeKyiv(genDate, false);
         }
         
+        // Зберігаємо дані в data-атрибутах для подальшого використання
+        const dataAttributes = `
+            data-asset="${signal.asset}"
+            data-direction="${signal.direction}"
+            data-confidence="${signal.confidence}"
+            data-entry-time="${entryTime}"
+            data-duration="${duration}"
+            data-generated-at="${signal.generated_at}"
+            ${signal.reason ? `data-reason="${signal.reason.replace(/"/g, '&quot;')}"` : ''}
+        `;
+        
         return `
-            <div class="signal-card ${directionClass}" id="${signalId}" data-asset="${signal.asset}">
+            <div class="signal-card ${directionClass}" id="${signalId}" ${dataAttributes}>
                 <div class="signal-header">
                     <div class="asset-info">
                         <div class="asset-icon">
@@ -569,6 +1043,14 @@ class SignalDisplay {
                 // Видаляємо сигнал після опитувальника
                 const signalElement = document.getElementById(signalId);
                 if (signalElement) {
+                    // Отримуємо дані сигналу для збереження в історії
+                    const signalData = this.getSignalData(signalId);
+                    if (signalData && !signalData.savedToHistory) {
+                        // Якщо користувач не надав feedback, зберігаємо як 'unknown'
+                        this.saveTradeToHistory(signalData, 'unknown');
+                        signalData.savedToHistory = true;
+                    }
+                    
                     signalElement.remove();
                     this.updateSignalCount();
                 }
@@ -591,16 +1073,58 @@ class SignalDisplay {
         updateTimer();
     }
 
+    getSignalData(signalId) {
+        const signalElement = document.getElementById(signalId);
+        if (!signalElement) return null;
+        
+        return {
+            id: signalId,
+            asset: signalElement.dataset.asset,
+            direction: signalElement.dataset.direction,
+            confidence: parseFloat(signalElement.dataset.confidence) || 0.7,
+            entry_time: signalElement.dataset.entryTime,
+            duration: parseInt(signalElement.dataset.duration) || 2,
+            generated_at: signalElement.dataset.generatedAt,
+            reason: signalElement.dataset.reason || ''
+        };
+    }
+
     giveFeedback(signalId, feedback) {
         const signalElement = document.getElementById(signalId);
         if (!signalElement) return;
         
         const asset = signalElement.dataset.asset;
+        
+        // Отримуємо дані сигналу для збереження в історії
+        const signalData = this.getSignalData(signalId);
+        if (signalData) {
+            const outcome = feedback === 'yes' ? 'win' : feedback === 'no' ? 'loss' : 'unknown';
+            this.saveTradeToHistory(signalData, outcome);
+            
+            // Оновлюємо статистику на головній сторінці
+            this.updateTradeStats();
+        }
+        
         console.log(`Feedback for ${asset}: ${feedback}`);
         
         // Видаляємо сигнал
         signalElement.remove();
         this.updateSignalCount();
+        
+        // Показуємо сповіщення
+        this.showNotification(
+            this.translate('feedbackSaved'),
+            'success',
+            { body: `Сигнал ${asset} відмічений як ${feedback === 'yes' ? this.translate('feedbackSuccess') : this.translate('feedbackFailed')}` }
+        );
+    }
+
+    updateTradeStats() {
+        const stats = this.getTradeStats();
+        const successRateElement = document.getElementById('success-rate');
+        if (successRateElement) {
+            successRateElement.textContent = `${stats.winRate}%`;
+        }
     }
 
     updateSignalCount() {
@@ -722,6 +1246,7 @@ class SignalDisplay {
         // Оновлюємо кнопки
         const searchBtn = document.getElementById('search-btn');
         const refreshBtn = document.getElementById('refresh-btn');
+        const historyBtn = document.getElementById('history-btn');
         
         if (searchBtn) {
             searchBtn.innerHTML = '<i class="fas fa-search"></i> ' + translations.searchBtn;
@@ -729,6 +1254,10 @@ class SignalDisplay {
         
         if (refreshBtn && !refreshBtn.disabled) {
             refreshBtn.innerHTML = '<i class="fas fa-redo"></i> ' + translations.refreshBtn;
+        }
+        
+        if (historyBtn) {
+            historyBtn.innerHTML = '<i class="fas fa-history"></i> ' + translations.historyTitle;
         }
     }
 
