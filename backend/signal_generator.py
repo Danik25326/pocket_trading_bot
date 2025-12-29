@@ -49,16 +49,28 @@ class SignalGenerator:
 
             logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
             
-            # Перевірка актуальності останньої свічки
+            # Перевірка актуальності останньої свічки (виправлена версія)
             if hasattr(candles[-1], 'timestamp'):
                 last_candle_time = candles[-1].timestamp
                 current_time = Config.get_kyiv_time()
+                
+                # Конвертуємо час свічки в offset-aware, якщо він offset-naive
+                if last_candle_time.tzinfo is None:
+                    # Припускаємо, що час свічок в UTC
+                    import pytz
+                    last_candle_time = last_candle_time.replace(tzinfo=pytz.UTC)
+                    # Конвертуємо в Київський час
+                    last_candle_time = last_candle_time.astimezone(Config.KYIV_TZ)
+                
                 time_diff = (current_time - last_candle_time).total_seconds()
                 
                 if time_diff > 300:  # 5 хвилин
                     logger.warning(f"⚠️ Остання свічка застаріла: {time_diff:.0f} сек тому")
+                    logger.warning(f"   Час свічки: {last_candle_time.strftime('%H:%M:%S')}")
+                    logger.warning(f"   Поточний час: {current_time.strftime('%H:%M:%S')}")
                 else:
                     logger.info(f"🕐 Остання свічка актуальна: {time_diff:.0f} сек тому")
+                    logger.info(f"   Час свічки: {last_candle_time.strftime('%H:%M:%S')}")
             
             # Аналізуємо через AI
             logger.info(f"🧠 Аналіз через AI для {asset}...")
