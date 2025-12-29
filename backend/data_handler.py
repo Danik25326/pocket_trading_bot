@@ -9,6 +9,7 @@ class DataHandler:
         self.signals_file = Config.SIGNALS_FILE
         self.history_file = Config.HISTORY_FILE
         self.feedback_file = Config.FEEDBACK_FILE
+        self.lessons_file = Config.LESSONS_FILE
         self.create_data_dir()
     
     def create_data_dir(self):
@@ -18,14 +19,22 @@ class DataHandler:
     def save_signals(self, signals):
         """Збереження сигналів"""
         try:
-            # Фільтруємо сигнали з достатньою впевненістю
-            valid_signals = [
-                s for s in signals 
-                if s.get('confidence', 0) >= Config.MIN_CONFIDENCE
-            ]
+            # Фільтруємо сигнали з достатньою впевненістю та валідною тривалістю
+            valid_signals = []
+            for s in signals:
+                if s.get('confidence', 0) < Config.MIN_CONFIDENCE:
+                    continue
+                
+                # Перевірка тривалості
+                is_valid_duration, duration_msg = self.validate_signal_duration(s)
+                if not is_valid_duration:
+                    print(f"⚠️ Пропускаємо сигнал: {duration_msg}")
+                    continue
+                
+                valid_signals.append(s)
             
             if not valid_signals:
-                print("⚠️ Немає сигналів з достатньою впевненістю для збереження")
+                print("⚠️ Немає сигналів з достатньою впевненістю та валідною тривалістю")
                 return False
             
             # Додаємо київський час
@@ -41,19 +50,19 @@ class DataHandler:
             existing_data = self.load_signals()
             existing_signals = existing_data.get('signals', [])
             
-            # Фільтруємо тільки активні сигнали (не старіші ніж ACTIVE_SIGNAL_TIMEOUT хвилин)
+            # Фільтруємо тільки актуальні сигнали (не старіші ніж SIGNAL_VALIDITY_MINUTES хвилин)
             active_signals = []
             for signal in existing_signals:
                 signal_time = datetime.fromisoformat(signal.get('generated_at', ''))
-                if now_kyiv - signal_time <= timedelta(minutes=Config.ACTIVE_SIGNAL_TIMEOUT):
+                if now_kyiv - signal_time <= timedelta(minutes=Config.SIGNAL_VALIDITY_MINUTES):
                     active_signals.append(signal)
             
             # Додаємо нові сигнали
             all_signals = active_signals + valid_signals
             
-            # Обмежуємо кількість сигналів
-            if len(all_signals) > Config.MAX_SIGNALS_HISTORY:
-                all_signals = all_signals[-Config.MAX_SIGNALS_HISTORY:]
+            # Обмежуємо кількість сигналів (максимум 3 актуальні)
+            if len(all_signals) > 3:
+                all_signals = all_signals[:3]
             
             # Оновлюємо дані
             data = {
@@ -71,6 +80,9 @@ class DataHandler:
             # Додаємо в історію
             self._add_to_history(valid_signals)
             
+            # Очищення історії після SIGNAL_CLEANUP_COUNT сигналів
+            self._cleanup_history()
+            
             print(f"💾 Збережено {len(valid_signals)} сигналів. Активних: {data['active_signals']}")
             return True
             
@@ -79,6 +91,13 @@ class DataHandler:
             import traceback
             print(f"Деталі: {traceback.format_exc()}")
             return False
+    
+    def validate_signal_duration(self, signal):
+        """Перевірка тривалості сигналу (не більше MAX_DURATION хвилин)"""
+        duration = signal.get('duration', 0)
+        if duration > Config.MAX_DURATION:
+            return False, f"Тривалість {duration} більше максимально дозволеної {Config.MAX_DURATION}"
+        return True, "Тривалість валідна"
     
     def load_signals(self):
         """Завантаження сигналів з файлу"""
@@ -147,6 +166,24 @@ class DataHandler:
         except Exception as e:
             print(f"❌ Помилка додавання в історію: {e}")
     
+    def _cleanup_history(self):
+        """Очищення історії після певної кількості сигналів"""
+        try:
+            if os.path.exists(self.history_file):
+                with open(self.history_file, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+                
+                if len(history) >= Config.SIGNAL_CLEANUP_COUNT:
+                    # Зберігаємо тільки останні SIGNAL_CLEANUP_COUNT записів
+                    history = history[-Config.SIGNAL_CLEANUP_COUNT:]
+                    
+                    with open(self.history_file, 'w', encoding='utf-8') as f:
+                        json.dump(history, f, indent=2, ensure_ascii=False, default=str)
+                    
+                    print(f"🧹 Очищено історію сигналів. Залишено {len(history)} записів")
+        except Exception as e:
+            print(f"❌ Помилка очищення історії: {e}")
+    
     def save_feedback(self, signal_id, success, user_comment=""):
         """Збереження відгуку про результат угоди"""
         try:
@@ -173,6 +210,10 @@ class DataHandler:
                 json.dump(feedback, f, indent=2, ensure_ascii=False, default=str)
             
             print(f"💾 Збережено відгук для сигналу {signal_id}: {'✅ Успіх' if success else '❌ Невдача'}")
+            
+            # Запускаємо навчання на основі відгуку
+            self.learn_from_feedback()
+            
             return True
             
         except Exception as e:
@@ -213,4 +254,44 @@ class DataHandler:
             
         except Exception as e:
             print(f"❌ Помилка отримання активних сигналів: {e}")
+            return []
+    
+    def learn_from_feedback(self):
+        """Аналіз зворотного зв'язку для навчання ШІ"""
+        try:
+            feedback_data = self.get_feedback_history()
+            
+            # Групуємо по активу та результату
+            analysis = {}
+            for fb in feedback_data:
+                asset = fb.get('signal_id', '').split('_')[0]
+                if asset not in analysis:
+                    analysis[asset] = {'correct': 0, 'total': 0}
+                
+                if fb.get('success') is True:
+                    analysis[asset]['correct'] += 1
+                analysis[asset]['total'] += 1
+            
+            # Генеруємо висновки для навчання
+            lessons = []
+            for asset, stats in analysis.items():
+                if stats['total'] > 0:
+                    accuracy = stats['correct'] / stats['total']
+                    lesson = {
+                        'asset': asset,
+                        'accuracy': accuracy,
+                        'total_signals': stats['total'],
+                        'learned_at': Config.get_kyiv_time().isoformat()
+                    }
+                    lessons.append(lesson)
+            
+            # Зберігаємо вчення
+            with open(self.lessons_file, 'w', encoding='utf-8') as f:
+                json.dump(lessons, f, indent=2, ensure_ascii=False, default=str)
+            
+            print(f"🧠 ШІ навчився на основі {len(feedback_data)} відгуків")
+            return lessons
+            
+        except Exception as e:
+            print(f"❌ Помилка навчання: {e}")
             return []
