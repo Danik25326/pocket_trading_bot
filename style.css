@@ -900,3 +900,143 @@ footer p {
         font-size: 0.9rem;
     }
 }
+/* Додаємо в кінець файлу */
+
+/* Стилі для кнопки пошуку */
+.search-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
+}
+
+.search-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Стилі для таймера */
+.signal-timer {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.signal-timer.active {
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+    border-left-color: #48bb78;
+    animation: pulse 2s infinite;
+}
+
+.timer-display {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #856404;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.signal-timer.active .timer-display {
+    color: #22543d;
+}
+
+.timer-text {
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+}
+
+/* Стилі для опитувальника */
+.signal-feedback {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border-left: 4px solid #6c757d;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.feedback-content {
+    text-align: center;
+}
+
+.feedback-content p {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+.feedback-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Анімація для активних сигналів з опитувальником */
+.signal-card.feedback-active {
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(108, 117, 125, 0.8);
+    }
+}
+
+/* Стилі для кнопки оновлення при очікуванні */
+.refresh-btn:disabled {
+    background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-direction: column;
+    }
+    
+    .search-btn, .refresh-btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .feedback-buttons {
+        flex-direction: column;
+    }
+    
+    .feedback-btn {
+        width: 100%;
+    }
+}
