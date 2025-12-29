@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from config import Config
 from pocket_client import PocketOptionClient
 from groq_analyzer import GroqAnalyzer
@@ -58,6 +58,12 @@ class SignalGenerator:
             signal = self.analyzer.analyze_market(asset, candles)
 
             if signal and signal.get('confidence', 0) >= Config.MIN_CONFIDENCE:
+                # Перевірка тривалості
+                duration = signal.get('duration', 2)
+                if duration > Config.MAX_DURATION:
+                    logger.warning(f"⚠️ Сигнал для {asset} має завелику тривалість: {duration} хв")
+                    return None
+                
                 signal['generated_at'] = Config.get_kyiv_time().isoformat()
                 signal['asset'] = asset
                 logger.info(f"✅ Створено сигнал для {asset}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
@@ -80,12 +86,24 @@ class SignalGenerator:
         logger.info(f"🚀 Початок генерації сигналів - {Config.get_kyiv_time().strftime('%Y-%m-%d %H:%M:%S')} (Київ)")
 
         try:
+            # Перевірка часу з останнього сигналу
+            existing_data = self.data_handler.load_signals()
+            last_update = existing_data.get('last_update')
+            
+            if last_update:
+                last_time = datetime.fromisoformat(last_update)
+                time_diff = (Config.get_kyiv_time() - last_time).total_seconds()
+                if time_diff < Config.SIGNAL_INTERVAL:
+                    logger.info(f"⏳ Ще не пройшло {Config.SIGNAL_INTERVAL/60} хвилин з останньої генерації ({time_diff:.0f} сек)")
+                    return []
+            
             # Виводимо конфігурацію
             logger.info(f"⚙️ Конфігурація:")
             logger.info(f"  - Демо режим: {Config.POCKET_DEMO}")
             logger.info(f"  - Активи: {Config.ASSETS}")
             logger.info(f"  - Таймфрейм: {Config.TIMEFRAMES} сек")
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
+            logger.info(f"  - Макс. тривалість: {Config.MAX_DURATION} хв")
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
             
             # Підключення
@@ -147,15 +165,15 @@ async def main():
                 print("\n⚠️  СИГНАЛІВ НЕ ЗНАЙДЕНО")
             
             # Чекаємо 5 хвилин до наступної перевірки
-            print(f"\n⏳ Очікую 5 хвилин до наступної перевірки...")
-            await asyncio.sleep(300)  # 300 секунд = 5 хвилин
+            print(f"\n⏳ Очікую {Config.SIGNAL_INTERVAL/60} хвилин до наступної перевірки...")
+            await asyncio.sleep(Config.SIGNAL_INTERVAL)
             
         except KeyboardInterrupt:
             print("\n\n🛑 Бот зупинено користувачем")
             break
         except Exception as e:
             print(f"💥 Помилка в головному циклі: {e}")
-            await asyncio.sleep(300)  # Чекаємо 5 хвилин навіть при помилці
+            await asyncio.sleep(Config.SIGNAL_INTERVAL)
 
 if __name__ == "__main__":
     asyncio.run(main())
