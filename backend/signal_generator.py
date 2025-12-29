@@ -89,16 +89,18 @@ class SignalGenerator:
                     # Перевірка часу входу
                     entry_time = signal.get('entry_time', '')
                     now_kyiv = Config.get_kyiv_time()
+                    entry_datetime_kyiv = None
+                    
                     try:
                         if ':' in entry_time:
                             hour, minute = map(int, entry_time.split(':'))
-                            entry_datetime = now_kyiv.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                            entry_datetime_kyiv = now_kyiv.replace(hour=hour, minute=minute, second=0, microsecond=0)
                             
                             # Якщо час вже минув сьогодні, додаємо день
-                            if entry_datetime < now_kyiv:
-                                entry_datetime += timedelta(days=1)
+                            if entry_datetime_kyiv < now_kyiv:
+                                entry_datetime_kyiv = entry_datetime_kyiv + timedelta(days=1)
                             
-                            time_to_entry = (entry_datetime - now_kyiv).total_seconds() / 60
+                            time_to_entry = (entry_datetime_kyiv - now_kyiv).total_seconds() / 60
                             if time_to_entry < 0:
                                 logger.warning(f"⚠️ Час входу в минулому: {entry_time}")
                                 return None
@@ -107,8 +109,17 @@ class SignalGenerator:
                                 return None
                             
                             logger.info(f"⏰ Час входу: {entry_time} (через {time_to_entry:.1f} хв)")
+                            
+                            # Конвертуємо час входу з київського в UTC
+                            import pytz
+                            entry_datetime_utc = entry_datetime_kyiv.astimezone(pytz.UTC)
+                            signal['entry_time_utc'] = entry_datetime_utc.isoformat()
+                            signal['entry_time_kyiv'] = entry_time
+                            
                     except Exception as e:
                         logger.warning(f"⚠️ Помилка перевірки часу входу: {e}")
+                        signal['entry_time_utc'] = None
+                        signal['entry_time_kyiv'] = entry_time
                     
                     signal['generated_at'] = now_kyiv.isoformat()
                     signal['asset'] = asset
@@ -116,6 +127,8 @@ class SignalGenerator:
                     
                     logger.info(f"✅ Створено сигнал для {asset}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
                     logger.info(f"   📅 Вхід: {entry_time}, Тривалість: {duration} хв")
+                    logger.info(f"   ⌚ Київський час: {entry_time}, UTC: {signal.get('entry_time_utc', 'N/A')}")
+                    
                     return signal
                 else:
                     logger.warning(f"⚠️ Сигнал для {asset} має низьку впевненість: {signal.get('confidence', 0)*100:.1f}%")
@@ -207,7 +220,7 @@ class SignalGenerator:
                     logger.info(f"\n🎯 ЗГЕНЕРОВАНО {len(valid_signals)} СИГНАЛІВ:")
                     for i, signal in enumerate(valid_signals, 1):
                         logger.info(f"   {i}. {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
-                        logger.info(f"      Вхід: {signal.get('entry_time', 'N/A')}, Тривалість: {signal.get('duration', 'N/A')} хв")
+                        logger.info(f"      Вхід: {signal.get('entry_time_kyiv', signal.get('entry_time', 'N/A'))}, Тривалість: {signal.get('duration', 'N/A')} хв")
                         logger.info(f"      ID: {signal.get('id', 'N/A')}")
                 else:
                     logger.error("❌ Помилка збереження сигналів")
@@ -253,7 +266,7 @@ async def main():
     if signals:
         print(f"\n🎯 ЗГЕНЕРОВАНО {len(signals)} СИГНАЛІВ:")
         for signal in signals:
-            print(f"   • {signal['asset']}: {signal['direction']} ({signal.get('confidence', 0)*100:.1f}%) - {signal.get('entry_time', 'N/A')}")
+            print(f"   • {signal['asset']}: {signal['direction']} ({signal.get('confidence', 0)*100:.1f}%) - Вхід: {signal.get('entry_time_kyiv', signal.get('entry_time', 'N/A'))}")
     else:
         print("\n⚠️  СИГНАЛІВ НЕ ЗНАЙДЕНО")
     
