@@ -40,27 +40,7 @@ class SignalGenerator:
 
             logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
             
-            # ПЕРЕВІРКА: Якщо остання свічка старіша за 5 хвилин - ПРОПУСКАЄМО
-            if hasattr(candles[-1], 'timestamp'):
-                last_candle_time = candles[-1].timestamp
-                current_time = Config.get_kyiv_time()
-                
-                # Якщо свічка має часовий пояс, видаляємо його для порівняння
-                if last_candle_time.tzinfo is not None:
-                    last_candle_time = last_candle_time.replace(tzinfo=None)
-                
-                # Перетворюємо current_time також без часового поясу для порівняння
-                current_time_no_tz = current_time.replace(tzinfo=None)
-                time_diff = (current_time_no_tz - last_candle_time).total_seconds()
-                
-                if time_diff > 300:  # 5 хвилин
-                    logger.error(f"❌ Свічки для {asset} ЗАСТАРІЛІ: {time_diff:.0f} сек ({time_diff/60:.1f} хв)")
-                    logger.error(f"   Час останньої свічки: {last_candle_time}")
-                    logger.error(f"   Поточний час: {current_time_no_tz}")
-                    logger.error(f"   Пропускаємо актив {asset}")
-                    return None
-            
-            # Перевірка актуальності останньої свічки (додаткова перевірка)
+            # Перевірка актуальності останньої свічки
             if hasattr(candles[-1], 'timestamp'):
                 last_candle_time = candles[-1].timestamp
                 current_time = Config.get_kyiv_time()
@@ -71,12 +51,8 @@ class SignalGenerator:
                 last_candle_time_kyiv = last_candle_time.astimezone(Config.KYIV_TZ)
                 time_diff = (current_time - last_candle_time_kyiv).total_seconds()
                 
-                # Якщо свічка старіша за 5 хвилин - пропускаємо актив
-                if time_diff > 300:  # 5 хвилин
-                    logger.error(f"❌ Свічки для {asset} застарілі: {time_diff:.0f} сек")
-                    return None
-                elif time_diff > 180:  # 3 хвилини
-                    logger.warning(f"⚠️ Остання свічка трохи застаріла: {time_diff:.0f} сек тому")
+                if time_diff > 300:
+                    logger.warning(f"⚠️ Остання свічка застаріла: {time_diff:.0f} сек тому")
                 else:
                     logger.info(f"🕐 Остання свічка актуальна: {time_diff:.0f} сек тому")
             
