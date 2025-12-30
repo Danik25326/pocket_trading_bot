@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🤖 PocketOption AI Trading Signals</title>
+    <title>🤖 PocketOption AI Signals</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
@@ -13,28 +13,24 @@
         <header class="main-header">
             <div class="header-content">
                 <h1><i class="fas fa-robot"></i> <span data-translate="title">AI Trading Signals</span></h1>
-                <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT-OSS-120b</p>
-                <div class="header-stats">
-                    <span class="stat-badge"><i class="fas fa-sync-alt"></i> <span data-translate="updateMode">Режим:</span> <span data-translate="onDemand">За запитом</span></span>
-                    <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 70%</span>
-                    <span class="stat-badge"><i class="fas fa-chart-line"></i> <span data-translate="model">Модель:</span> GPT-OSS-120b</span>
-                </div>
+                <p class="subtitle" data-translate="subtitle">Генерація сигналів на основі GPT-OSS-120b</p>
             </div>
             
             <div class="header-controls">
                 <div class="language-switcher">
-                    <button id="lang-uk" class="lang-btn active" data-lang="uk">🇺🇦 Українська</button>
-                    <button id="lang-ru" class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+                    <button id="lang-uk" class="lang-btn active" data-lang="uk">🇺🇦 UA</button>
+                    <button id="lang-ru" class="lang-btn" data-lang="ru">🇷🇺 RU</button>
                 </div>
                 
                 <div class="action-buttons">
-                    <button id="search-btn" class="search-btn">
-                        <i class="fas fa-search"></i> <span class="btn-text" data-translate="searchBtn">Пошук сигналів</span>
+                    <button id="search-btn" class="main-btn search-btn">
+                        <i class="fas fa-search"></i> <span data-translate="searchBtn">Пошук сигналів</span>
                     </button>
                     
-                    <button id="refresh-btn" class="refresh-btn" style="display: none;" disabled>
-                        <i class="fas fa-redo"></i> <span class="btn-text" data-translate="updateBtn">Оновити</span>
-                        <span id="cooldown-timer"></span>
+                    <button id="refresh-btn" class="main-btn refresh-btn" style="display: none;" disabled>
+                        <i class="fas fa-redo"></i> 
+                        <span data-translate="updateBtn">Оновити</span>
+                        <span id="cooldown-timer" class="timer-text"></span>
                     </button>
                 </div>
             </div>
@@ -42,76 +38,46 @@
 
         <div class="dashboard">
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-icon primary"><i class="fas fa-clock"></i></div>
                     <div class="stat-info">
-                        <h3 data-translate="lastUpdate">Останнє оновлення</h3>
-                        <p id="last-update" class="stat-value">--:--:--</p>
-                        <small data-translate="kievTime">(Київський час)</small>
+                        <h3 data-translate="lastUpdate">Оновлено</h3>
+                        <p id="last-update">--:--</p>
                     </div>
                 </div>
-                
-                <div class="stat-card success">
-                    <div class="stat-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fas fa-bolt"></i></div>
                     <div class="stat-info">
-                        <h3 data-translate="activeSignals">Активних сигналів</h3>
-                        <p id="active-signals" class="stat-value">0</p>
-                        <small data-translate="withConfidence">з впевненістю >70%</small>
+                        <h3 data-translate="activeSignals">Активні</h3>
+                        <p id="active-signals">0</p>
                     </div>
                 </div>
             </div>
 
             <div class="signals-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-bell"></i> <span data-translate="currentSignals">Актуальні сигнали</span></h2>
-                    <div class="time-info">
-                        <i class="fas fa-globe-europe"></i> <span data-translate="serverTime">Поточний час:</span> <span id="server-time">--:--</span> (Київ)
+                    <h2><i class="fas fa-chart-line"></i> <span data-translate="currentSignals">Сигнали</span></h2>
+                    <div class="server-time">
+                        <i class="far fa-clock"></i> <span id="server-time">--:--:--</span> (Київ)
                     </div>
                 </div>
                 
                 <div id="initial-state" class="empty-state">
-                    <i class="fas fa-search-dollar" style="font-size: 3rem; color: #667eea; margin-bottom: 20px;"></i>
+                    <div class="icon-box"><i class="fas fa-rocket"></i></div>
                     <h3 data-translate="pressSearch">Натисніть "Пошук сигналів"</h3>
-                    <p data-translate="searchDesc">Системи проаналізують ринок та знайдуть найкращі точки входу</p>
+                    <p data-translate="searchDesc">AI проаналізує ринок і знайде точки входу</p>
                 </div>
 
                 <div class="signals-container" id="signals-container" style="display: none;">
-                    <div class="loading-state">
-                        <div class="spinner">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
-                        <p data-translate="loadingSignals">Аналіз графіків...</p>
                     </div>
-                </div>
                 
                 <div class="no-signals" id="no-signals" style="display: none;">
                     <div class="empty-state">
-                        <i class="fas fa-chart-line"></i>
-                        <h3 data-translate="noSignalsNow">Наразі немає актуальних сигналів</h3>
-                        <p data-translate="waitForUpdate">Спробуйте пізніше або змініть актив</p>
+                        <i class="fas fa-ban"></i>
+                        <h3 data-translate="noSignalsNow">Сигналів не знайдено</h3>
+                        <p data-translate="waitForUpdate">Спробуйте пізніше</p>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <footer>
-            <p>© 2025 AI Trading Signals | <span data-translate="createdWith">Створено з використанням</span> Groq Cloud & PocketOption API</p>
-            <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT-OSS-120b • Python • GitHub Actions</p>
-        </footer>
-    </div>
-
-    <div id="feedback-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3 data-translate="feedbackQuestion">Сигнал був вірний?</h3>
-            <p id="feedback-asset"></p>
-            <div class="feedback-buttons">
-                <button class="feedback-btn feedback-yes" data-translate="feedbackYes">Так</button>
-                <button class="feedback-btn feedback-no" data-translate="feedbackNo">Ні</button>
-                <button class="feedback-btn feedback-skip" data-translate="feedbackSkip">Я не перевіряв</button>
             </div>
         </div>
     </div>
