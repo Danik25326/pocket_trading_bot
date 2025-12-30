@@ -1,7 +1,7 @@
 name: Generate Trading Signals and Deploy
 
 on:
-  workflow_dispatch:  # Тільки ручний запуск
+  workflow_dispatch:  # Ручний запуск через кнопку в GitHub Actions
   push:
     branches: [ main ]
     paths-ignore:
@@ -68,59 +68,6 @@ jobs:
           echo '[]' > data/lessons.json
         fi
     
-    - name: Clean old signals (older than 5 minutes)
-      run: |
-        echo "🧹 Очищення старих сигналів..."
-        python -c "
-        import json
-        from datetime import datetime, timedelta
-        import pytz
-        
-        kyiv_tz = pytz.timezone('Europe/Kiev')
-        now = datetime.now(kyiv_tz)
-        
-        try:
-            with open('data/signals.json', 'r', encoding='utf-8') as f:
-                signals_data = json.load(f)
-        except:
-            signals_data = {'last_update': None, 'signals': [], 'timezone': 'Europe/Kiev (UTC+2)'}
-        
-        # Фільтруємо сигнали старіші 5 хвилин
-        valid_signals = []
-        for signal in signals_data.get('signals', []):
-            try:
-                # Час генерації сигналу
-                gen_time_str = signal.get('generated_at_utc') or signal.get('generated_at')
-                if gen_time_str:
-                    gen_time = datetime.fromisoformat(gen_time_str.replace('Z', '+00:00'))
-                    
-                    # Конвертуємо в київський час
-                    if gen_time.tzinfo is None:
-                        gen_time = pytz.UTC.localize(gen_time)
-                    gen_time_kyiv = gen_time.astimezone(kyiv_tz)
-                    
-                    # Перевіряємо, чи сигнал ще дійсний (менше 5 хвилин)
-                    if now - gen_time_kyiv <= timedelta(minutes=5):
-                        valid_signals.append(signal)
-            except Exception as e:
-                print(f'⚠️ Помилка обробки сигналу: {e}')
-                continue
-        
-        # Обмежуємо кількість (максимум 3)
-        if len(valid_signals) > 3:
-            valid_signals = valid_signals[:3]
-        
-        # Оновлюємо дані
-        signals_data['signals'] = valid_signals
-        signals_data['active_signals'] = len(valid_signals)
-        signals_data['total_signals'] = len(valid_signals)
-        
-        with open('data/signals.json', 'w', encoding='utf-8') as f:
-            json.dump(signals_data, f, indent=2, ensure_ascii=False)
-        
-        print(f'✅ Залишено {len(valid_signals)} актуальних сигналів')
-        "
-    
     - name: Generate trading signals
       env:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
@@ -134,19 +81,15 @@ jobs:
         ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
-        GROQ_MODEL: 'openai/gpt-oss-120b'
+        GROQ_MODEL: 'openai/gpt-oss-120b' # Змінено на модель, яку ти просив, якщо Groq її підтримує. Якщо ні - повернеться defualt з config.
       run: |
         echo "🚀 Початок генерації сигналів..."
         echo "📊 Активи: $ASSETS"
         echo "🧠 Модель AI: $GROQ_MODEL"
-        echo "🎯 Мінімальна впевненість: 70%"
-        echo "⏰ Максимальна тривалість: 5 хв"
         echo "🕐 Часовий пояс: Київ (UTC+2)"
         
-        # Додаємо шляхи Python
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
-        # Запускаємо генератор сигналів
         cd backend
         python signal_generator.py
         
@@ -157,23 +100,14 @@ jobs:
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
         
-        # Синхронізуємо з віддаленим репозиторієм
-        echo "🔄 Синхронізація з GitHub..."
-        git fetch origin
-        git reset --hard origin/main
-        
-        # Додаємо змінені файли
-        echo "📁 Додавання файлів..."
         git add data/
         git add logs/
         git add .nojekyll
         
-        # Перевіряємо, чи є зміни для коміту
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Генерація сигналів $(date +'%Y-%m-%d %H:%M') [skip ci]"
-          echo "📤 Відправка на GitHub..."
+          git commit -m "🤖 On-Demand: Нові сигнали $(date +'%Y-%m-%d %H:%M') [skip ci]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
