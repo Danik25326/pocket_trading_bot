@@ -13,11 +13,11 @@
         <header class="main-header">
             <div class="header-content">
                 <h1><i class="fas fa-robot"></i> <span data-translate="title">AI Trading Signals</span></h1>
-                <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням Llama 4 AI</p>
+                <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI</p>
                 <div class="header-stats">
-                    <span class="stat-badge"><i class="fas fa-sync-alt"></i> <span data-translate="updateEvery">Оновлення:</span> кожні 5 хв</span>
+                    <span class="stat-badge"><i class="fas fa-hand-pointer"></i> <span data-translate="generationType">Генерація:</span> <span data-translate="manualOnly">тільки вручну</span></span>
                     <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 70%</span>
-                    <span class="stat-badge"><i class="fas fa-chart-line"></i> <span data-translate="model">Модель:</span> Llama 4 Maverick</span>
+                    <span class="stat-badge"><i class="fas fa-chart-line"></i> <span data-translate="model">Модель:</span> GPT OSS 120B</span>
                 </div>
             </div>
             
@@ -27,12 +27,13 @@
                     <button id="lang-ru" class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
                 </div>
                 
-                <div class="button-group">
-                    <button id="search-btn" class="search-btn">
-                        <i class="fas fa-search"></i> <span class="btn-text" data-translate="searchBtn">Пошук сигналів</span>
+                <div class="action-buttons">
+                    <button id="search-signals-btn" class="action-btn primary-btn">
+                        <i class="fas fa-search"></i> <span class="btn-text" data-translate="searchSignalsBtn">Пошук сигналів</span>
                     </button>
-                    <button id="refresh-btn" class="refresh-btn" disabled>
-                        <i class="fas fa-redo"></i> <span class="btn-text" data-translate="updateBtn">Оновити</span>
+                    <button id="refresh-btn" class="action-btn secondary-btn" disabled>
+                        <i class="fas fa-redo"></i> <span class="btn-text" data-translate="regenerateBtn">Перегенерувати</span>
+                        <span class="timer-badge" id="refresh-timer">5:00</span>
                     </button>
                 </div>
             </div>
@@ -85,6 +86,18 @@
                 </div>
             </div>
 
+            <div class="action-info-card">
+                <div class="info-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="info-content">
+                    <h3 data-translate="howToStart">Як почати роботу?</h3>
+                    <p data-translate="instructionText">
+                        Натисніть кнопку "Пошук сигналів" для генерації нових сигналів. Після генерації ви зможете перегенерувати сигнали через 5 хвилин.
+                    </p>
+                </div>
+            </div>
+
             <div class="signals-section">
                 <div class="section-header">
                     <h2><i class="fas fa-bell"></i> <span data-translate="currentSignals">Актуальні сигнали</span></h2>
@@ -94,13 +107,12 @@
                 </div>
                 
                 <div class="signals-container" id="signals-container">
-                    <div class="welcome-state">
-                        <i class="fas fa-chart-line"></i>
-                        <h3 data-translate="welcome">Ласкаво просимо до AI Trading Signals!</h3>
-                        <p data-translate="welcomeDesc">Натисніть кнопку "Пошук сигналів" для початку аналізу</p>
-                        <button id="initial-search-btn" class="search-btn large">
-                            <i class="fas fa-search"></i> <span data-translate="searchBtn">Пошук сигналів</span>
-                        </button>
+                    <div class="loading-state">
+                        <div class="spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p data-translate="noSignalsYet">Сигналів ще немає</p>
+                        <small data-translate="clickSearchToStart">Натисніть "Пошук сигналів" для початку</small>
                     </div>
                 </div>
                 
@@ -108,10 +120,7 @@
                     <div class="empty-state">
                         <i class="fas fa-chart-line"></i>
                         <h3 data-translate="noSignalsNow">Наразі немає актуальних сигналів</h3>
-                        <p data-translate="waitForUpdate">Очікуйте наступного оновлення</p>
-                        <button id="retry-search-btn" class="search-btn">
-                            <i class="fas fa-redo"></i> <span data-translate="searchAgain">Шукати знову</span>
-                        </button>
+                        <p data-translate="searchNewSignals">Знайдіть нові сигнали або зачекайте завершення поточних</p>
                     </div>
                 </div>
             </div>
@@ -120,10 +129,10 @@
                 <div class="info-card">
                     <h3><i class="fas fa-info-circle"></i> <span data-translate="howItWorks">Як працює система</span></h3>
                     <ul>
-                        <li><strong data-translate="aiAnalysis">AI Аналіз:</strong> <span data-translate="aiAnalysisDesc">Llama 4 для технічного аналізу</span></li>
+                        <li><strong data-translate="aiAnalysis">AI Аналіз:</strong> <span data-translate="aiAnalysisDesc">GPT OSS 120B для технічного аналізу</span></li>
                         <li><strong data-translate="realTimeData">Дані в реальному часі:</strong> <span data-translate="realTimeDataDesc">Отримання з PocketOption API</span></li>
-                        <li><strong data-translate="filtering">Фільтрація:</strong> <span data-translate="filteringDesc">Тільки сигнали >70% та не старіші 5 хв</span></li>
-                        <li><strong data-translate="updates">Оновлення:</strong> <span data-translate="updatesDesc">Кожні 5 хвилин для нових сигналів</span></li>
+                        <li><strong data-translate="volatilityBased">Тривалість угоди:</strong> <span data-translate="volatilityBasedDesc">1-5 хв на основі волатильності</span></li>
+                        <li><strong data-translate="manualControl">Контроль:</strong> <span data-translate="manualControlDesc">Тільки ручна генерація сигналів</span></li>
                     </ul>
                 </div>
                 
@@ -136,7 +145,7 @@
 
         <footer>
             <p>© 2025 AI Trading Signals | <span data-translate="createdWith">Створено з використанням</span> Groq Cloud & PocketOption API</p>
-            <p class="tech-info"><span data-translate="technologies">Технології:</span> Llama 4 Maverick • Python • GitHub Actions</p>
+            <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT OSS 120B • Python • GitHub Actions</p>
         </footer>
     </div>
 
