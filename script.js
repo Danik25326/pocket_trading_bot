@@ -7,6 +7,11 @@ class SignalDisplay {
         this.activeTimers = new Map();
         this.lastGenerationTime = localStorage.getItem('lastGenerationTime') ? new Date(localStorage.getItem('lastGenerationTime')) : null;
         this.refreshTimer = null;
+        this.ghConfig = window.GH_CONFIG || {
+            owner: 'DimonFrontend',
+            repo: 'pocket_trading_bot',
+            workflowId: 'signals.yml'
+        };
         
         this.translations = {
             uk: {
@@ -66,7 +71,14 @@ class SignalDisplay {
                 signalGenerated: "Сигнал згенеровано",
                 searchInProgress: "Пошук сигналів...",
                 waitForCompletion: "Зачекайте завершення",
-                generatingViaAPI: "Запуск генерації через API..."
+                generatingViaAPI: "Запуск генерації через API...",
+                waitMinutes: 'Зачекайте ще',
+                minutesLeft: 'хвилин',
+                generatingSignals: 'Генерація сигналів...',
+                signalGenerationStarted: 'Генерація сигналів запущена!',
+                generationFailed: 'Не вдалося запустити генерацію',
+                cooldownActive: 'Зачекайте 5 хвилин перед наступною генерацією',
+                noTokenConfigured: 'GitHub токен не налаштовано. Перевірте config.js'
             },
             ru: {
                 title: "AI Торговые Сигналы",
@@ -125,7 +137,14 @@ class SignalDisplay {
                 signalGenerated: "Сигнал сгенерирован",
                 searchInProgress: "Поиск сигналов...",
                 waitForCompletion: "Дождитесь завершения",
-                generatingViaAPI: "Запуск генерации через API..."
+                generatingViaAPI: "Запуск генерации через API...",
+                waitMinutes: 'Подождите еще',
+                minutesLeft: 'минут',
+                generatingSignals: 'Генерация сигналов...',
+                signalGenerationStarted: 'Генерация сигналов запущена!',
+                generationFailed: 'Не удалось запустить генерацию',
+                cooldownActive: 'Подождите 5 минут перед следующей генерацией',
+                noTokenConfigured: 'GitHub токен не настроен. Проверьте config.js'
             }
         };
         
@@ -138,30 +157,16 @@ class SignalDisplay {
         this.updateKyivTime();
         setInterval(() => this.updateKyivTime(), 1000);
         
-        // Перевіряємо час останньої генерації
         this.checkGenerationTime();
-        
-        // Завантажуємо сигнали при старті
         await this.loadSignals();
-        
-        // Запускаємо перевірку активних таймерів
         this.startTimerChecks();
     }
 
     setupEventListeners() {
-        // Кнопка пошуку сигналів
         document.getElementById('search-signals-btn').addEventListener('click', () => {
             this.startSignalGeneration();
         });
         
-        // Кнопка перегенерації
-        document.getElementById('refresh-btn').addEventListener('click', () => {
-            if (!document.getElementById('refresh-btn').disabled) {
-                this.regenerateSignals();
-            }
-        });
-        
-        // Перемикач мов
         document.getElementById('lang-uk').addEventListener('click', () => {
             this.switchLanguage('uk');
         });
@@ -175,76 +180,115 @@ class SignalDisplay {
         const btn = document.getElementById('search-signals-btn');
         const originalText = btn.innerHTML;
         
+        const now = new Date();
+        if (this.lastGenerationTime) {
+            const diffMs = now - this.lastGenerationTime;
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            
+            if (diffMinutes < 5) {
+                const minutesLeft = 5 - diffMinutes;
+                this.showMessage('warning', 
+                    this.translate('cooldownActive') + 
+                    ` (${minutesLeft} ${this.translate('minutesLeft')})`
+                );
+                return;
+            }
+        }
+        
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${this.translate('generatingViaAPI')}`;
         btn.disabled = true;
         
         try {
-            // Імітація запуску генерації через GitHub API
-            // В реальності тут буде виклик до GitHub Actions API
-            await this.simulateAPICall();
+            const success = await this.triggerGitHubWorkflow();
             
-            // Оновлюємо час генерації
-            this.lastGenerationTime = new Date();
-            localStorage.setItem('lastGenerationTime', this.lastGenerationTime.toISOString());
-            
-            // Блокуємо кнопку на 5 хвилин
-            this.disableRefreshButton(5);
-            
-            // Оновлюємо інтерфейс
-            this.showMessage('success', this.translate('signalGenerated'));
-            
-            // Оновлюємо сигнали через 10 секунд (час на генерацію)
-            setTimeout(() => {
-                this.loadSignals(true);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }, 10000);
-            
+            if (success) {
+                this.lastGenerationTime = new Date();
+                localStorage.setItem('lastGenerationTime', this.lastGenerationTime.toISOString());
+                
+                this.disableSearchButton(5);
+                this.showMessage('success', this.translate('signalGenerationStarted'));
+                
+                setTimeout(() => {
+                    this.loadSignals(true);
+                }, 30000);
+            } else {
+                throw new Error('Failed to trigger workflow');
+            }
         } catch (error) {
             console.error('Помилка генерації:', error);
-            this.showMessage('error', 'Помилка генерації сигналів');
+            this.showMessage('error', this.translate('generationFailed'));
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
     }
 
-    simulateAPICall() {
-        return new Promise((resolve) => {
-            // Імітуємо затримку API
-            setTimeout(resolve, 2000);
-        });
+    async triggerGitHubWorkflow() {
+        if (!this.ghConfig.token || this.ghConfig.token === '{{GH_PAT}}') {
+            console.error('GitHub token not configured');
+            this.showMessage('error', this.translate('noTokenConfigured'));
+            return false;
+        }
+
+        const url = `https://api.github.com/repos/${this.ghConfig.owner}/${this.ghConfig.repo}/actions/workflows/${this.ghConfig.workflowId}/dispatches`;
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${this.ghConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ref: 'main',
+                    inputs: {
+                        language: this.language,
+                        trigger_source: 'website_button'
+                    }
+                })
+            });
+            
+            if (response.status === 204) {
+                console.log('Workflow triggered successfully');
+                return true;
+            } else {
+                const errorText = await response.text();
+                console.error('Failed to trigger workflow:', response.status, errorText);
+                return false;
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            return false;
+        }
     }
 
-    disableRefreshButton(minutes) {
-        const btn = document.getElementById('refresh-btn');
-        const timerBadge = document.getElementById('refresh-timer');
+    disableSearchButton(minutes) {
+        const btn = document.getElementById('search-signals-btn');
         let timeLeft = minutes * 60;
         
         btn.disabled = true;
         
-        const updateTimer = () => {
+        const updateButton = () => {
             const minutesLeft = Math.floor(timeLeft / 60);
             const secondsLeft = timeLeft % 60;
             
-            timerBadge.textContent = `${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
+            btn.innerHTML = `<i class="fas fa-clock"></i> ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
             
             if (timeLeft <= 0) {
+                btn.innerHTML = `<i class="fas fa-search"></i> <span class="btn-text">${this.translate('searchSignalsBtn')}</span>`;
                 btn.disabled = false;
-                timerBadge.textContent = '';
-                clearInterval(this.refreshTimer);
-                this.showMessage('info', this.translate('regenerateBtn') + ' ' + this.translate('nowAvailable'));
+                clearInterval(this.searchCooldownTimer);
             } else {
                 timeLeft--;
             }
         };
         
-        // Очищаємо попередній таймер
-        if (this.refreshTimer) {
-            clearInterval(this.refreshTimer);
+        if (this.searchCooldownTimer) {
+            clearInterval(this.searchCooldownTimer);
         }
         
-        this.refreshTimer = setInterval(updateTimer, 1000);
-        updateTimer(); // Викликаємо відразу
+        this.searchCooldownTimer = setInterval(updateButton, 1000);
+        updateButton();
     }
 
     checkGenerationTime() {
@@ -255,7 +299,7 @@ class SignalDisplay {
             
             if (diffMinutes < 5) {
                 const minutesLeft = 5 - diffMinutes;
-                this.disableRefreshButton(minutesLeft);
+                this.disableSearchButton(minutesLeft);
             }
         }
     }
@@ -271,7 +315,6 @@ class SignalDisplay {
             
             const data = await response.json();
             this.processSignals(data, force);
-            
         } catch (error) {
             console.error('Помилка завантаження:', error);
             this.showError(this.translate('noSignalsYet'));
@@ -293,22 +336,18 @@ class SignalDisplay {
             return;
         }
         
-        // Оновлюємо час останнього оновлення
         if (data.last_update) {
             const updateDate = new Date(data.last_update);
             lastUpdate.textContent = this.formatTime(updateDate, true);
         }
         
-        // Оновлюємо статистику
         activeSignalsElement.textContent = data.active_signals || 0;
         totalSignalsElement.textContent = data.total_signals || data.signals.length;
         
-        // Генеруємо HTML для сигналів
         let html = '';
         let hasActiveSignals = false;
         
         data.signals.forEach((signal, index) => {
-            // Фільтрація: confidence > 70%
             const confidencePercent = Math.round(signal.confidence * 100);
             if (confidencePercent < 70) return;
             
@@ -328,7 +367,6 @@ class SignalDisplay {
             container.innerHTML = html;
             noSignals.style.display = 'none';
             
-            // Налаштовуємо таймери для всіх сигналів
             data.signals.forEach((signal, index) => {
                 const signalId = `signal-${index}`;
                 this.setupSignalTimer(signal, signalId);
@@ -342,11 +380,9 @@ class SignalDisplay {
         const directionClass = signal.direction.toLowerCase();
         const duration = signal.duration || 2;
         
-        // Конвертуємо час в київський
         const entryTimeKyiv = this.convertToKyivTime(signal.entry_timestamp || signal.timestamp);
         const generatedTime = this.convertToKyivTime(signal.generated_at);
         
-        // Перекладаємо причину, якщо потрібно
         let reason = signal.reason || '';
         if (this.language === 'ru' && signal.reason_ru) {
             reason = signal.reason_ru;
@@ -437,10 +473,8 @@ class SignalDisplay {
         
         if (!entryTime) return;
         
-        // Парсимо час входу
         const entryDate = new Date(entryTime);
         const endDate = new Date(entryDate.getTime() + duration * 60000);
-        const now = new Date();
         
         const updateTimerDisplay = () => {
             const now = new Date();
@@ -460,14 +494,12 @@ class SignalDisplay {
                     </div>
                 `;
                 
-                // Зберігаємо стан таймера
                 this.activeTimers.set(signalId, {
                     isActive: true,
                     endTime: endDate.getTime(),
                     updateInterval: setInterval(() => updateTimerDisplay(), 1000)
                 });
             } else {
-                // Таймер завершився
                 clearInterval(this.activeTimers.get(signalId)?.updateInterval);
                 this.activeTimers.delete(signalId);
                 
@@ -490,16 +522,14 @@ class SignalDisplay {
             }
         };
         
-        // Запускаємо таймер
         updateTimerDisplay();
     }
 
     startTimerChecks() {
-        // Перевіряємо таймери кожну секунду
         setInterval(() => {
             this.activeTimers.forEach((timer, signalId) => {
                 if (timer.isActive && Date.now() >= timer.endTime) {
-                    this.setupSignalTimer({}, signalId); // Оновлюємо відображення
+                    this.setupSignalTimer({}, signalId);
                 }
             });
         }, 1000);
@@ -512,17 +542,14 @@ class SignalDisplay {
         const asset = signalElement.dataset.asset;
         console.log(`Feedback for ${asset}: ${feedback}`);
         
-        // Видаляємо сигнал
         signalElement.remove();
         
-        // Очищаємо таймер
         const timer = this.activeTimers.get(signalId);
         if (timer && timer.updateInterval) {
             clearInterval(timer.updateInterval);
         }
         this.activeTimers.delete(signalId);
         
-        // Оновлюємо статистику
         this.updateSignalCount();
     }
 
@@ -534,18 +561,6 @@ class SignalDisplay {
         if (activeSignals === 0) {
             document.getElementById('no-signals').style.display = 'block';
         }
-    }
-
-    async regenerateSignals() {
-        const btn = document.getElementById('refresh-btn');
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${this.translate('regenerateBtn')}`;
-        btn.disabled = true;
-        
-        // Імітуємо затримку
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Запускаємо нову генерацію
-        await this.startSignalGeneration();
     }
 
     updateKyivTime() {
@@ -625,14 +640,65 @@ class SignalDisplay {
     }
 
     showMessage(type, text) {
-        // Можна реалізувати тости
-        console.log(`${type}: ${text}`);
+        let messageContainer = document.getElementById('message-container');
+        if (!messageContainer) {
+            messageContainer = document.createElement('div');
+            messageContainer.id = 'message-container';
+            messageContainer.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                max-width: 400px;
+            `;
+            document.body.appendChild(messageContainer);
+        }
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        messageDiv.style.cssText = `
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        `;
+        
+        if (type === 'success') {
+            messageDiv.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+        } else if (type === 'error') {
+            messageDiv.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
+        } else if (type === 'warning') {
+            messageDiv.style.background = 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)';
+        }
+        
+        messageDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${text}</span>
+        `;
+        
+        messageContainer.appendChild(messageDiv);
+        
+        setTimeout(() => {
+            messageDiv.style.animation = 'slideOut 0.3s ease-out';
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 300);
+        }, 5000);
     }
 
     async setupLanguage() {
         this.applyLanguage(this.language);
         
-        // Оновлюємо активні кнопки
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === this.language);
         });
@@ -643,12 +709,10 @@ class SignalDisplay {
         localStorage.setItem('language', lang);
         this.applyLanguage(lang);
         
-        // Оновлюємо активні кнопки
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
         
-        // Перезавантажуємо сигнали для оновлення перекладу
         this.loadSignals();
     }
 
@@ -669,10 +733,34 @@ class SignalDisplay {
     }
 }
 
-// Глобальна змінна для доступу з HTML
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
 let signalDisplay;
 
-// Запуск при завантаженні сторінки
 document.addEventListener('DOMContentLoaded', () => {
     signalDisplay = new SignalDisplay();
     window.signalDisplay = signalDisplay;
