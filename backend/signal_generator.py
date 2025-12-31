@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from datetime import datetime, timedelta
 import pytz
 from config import Config
@@ -21,12 +22,10 @@ class SignalGenerator:
         try:
             logger.info(f"📈 Аналіз активу: {asset}")
             
-            # Перевірка підключення
             if not hasattr(self.pocket_client, 'client') or not self.pocket_client.client:
                 logger.error("❌ PocketOptionClient не ініціалізований")
                 return None
             
-            # Отримуємо свічки
             logger.info(f"📊 Запит свічок для {asset}...")
             candles = await self.pocket_client.get_candles(
                 asset=asset,
@@ -40,7 +39,6 @@ class SignalGenerator:
 
             logger.info(f"✅ Отримано {len(candles)} свічок для {asset}")
             
-            # Перевірка актуальності останньої свічки
             if hasattr(candles[-1], 'timestamp'):
                 last_candle_time = candles[-1].timestamp
                 current_time = Config.get_kyiv_time()
@@ -56,29 +54,25 @@ class SignalGenerator:
                 else:
                     logger.info(f"🕐 Остання свічка актуальна: {time_diff:.0f} сек тому")
             
-            # Аналізуємо через AI
             logger.info(f"🧠 Аналіз через GPT OSS 120B для {asset}...")
-            signal = self.analyzer.analyze_market(asset, candles)
+            signal = self.analyzer.analyze_market(asset, candles, language=Config.LANGUAGE)
 
             if signal:
                 confidence = signal.get('confidence', 0)
                 logger.info(f"📝 AI повернув сигнал для {asset}: confidence={confidence*100:.1f}%")
                 
                 if confidence >= Config.MIN_CONFIDENCE:
-                    # Перевірка тривалості
                     duration = signal.get('duration', 2)
                     if duration > Config.MAX_DURATION:
                         logger.warning(f"⚠️ Сигнал для {asset} має завелику тривалість: {duration} > {Config.MAX_DURATION}")
                         signal['duration'] = Config.MAX_DURATION
                     
-                    # Додаємо часові мітки
                     now_kyiv = Config.get_kyiv_time()
                     signal['generated_at'] = now_kyiv.isoformat()
                     signal['generated_at_utc'] = datetime.utcnow().isoformat() + 'Z'
                     signal['asset'] = asset
                     signal['id'] = f"{asset}_{now_kyiv.strftime('%Y%m%d%H%M%S')}"
                     
-                    # Перевіряємо час входу
                     entry_time = signal.get('entry_time', '')
                     if ':' in entry_time:
                         hour, minute = map(int, entry_time.split(':'))
@@ -109,11 +103,11 @@ class SignalGenerator:
         """Генерація сигналів для всіх активів - одноразово"""
         logger.info("=" * 60)
         logger.info(f"🚀 ПОЧАТОК ГЕНЕРАЦІЇ СИГНАЛІВ")
+        logger.info(f"🌐 Мова: {Config.LANGUAGE}")
         logger.info(f"🕐 Час: {Config.get_kyiv_time().strftime('%Y-%m-%d %H:%M:%S')} (Київ)")
         logger.info("=" * 60)
 
         try:
-            # Виводимо конфігурацію
             logger.info(f"⚙️ Конфігурація:")
             logger.info(f"  - Демо режим: {Config.POCKET_DEMO}")
             logger.info(f"  - Активи: {Config.ASSETS}")
@@ -121,9 +115,9 @@ class SignalGenerator:
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
             logger.info(f"  - Макс. тривалість: {Config.MAX_DURATION} хв")
             logger.info(f"  - Модель AI: {Config.GROQ_MODEL}")
+            logger.info(f"  - Мова: {Config.LANGUAGE}")
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
             
-            # Перевірка останнього оновлення
             existing_data = self.data_handler.load_signals()
             last_update = existing_data.get('last_update')
             
@@ -135,11 +129,10 @@ class SignalGenerator:
                     if time_diff < Config.SIGNAL_INTERVAL:
                         logger.info(f"⏳ Ще не пройшло 5 хвилин з останньої генерації ({time_diff:.0f} сек)")
                         logger.info(f"   Останнє оновлення: {last_time.strftime('%H:%M:%S')} UTC")
-                        return []  # Повертаємо порожній список
+                        return []
                 except Exception as e:
                     logger.warning(f"⚠️ Помилка перевірки часу: {e}")
             
-            # Підключення до PocketOption
             logger.info("🔗 Підключення до PocketOption...")
             logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")
             
@@ -148,7 +141,7 @@ class SignalGenerator:
             if not connection_result:
                 logger.error("❌ Не вдалося підключитися до PocketOption")
                 logger.info("⏸️ Пропускаю генерацію сигналів...")
-                return []  # Повертаємо порожній список
+                return []
             
             logger.info("✅ Підключення успішне!")
             logger.info("🎯 Генерую сигнали для активів...")
@@ -169,7 +162,6 @@ class SignalGenerator:
                     logger.warning(f"⚠️ Не створено сигнал для {asset}")
                     failed_assets.append(asset)
 
-            # Зберігаємо сигнали
             if valid_signals:
                 logger.info(f"\n💾 Збереження {len(valid_signals)} сигналів...")
                 save_result = self.data_handler.save_signals(valid_signals)
@@ -177,7 +169,6 @@ class SignalGenerator:
                 if save_result:
                     logger.info(f"✅ Збережено {len(valid_signals)} сигналів")
                     
-                    # Виводимо детальну інформацію
                     logger.info(f"\n🎯 ЗГЕНЕРОВАНО {len(valid_signals)} СИГНАЛІВ:")
                     for i, signal in enumerate(valid_signals, 1):
                         logger.info(f"   {i}. {signal['asset']}: {signal['direction']} ({signal['confidence']*100:.1f}%)")
@@ -191,12 +182,10 @@ class SignalGenerator:
                 if failed_assets:
                     logger.info(f"📉 Активи без сигналів: {', '.join(failed_assets)}")
 
-            # Відключаємося
             logger.info("🔌 Відключення від PocketOption...")
             await self.pocket_client.disconnect()
             logger.info("✅ Відключено від PocketOption")
             
-            # Підсумок
             logger.info(f"\n⏱️  Час виконання: {Config.get_kyiv_time().strftime('%H:%M:%S')}")
             logger.info(f"📊 Підсумок: {len(valid_signals)} сигналів з {len(Config.ASSETS)} активів")
             logger.info("=" * 60)
@@ -213,9 +202,9 @@ async def main():
     """Головна функція - запускається ТІЛЬКИ ОДИН РАЗ"""
     print("\n" + "="*60)
     print(f"🚀 ЗАПУСК ГЕНЕРАЦІЇ СИГНАЛІВ - {Config.get_kyiv_time().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"🌐 Мова: {Config.LANGUAGE}")
     print("="*60)
     
-    # Ініціалізація логування
     logging.basicConfig(
         level=getattr(logging, Config.LOG_LEVEL),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
