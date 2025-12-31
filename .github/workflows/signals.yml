@@ -2,6 +2,19 @@ name: Generate Trading Signals and Deploy
 
 on:
   workflow_dispatch:  # Ручний запуск через кнопку в GitHub Actions
+    inputs:
+      language:
+        description: 'Мова для генерації сигналів'
+        required: true
+        default: 'uk'
+        type: choice
+        options:
+          - uk
+          - ru
+      trigger_source:
+        description: 'Джерело запуску'
+        default: 'manual'
+        type: string
   push:
     branches: [ main ]
     paths-ignore:
@@ -11,6 +24,7 @@ on:
       - '*.css'
       - '*.js'
       - '*.html'
+      - 'config.js'
 
 permissions:
   contents: write
@@ -81,12 +95,16 @@ jobs:
         ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
-        GROQ_MODEL: 'openai/gpt-oss-120b' # Змінено на модель, яку ти просив, якщо Groq її підтримує. Якщо ні - повернеться defualt з config.
+        GROQ_MODEL: 'openai/gpt-oss-120b'
+        LANGUAGE: ${{ inputs.language || 'uk' }}
+        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'manual' }}
       run: |
         echo "🚀 Початок генерації сигналів..."
+        echo "🌐 Мова: $LANGUAGE"
         echo "📊 Активи: $ASSETS"
         echo "🧠 Модель AI: $GROQ_MODEL"
         echo "🕐 Часовий пояс: Київ (UTC+2)"
+        echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
         
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
@@ -107,7 +125,7 @@ jobs:
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 On-Demand: Нові сигнали $(date +'%Y-%m-%d %H:%M') [skip ci]"
+          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
