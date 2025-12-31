@@ -1,0 +1,28 @@
+name: Update Config File
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-config.yml'
+      - 'config.template.js'
+
+jobs:
+  update-config:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Create config.js
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        sed "s/{{GH_PAT}}/$GH_PAT/g" config.template.js > config.js
+        
+    - name: Commit config.js
+      run: |
+        git config --global user.name 'GitHub Actions Bot'
+        git config --global user.email 'actions@github.com'
+        git add config.js
+        git commit -m "Update config.js" || echo "No changes to commit"
+        git push
