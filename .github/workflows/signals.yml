@@ -1,8 +1,7 @@
-
 name: Generate Trading Signals and Deploy
 
 on:
-  workflow_dispatch:  # Ручний запуск через кнопку в GitHub Actions
+  workflow_dispatch:
     inputs:
       language:
         description: 'Мова для генерації сигналів'
