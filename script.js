@@ -15,9 +15,9 @@ class SignalDisplay {
         this.translations = {
             uk: {
                 title: "AI Trading Signals",
-                subtitle: "Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI",
+                subtitle: "Автоматичні сигнали кожні 10 хвилин з використанням GPT OSS 120B AI",
                 autoUpdate: "Оновлення:",
-                every5min: "кожні 5 хв",
+                every10min: "кожні 10 хв",
                 minAccuracy: "Мін. точність:",
                 model: "Модель:",
                 entryDelay: "Вхід через:",
@@ -31,8 +31,8 @@ class SignalDisplay {
                 successRate: "Точність AI",
                 learning: "навчання активне",
                 systemActive: "Система активна!",
-                autoDescription: "Сигнали генеруються автоматично кожні 5 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини для точнішого прогнозу.",
-                currentSignals: "Актуальні сигнали",
+                autoDescription: "Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини. Максимум 6 сигналів одночасно.",
+                currentSignals: "Актуальні сигнали (останні 6)",
                 serverTime: "Київський час:",
                 loadingSignals: "Завантаження сигналів...",
                 firstLoad: "Перше оновлення через",
@@ -40,13 +40,13 @@ class SignalDisplay {
                 nextAutoUpdate: "Наступне автоматичне оновлення через",
                 howItWorks: "Як працює система",
                 autoGeneration: "Автоматична генерація:",
-                autoGenDesc: "кожні 5 хвилин",
+                autoGenDesc: "кожні 10 хвилин",
                 entryDelay2: "Затримка входу:",
                 entryDelayDesc: "1-2 хвилини для точнішого прогнозу",
                 aiLearning: "Навчання AI:",
                 aiLearningDesc: "аналізує успішність сигналів",
                 autoCleanup: "Автоочищення:",
-                autoCleanupDesc: "сигнали зникають через 5 хвилин",
+                autoCleanupDesc: "сигнали зникають через 10 хвилин",
                 tokenLimits: "Ліміти використання",
                 tokenLimitsDesc: "Для економії токенів AI обмежено до 3 сигналів за раз. Система розрахована на тривалу роботу.",
                 createdWith: "Створено з використанням",
@@ -81,9 +81,9 @@ class SignalDisplay {
             },
             ru: {
                 title: "AI Торговые Сигналы",
-                subtitle: "Автоматические сигналы для бинарных опционов с использованием GPT OSS 120B AI",
+                subtitle: "Автоматические сигналы каждые 10 минут с использованием GPT OSS 120B AI",
                 autoUpdate: "Обновление:",
-                every5min: "каждые 5 мин",
+                every10min: "каждые 10 мин",
                 minAccuracy: "Мин. точность:",
                 model: "Модель:",
                 entryDelay: "Вход через:",
@@ -97,8 +97,8 @@ class SignalDisplay {
                 successRate: "Точность AI",
                 learning: "обучение активно",
                 systemActive: "Система активна!",
-                autoDescription: "Сигналы генерируются автоматически каждые 5 минут. AI анализирует рынок и указывает время входа через 1-2 минуты для более точного прогноза.",
-                currentSignals: "Актуальные сигналы",
+                autoDescription: "Сигналы генерируются автоматически каждые 10 минут. AI анализирует рынок и указывает время входа через 1-2 минуты. Максимум 6 сигналов одновременно.",
+                currentSignals: "Актуальные сигналы (последние 6)",
                 serverTime: "Киевское время:",
                 loadingSignals: "Загрузка сигналов...",
                 firstLoad: "Первое обновление через",
@@ -106,13 +106,13 @@ class SignalDisplay {
                 nextAutoUpdate: "Следующее автоматическое обновление через",
                 howItWorks: "Как работает система",
                 autoGeneration: "Автоматическая генерация:",
-                autoGenDesc: "каждые 5 минут",
+                autoGenDesc: "каждые 10 минут",
                 entryDelay2: "Задержка входа:",
                 entryDelayDesc: "1-2 минуты для более точного прогноза",
                 aiLearning: "Обучение AI:",
                 aiLearningDesc: "анализирует успешность сигналов",
                 autoCleanup: "Автоочистка:",
-                autoCleanupDesc: "сигналы исчезают через 5 минут",
+                autoCleanupDesc: "сигналы исчезают через 10 минут",
                 tokenLimits: "Лимиты использования",
                 tokenLimitsDesc: "Для экономии токенов AI ограничено до 3 сигналов за раз. Система рассчитана на длительную работу.",
                 createdWith: "Создано с использованием",
@@ -184,10 +184,10 @@ class SignalDisplay {
     }
 
     startAutoUpdate() {
-        // Автоматичне оновлення кожні 5 хвилин (300 секунд)
+        // Автоматичне оновлення кожні 10 хвилин (600 секунд)
         this.updateInterval = setInterval(() => {
             this.loadSignals();
-        }, 300000); // 5 хвилин
+        }, 600000); // 10 хвилин
         
         // Оновлюємо таймер наступного оновлення
         this.updateNextUpdateTimer();
@@ -196,14 +196,14 @@ class SignalDisplay {
 
     updateNextUpdateTimer() {
         if (!this.nextUpdateTime) {
-            this.nextUpdateTime = Date.now() + 300000; // 5 хвилин
+            this.nextUpdateTime = Date.now() + 600000; // 10 хвилин
         }
         
         const now = Date.now();
         const timeLeft = this.nextUpdateTime - now;
         
         if (timeLeft <= 0) {
-            this.nextUpdateTime = now + 300000;
+            this.nextUpdateTime = now + 600000;
             return;
         }
         
@@ -229,7 +229,7 @@ class SignalDisplay {
             this.processSignals(data);
             
             // Оновлюємо час наступного оновлення
-            this.nextUpdateTime = Date.now() + 300000;
+            this.nextUpdateTime = Date.now() + 600000;
         } catch (error) {
             console.error('Помилка завантаження сигналів:', error);
             this.showMessage('error', 'Помилка завантаження сигналів. Спробуйте оновити сторінку.');
@@ -271,7 +271,15 @@ class SignalDisplay {
         let html = '';
         let hasSignals = false;
         
-        data.signals.forEach((signal, index) => {
+        // Сортуємо сигнали за часом генерації (новіші перші)
+        const sortedSignals = [...data.signals].sort((a, b) => {
+            return new Date(b.generated_at) - new Date(a.generated_at);
+        });
+        
+        // Обмежуємо до 6 останніх сигналів
+        const latestSignals = sortedSignals.slice(0, 6);
+        
+        latestSignals.forEach((signal, index) => {
             const confidencePercent = Math.round(signal.confidence * 100);
             if (confidencePercent < 70) return;
             
@@ -290,7 +298,7 @@ class SignalDisplay {
             noSignals.style.display = 'none';
             
             // Запускаємо таймери для кожного сигналу
-            data.signals.forEach((signal, index) => {
+            latestSignals.forEach((signal, index) => {
                 this.setupSignalTimer(signal, index);
             });
         }
@@ -380,7 +388,7 @@ class SignalDisplay {
                 <div class="signal-footer">
                     <div class="expiry-timer" id="expiry-${index}">
                         <i class="fas fa-hourglass-end"></i> 
-                        ${this.translate('expiresIn')}: <span class="expiry-time">5:00</span>
+                        ${this.translate('expiresIn')}: <span class="expiry-time">10:00</span>
                     </div>
                     <button class="feedback-trigger" onclick="signalDisplay.showFeedbackModal(${index})">
                         <i class="fas fa-star"></i> ${this.translate('giveFeedback')}
@@ -396,7 +404,7 @@ class SignalDisplay {
         if (!timerElement || !expiryElement) return;
         
         const generatedTime = new Date(signal.generated_at);
-        const expiryTime = new Date(generatedTime.getTime() + 5 * 60000); // 5 хвилин
+        const expiryTime = new Date(generatedTime.getTime() + 10 * 60000); // 10 хвилин
         
         const updateTimer = () => {
             const now = new Date();
@@ -526,7 +534,7 @@ class SignalDisplay {
         const { index, asset, element } = this.currentFeedbackSignal;
         
         try {
-            // Симулюємо відправку feedback на сервер
+            // Симулюємо відправку feedback на сервер для навчання AI
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // В реальності тут буде запит до сервера:
@@ -634,7 +642,7 @@ class SignalDisplay {
             <div class="empty-state">
                 <i class="fas fa-chart-line"></i>
                 <h3>${this.translate('noSignalsNow')}</h3>
-                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">5:00</span></p>
+                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">10:00</span></p>
             </div>
         `;
     }
