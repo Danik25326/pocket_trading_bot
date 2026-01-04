@@ -1,10 +1,6 @@
-name: Generate and Deploy Trading Signals
+name: Generate Trading Signals and Deploy
 
 on:
-  schedule:
-    # Запуск кожні 5 хвилин
-    - cron: '*/5 * * * *'
-  
   workflow_dispatch:
     inputs:
       language:
@@ -17,8 +13,18 @@ on:
           - ru
       trigger_source:
         description: 'Джерело запуску'
-        default: 'auto'
+        default: 'manual'
         type: string
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'data/**'
+      - 'logs/**'
+      - '*.md'
+      - '*.css'
+      - '*.js'
+      - '*.html'
+      - 'config.js'
 
 permissions:
   contents: write
@@ -28,7 +34,6 @@ permissions:
 jobs:
   generate-signals:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
     
     steps:
     - name: Checkout repository
@@ -42,17 +47,28 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Install dependencies
+    - name: Clear all caches
+      run: |
+        echo "🧹 Очищення кешу..."
+        pip cache purge
+        rm -rf ~/.cache/pip
+        rm -rf ~/.cache/apt
+        sudo apt-get clean
+        echo "✅ Кеш очищено"
+    
+    - name: Upgrade pip and install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install --upgrade setuptools wheel
         pip install --no-cache-dir -r backend/requirements.txt
     
     - name: Create necessary directories
       run: |
-        mkdir -p data logs
+        mkdir -p data
+        mkdir -p logs
         touch .nojekyll
         
-        # Створюємо початкові файли
+        # Створюємо початкові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then 
           echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
         fi
@@ -62,19 +78,11 @@ jobs:
         if [ ! -f data/assets_config.json ]; then 
           echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
         fi
-        if [ ! -f data/usage.json ]; then 
-          echo '{"date": "$(date +%Y-%m-%d)", "tokens_used": 0, "requests_used": 0, "last_reset": "$(date +%Y-%m-%d %H:%M:%S)"}' > data/usage.json
+        if [ ! -f data/lessons.json ]; then 
+          echo '[]' > data/lessons.json
         fi
     
-    - name: Check usage limits
-      id: check_limits
-      run: |
-        echo "📊 Перевірка лімітів використання..."
-        python backend/check_limits.py
-        echo "✅ Перевірка завершена"
-    
     - name: Generate trading signals
-      if: steps.check_limits.outputs.can_generate == 'true'
       env:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -82,34 +90,30 @@ jobs:
         SIGNAL_INTERVAL: '300'
         MIN_CONFIDENCE: '0.7'
         MAX_DURATION: '5.0'
-        MAX_SIGNALS_TO_SHOW: '6'
-        ASSETS_PER_GENERATION: '2'
-        ENTRY_DELAY_MINUTES: '2'
-        ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
+        SIGNAL_VALIDITY_MINUTES: '5'
+        SIGNAL_CLEANUP_COUNT: '9'
+        ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
-        TRIGGER_SOURCE: ${{ github.event_name == 'schedule' && 'auto' || inputs.trigger_source || 'manual' }}
-        MAX_TOKENS_PER_DAY: '200000'
-        MAX_REQUESTS_PER_DAY: '1000'
+        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'manual' }}
       run: |
-        echo "🚀 Запуск генерації сигналів..."
-        echo "📊 Налаштування:"
-        echo "   • Мова: $LANGUAGE"
-        echo "   • Ліміт сигналів: $MAX_SIGNALS_TO_SHOW"
-        echo "   • Затримка входу: $ENTRY_DELAY_MINUTES хв"
-        echo "   • Активи за раз: $ASSETS_PER_GENERATION"
+        echo "🚀 Початок генерації сигналів..."
+        echo "🌐 Мова: $LANGUAGE"
+        echo "📊 Активи: $ASSETS"
+        echo "🧠 Модель AI: $GROQ_MODEL"
+        echo "🕐 Часовий пояс: Київ (UTC+2)"
+        echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
         
-        export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd)
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
         cd backend
         python signal_generator.py
         
-        echo "✅ Генерація завершена"
+        echo "✅ Генерація сигналів завершена"
     
-    - name: Deploy to GitHub Pages
-      if: steps.check_limits.outputs.can_generate == 'true'
+    - name: Commit and push generated data
       run: |
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
@@ -121,23 +125,31 @@ jobs:
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Авто-генерація: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
+          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
+
+  deploy:
+    needs: generate-signals
+    if: success()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
-    - name: Skip generation
-      if: steps.check_limits.outputs.can_generate == 'false'
-      run: |
-        echo "⏸️ Генерацію пропущено через досягнення лімітів"
-        echo "📊 Деталі:"
-        echo "   • Використано токенів: ${{ steps.check_limits.outputs.tokens_used }}"
-        echo "   • Використано запитів: ${{ steps.check_limits.outputs.requests_used }}"
-        echo "   • Доступно токенів: ${{ steps.check_limits.outputs.tokens_remaining }}"
-        echo "   • Доступно запитів: ${{ steps.check_limits.outputs.requests_remaining }}"
-    
-    - name: Deploy to GitHub Pages
-      if: steps.check_limits.outputs.can_generate == 'true'
-      uses: actions/deploy-pages@v4
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        path: '.'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
