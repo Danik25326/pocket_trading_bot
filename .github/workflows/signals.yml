@@ -15,10 +15,21 @@ on:
         description: 'Джерело запуску'
         default: 'manual'
         type: string
+  schedule:
+    # Запуск автоматично кожні 5 хвилин
+    - cron: '*/5 * * * *'
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/signals.yml'
+      - 'data/assets_config.json'
 
+# Дозволити запити з інших workflow
 permissions:
   contents: write
   actions: write
+  pages: write
 
 jobs:
   generate-signals:
@@ -30,6 +41,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
+        ref: ${{ github.ref }}
     
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -39,17 +51,20 @@ jobs:
     - name: Clear all caches
       run: |
         echo "🧹 Очищення кешу..."
-        pip cache purge
-        rm -rf ~/.cache/pip
-        rm -rf ~/.cache/apt
-        sudo apt-get clean
+        pip cache purge || true
+        rm -rf ~/.cache/pip || true
         echo "✅ Кеш очищено"
     
     - name: Upgrade pip and install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel
-        pip install --no-cache-dir -r backend/requirements.txt
+        if [ -f backend/requirements.txt ]; then
+          pip install --no-cache-dir -r backend/requirements.txt
+        else
+          echo "requirements.txt не знайдено, встановлюємо базові залежності"
+          pip install --no-cache-dir pocketoptionapi-async>=2.0.1 groq>=0.9.0 python-dotenv>=1.0.0 pytz>=2023.3
+        fi
     
     - name: Create necessary directories
       run: |
@@ -59,7 +74,7 @@ jobs:
         
         # Створюємо початкові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
+          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)", "total_signals": 0, "active_signals": 0}' > data/signals.json
         fi
         if [ ! -f data/history.json ]; then 
           echo '[]' > data/history.json
@@ -70,6 +85,8 @@ jobs:
         if [ ! -f data/lessons.json ]; then 
           echo '[]' > data/lessons.json
         fi
+        
+        echo "📁 Створено всі необхідні директорії та файли"
     
     - name: Generate trading signals
       env:
@@ -81,7 +98,7 @@ jobs:
         MAX_DURATION: '5.0'
         SIGNAL_VALIDITY_MINUTES: '5'
         SIGNAL_CLEANUP_COUNT: '9'
-        ASSETS: 'GBP/JPY_otc,EUR/USD_otc,USD/JPY_otc'
+        ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
@@ -94,6 +111,7 @@ jobs:
         echo "🧠 Модель AI: $GROQ_MODEL"
         echo "🕐 Часовий пояс: Київ (UTC+2)"
         echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
+        echo "📅 Час запуску: $(date '+%Y-%m-%d %H:%M:%S')"
         
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
@@ -101,12 +119,24 @@ jobs:
         python signal_generator.py
         
         echo "✅ Генерація сигналів завершена"
+        
+        # Показуємо результат
+        echo "📊 Результат:"
+        if [ -f ../data/signals.json ]; then
+          cat ../data/signals.json
+        else
+          echo "❌ Файл signals.json не знайдено"
+        fi
     
     - name: Commit and push generated data
       run: |
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
         
+        echo "📊 Перевірка змін у файлах даних..."
+        git status
+        
+        # Додаємо файли даних
         git add data/
         git add logs/
         git add .nojekyll
@@ -114,7 +144,18 @@ jobs:
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
+          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [Source: ${{ inputs.trigger_source || 'manual' }}]"
+          echo "📤 Відправка змін до репозиторію..."
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
+    
+    - name: Deploy to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: main
+        force_orphan: false
+        keep_files: true
