@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 from datetime import datetime, timedelta
@@ -113,6 +112,9 @@ class PocketOptionClient:
                 logger.warning(f"🔌 Не підключено для {asset}, спробую підключитися...")
                 if not await self.connect():
                     logger.error(f"❌ Не вдалося підключитися для {asset}")
+                    # У режимі демо повертаємо тестові дані
+                    if Config.POCKET_DEMO:
+                        return await self._get_mock_candles(count)
                     return None
             
             logger.info(f"📊 Запит свічок для {asset_clean}...")
@@ -124,6 +126,9 @@ class PocketOptionClient:
             
             if not candles:
                 logger.warning(f"⚠️ Не отримано свічок для {asset_clean}")
+                # У режимі демо повертаємо тестові дані
+                if Config.POCKET_DEMO:
+                    return await self._get_mock_candles(count)
                 return None
             
             # Перевіряємо, чи свічки містять реальні дані
@@ -132,6 +137,9 @@ class PocketOptionClient:
                 if hasattr(first_candle, 'close'):
                     if first_candle.close == 0 or first_candle.open == 0:
                         logger.warning(f"⚠️ Отримані нульові дані для {asset_clean}")
+                        # У режимі демо повертаємо тестові дані
+                        if Config.POCKET_DEMO:
+                            return await self._get_mock_candles(count)
                         return None
             
             logger.info(f"✅ Отримано {len(candles)} коректних свічок для {asset_clean}")
@@ -139,7 +147,48 @@ class PocketOptionClient:
             
         except Exception as e:
             logger.error(f"❌ Помилка отримання свічок для {asset}: {e}")
+            # У режимі демо повертаємо тестові дані
+            if Config.POCKET_DEMO:
+                return await self._get_mock_candles(count)
             return None
+    
+    async def _get_mock_candles(self, count=50):
+        """Повернення тестових свічок для демо-режиму"""
+        import random
+        from collections import namedtuple
+        
+        logger.info("🔄 Генерую тестові свічки для демо-режиму...")
+        
+        Candle = namedtuple('Candle', ['timestamp', 'open', 'high', 'low', 'close'])
+        now = datetime.now()
+        candles = []
+        
+        base_price = 150.0
+        
+        for i in range(count):
+            timestamp = now - timedelta(minutes=2 * (count - i))
+            
+            # Створюємо реалістичні коливання ціни
+            change = random.uniform(-0.5, 0.5)
+            open_price = base_price + random.uniform(-1, 1)
+            close_price = open_price + change
+            
+            high_price = max(open_price, close_price) + random.uniform(0, 0.3)
+            low_price = min(open_price, close_price) - random.uniform(0, 0.3)
+            
+            candle = Candle(
+                timestamp=timestamp,
+                open=round(open_price, 5),
+                high=round(high_price, 5),
+                low=round(low_price, 5),
+                close=round(close_price, 5)
+            )
+            candles.append(candle)
+            
+            base_price = close_price
+        
+        logger.info(f"✅ Згенеровано {len(candles)} тестових свічок")
+        return candles
     
     async def disconnect(self):
         if self.client:
