@@ -1,7 +1,10 @@
-
 name: Generate Trading Signals
 
 on:
+  schedule:
+    # Запуск кожні 5 хвилин з випадковим зсувом
+    - cron: '*/5 * * * *'
+  
   workflow_dispatch:
     inputs:
       language:
@@ -14,25 +17,16 @@ on:
           - ru
       trigger_source:
         description: 'Джерело запуску'
-        default: 'manual'
+        default: 'auto'
         type: string
-  schedule:
-    # Запуск автоматично кожні 5 хвилин
-    - cron: '*/5 * * * *'
-  push:
-    branches: [ main ]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/signals.yml'
-      - 'data/assets_config.json'
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
   generate-signals:
     runs-on: ubuntu-latest
+    timeout-minutes: 4  # Завершуємо до наступного запуску
     
     steps:
     - name: Checkout repository
@@ -40,40 +34,25 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
-        ref: ${{ github.ref }}
     
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
     
-    - name: Clear all caches
-      run: |
-        echo "🧹 Очищення кешу..."
-        pip cache purge || true
-        rm -rf ~/.cache/pip || true
-        echo "✅ Кеш очищено"
-    
-    - name: Upgrade pip and install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade setuptools wheel
-        if [ -f backend/requirements.txt ]; then
-          pip install --no-cache-dir -r backend/requirements.txt
-        else
-          echo "requirements.txt не знайдено, встановлюємо базові залежності"
-          pip install --no-cache-dir pocketoptionapi-async>=2.0.1 groq>=0.9.0 python-dotenv>=1.0.0 pytz>=2023.3
-        fi
+        pip install --no-cache-dir -r backend/requirements.txt
     
     - name: Create necessary directories
       run: |
-        mkdir -p data
-        mkdir -p logs
+        mkdir -p data logs
         touch .nojekyll
         
-        # Створюємо початкові файли, якщо їх немає
+        # Створюємо початкові файли
         if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)", "total_signals": 0, "active_signals": 0}' > data/signals.json
+          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
         fi
         if [ ! -f data/history.json ]; then 
           echo '[]' > data/history.json
@@ -81,13 +60,19 @@ jobs:
         if [ ! -f data/assets_config.json ]; then 
           echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
         fi
-        if [ ! -f data/lessons.json ]; then 
-          echo '[]' > data/lessons.json
+        if [ ! -f data/usage.json ]; then 
+          echo '{"date": "$(date +%Y-%m-%d)", "tokens_used": 0, "requests_used": 0, "last_reset": "$(date +%Y-%m-%d %H:%M:%S)"}' > data/usage.json
         fi
-        
-        echo "📁 Створено всі необхідні директорії та файли"
     
-    - name: Generate trading signals
+    - name: Check usage limits
+      id: check_limits
+      run: |
+        echo "📊 Перевірка лімітів використання..."
+        python backend/check_limits.py
+        echo "✅ Перевірка завершена"
+    
+    - name: Generate trading signals (if limits allow)
+      if: steps.check_limits.outputs.can_generate == 'true'
       env:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -96,59 +81,55 @@ jobs:
         MIN_CONFIDENCE: '0.7'
         MAX_DURATION: '5.0'
         SIGNAL_VALIDITY_MINUTES: '5'
-        SIGNAL_CLEANUP_COUNT: '9'
         ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
-        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'manual' }}
+        TRIGGER_SOURCE: ${{ github.event_name == 'schedule' && 'auto' || inputs.trigger_source || 'manual' }}
+        MAX_TOKENS_PER_DAY: '200000'
+        MAX_REQUESTS_PER_DAY: '1000'
+        MAX_SIGNALS_TO_SHOW: '6'
+        ENTRY_DELAY_MINUTES: '2'
       run: |
-        echo "🚀 Початок генерації сигналів..."
-        echo "🌐 Мова: $LANGUAGE"
-        echo "📊 Активи: $ASSETS"
-        echo "🧠 Модель AI: $GROQ_MODEL"
-        echo "🕐 Часовий пояс: Київ (UTC+2)"
-        echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
-        echo "📅 Час запуску: $(date '+%Y-%m-%d %H:%M:%S')"
+        echo "🚀 Запуск генерації сигналів..."
+        echo "📊 Ліміти:"
+        echo "   • Токени/день: $MAX_TOKENS_PER_DAY"
+        echo "   • Запити/день: $MAX_REQUESTS_PER_DAY"
+        echo "   • Сигналів показувати: $MAX_SIGNALS_TO_SHOW"
+        echo "   • Затримка входу: $ENTRY_DELAY_MINUTES хв"
         
-        export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
+        export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd)
         
         cd backend
         python signal_generator.py
         
-        echo "✅ Генерація сигналів завершена"
-        
-        # Показуємо результат
-        echo "📊 Результат:"
-        if [ -f ../data/signals.json ]; then
-          cat ../data/signals.json
-        else
-          echo "❌ Файл signals.json не знайдено"
-        fi
+        echo "✅ Генерація завершена"
     
     - name: Commit and push generated data
+      if: steps.check_limits.outputs.can_generate == 'true'
       run: |
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
         
-        echo "📊 Перевірка змін у файлах даних..."
-        git status
-        
-        # Додаємо тільки файли даних
-        git add data/signals.json
-        git add data/history.json
+        git add data/
         git add logs/
         git add .nojekyll
         
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [Source: ${{ inputs.trigger_source || 'manual' }}]"
-          echo "📤 Відправка змін до репозиторію..."
+          git commit -m "🤖 Авто-генерація: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
-
-    # УВАГА: НЕ додавайте Deploy to GitHub Pages тут!
-    # GitHub Pages автоматично оновлюється при push в main
+    
+    - name: Skip generation (limits reached)
+      if: steps.check_limits.outputs.can_generate == 'false'
+      run: |
+        echo "⏸️ Генерацію пропущено через досягнення лімітів"
+        echo "📊 Деталі:"
+        echo "   • Використано токенів: ${{ steps.check_limits.outputs.tokens_used }}"
+        echo "   • Використано запитів: ${{ steps.check_limits.outputs.requests_used }}"
+        echo "   • Доступно токенів: ${{ steps.check_limits.outputs.tokens_remaining }}"
+        echo "   • Доступно запитів: ${{ steps.check_limits.outputs.requests_remaining }}"
