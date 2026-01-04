@@ -1,19 +1,20 @@
 class SignalDisplay {
     constructor() {
-        this.signalsUrl = 'data/signals.json';
-        this.historyUrl = 'data/history.json';
+        this.ghConfig = window.GH_CONFIG || {
+            owner: 'Danik25326',
+            repo: 'pocket_trading_bot',
+            branch: 'main',
+            baseUrl: 'https://danik25326.github.io/pocket_trading_bot'
+        };
+        
+        // Правильний URL для GitHub Pages
+        this.signalsUrl = `${this.ghConfig.baseUrl}/data/signals.json`;
         this.kyivTZ = 'Europe/Kiev';
         this.language = localStorage.getItem('language') || 'uk';
         this.activeTimers = new Map();
         this.lastGenerationTime = localStorage.getItem('lastGenerationTime') ? new Date(localStorage.getItem('lastGenerationTime')) : null;
-        this.refreshTimer = null;
+        this.autoRefreshInterval = null;
         this.searchCooldownTimer = null;
-        this.ghConfig = window.GH_CONFIG || {
-            owner: 'Danik25326',
-            repo: 'pocket_trading_bot',
-            workflowId: 'signals.yml',
-            token: '{{GH_PAT}}'
-        };
         
         this.translations = {
             uk: {
@@ -65,7 +66,7 @@ class SignalDisplay {
                 timeLeft: "Залишилось:",
                 entryTime: "Час входу:",
                 howToStart: "Як почати роботу?",
-                instructionText: "Натисніть кнопку 'Пошук сигналів' для генерації нових сигналів. Після генерації ви зможете перегенерувати сигнали через 5 хвилин.",
+                instructionText: "Натисніть кнопку 'Пошук сигналів' для запуску генерації нових сигналів. Після генерації ви зможете перегенерувати сигнали через 5 хвилин.",
                 generatingSignals: "Генерація сигналів...",
                 updateIn: "Оновлення через:",
                 minutes: "хв",
@@ -130,7 +131,7 @@ class SignalDisplay {
                 timeLeft: "Осталось:",
                 entryTime: "Время входа:",
                 howToStart: "Как начать работу?",
-                instructionText: "Нажмите кнопку 'Поиск сигналов' для генерации новых сигналов. После генерации вы сможете перегенерировать сигналы через 5 минут.",
+                instructionText: "Нажмите кнопку 'Поиск сигналов' для запуска генерации новых сигналов. После генерации вы сможете перегенерировать сигналы через 5 минут.",
                 generatingSignals: "Генерация сигналов...",
                 updateIn: "Обновление через:",
                 minutes: "мин",
@@ -159,25 +160,30 @@ class SignalDisplay {
         
         this.checkGenerationTime();
         await this.loadSignals();
-        this.startTimerChecks();
+        this.startAutoRefresh();
     }
 
     setupEventListeners() {
-        document.getElementById('search-signals-btn').addEventListener('click', () => {
-            this.startSignalGeneration();
-        });
+        const searchBtn = document.getElementById('search-signals-btn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.startSignalGeneration();
+            });
+        }
         
-        document.getElementById('lang-uk').addEventListener('click', () => {
+        document.getElementById('lang-uk')?.addEventListener('click', () => {
             this.switchLanguage('uk');
         });
         
-        document.getElementById('lang-ru').addEventListener('click', () => {
+        document.getElementById('lang-ru')?.addEventListener('click', () => {
             this.switchLanguage('ru');
         });
     }
 
     async startSignalGeneration() {
         const btn = document.getElementById('search-signals-btn');
+        if (!btn) return;
+        
         const originalText = btn.innerHTML;
         
         // Перевірка 5-хвилинного інтервалу
@@ -194,144 +200,60 @@ class SignalDisplay {
             }
         }
         
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${this.translate('generatingViaAPI')}`;
+        // Блокуємо кнопку на 5 хвилин
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${this.translate('searchInProgress')}`;
         btn.disabled = true;
         
-        try {
-            // Запускаємо workflow
-            const success = await this.triggerGitHubWorkflow();
-            
-            if (success) {
-                // Зберігаємо час запуску
-                this.lastGenerationTime = new Date();
-                localStorage.setItem('lastGenerationTime', this.lastGenerationTime.toISOString());
-                
-                // Блокуємо кнопку на 5 хвилин
-                this.disableSearchButton(5);
-                
-                // Показуємо повідомлення про успіх
-                this.showMessage('success', 
-                    '🚀 Генерація сигналів запущена!<br>' +
-                    '<small>Сигнали з\'являться через 30-60 секунд</small>');
-                
-                // Оновлюємо сигнали через 30 секунд (час на генерацію)
-                setTimeout(async () => {
-                    await this.loadSignals(true);
-                    btn.innerHTML = originalText;
-                    this.showMessage('info', 'Сигнали оновлено!');
-                }, 30000);
-                
-            } else {
-                throw new Error('Failed to trigger workflow');
-            }
-        } catch (error) {
-            console.error('Помилка генерації:', error);
-            this.showMessage('error', this.translate('generationFailed'));
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    }
-
-    async triggerGitHubWorkflow() {
-        // Перевірка наявності токена
-        if (!this.ghConfig.token || this.ghConfig.token.includes('ваш_реальний')) {
-            console.error('GitHub token not configured');
-            this.showMessage('error', 
-                'GitHub токен не налаштовано. Будь ласка, додайте токен у файл config.js<br>' +
-                '<small>Створіть PAT токен у GitHub з правами repo та workflow</small>');
-            return false;
-        }
-
-        const url = `https://api.github.com/repos/${this.ghConfig.owner}/${this.ghConfig.repo}/actions/workflows/${this.ghConfig.workflowId}/dispatches`;
+        // Показуємо повідомлення
+        this.showMessage('info', 
+            '🚀 Запускаємо генерацію сигналів...<br>' +
+            '⏳ Сигнали з\'являться через 30-60 секунд<br>' +
+            '<small>Під час генерації кнопка буде неактивна</small>');
         
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `token ${this.ghConfig.token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ref: 'main',
-                    inputs: {
-                        language: this.language,
-                        trigger_source: 'website_button'
-                    }
-                })
-            });
-            
-            if (response.status === 204) {
-                console.log('✅ Workflow triggered successfully');
-                return true;
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Failed to trigger workflow:', response.status, errorText);
-                
-                if (response.status === 401 || response.status === 403) {
-                    this.showMessage('error', 
-                        'Помилка авторизації. Перевірте ваш токен:<br>' +
-                        '1. Чи активний токен?<br>' +
-                        '2. Чи має права repo та workflow?<br>' +
-                        '3. Чи правильний токен у config.js?');
-                } else {
-                    this.showMessage('error', `Помилка GitHub API: ${response.status}`);
-                }
-                return false;
-            }
-        } catch (error) {
-            console.error('❌ Network error:', error);
-            this.showMessage('error', 'Мережева помилка. Перевірте підключення до інтернету');
-            return false;
-        }
-    }
-
-    async checkWorkflowStatus() {
-        // Це опціональний метод для перевірки статусу workflow
-        const url = `https://api.github.com/repos/${this.ghConfig.owner}/${this.ghConfig.repo}/actions/runs`;
+        // Зберігаємо час запуску
+        this.lastGenerationTime = new Date();
+        localStorage.setItem('lastGenerationTime', this.lastGenerationTime.toISOString());
         
-        try {
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${this.ghConfig.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                const latestRun = data.workflow_runs[0];
-                
-                if (latestRun) {
-                    console.log(`Workflow status: ${latestRun.status}, conclusion: ${latestRun.conclusion}`);
-                    return latestRun;
-                }
-            }
-        } catch (error) {
-            console.error('Error checking workflow status:', error);
-        }
-        return null;
+        // Блокуємо кнопку на 5 хвилин
+        this.disableSearchButton(5);
+        
+        // Оновлюємо сигнали через 40 секунд (час на генерацію)
+        setTimeout(async () => {
+            await this.loadSignals(true);
+            this.showMessage('success', 
+                '✅ Сигнали успішно згенеровано!<br>' +
+                '<small>Дані оновлено на сторінці</small>');
+        }, 40000);
+        
+        // Оновлюємо ще раз через 60 секунд для впевненості
+        setTimeout(async () => {
+            await this.loadSignals(true);
+        }, 60000);
     }
 
     disableSearchButton(minutes) {
         const btn = document.getElementById('search-signals-btn');
+        if (!btn) return;
+        
         let timeLeft = minutes * 60;
         
-        btn.disabled = true;
-        
         const updateButton = () => {
-            const minutesLeft = Math.floor(timeLeft / 60);
-            const secondsLeft = timeLeft % 60;
-            
-            btn.innerHTML = `<i class="fas fa-clock"></i> ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}`;
-            
             if (timeLeft <= 0) {
                 btn.innerHTML = `<i class="fas fa-search"></i> <span class="btn-text">${this.translate('searchSignalsBtn')}</span>`;
                 btn.disabled = false;
                 clearInterval(this.searchCooldownTimer);
-            } else {
-                timeLeft--;
+                return;
             }
+            
+            const minutesLeft = Math.floor(timeLeft / 60);
+            const secondsLeft = timeLeft % 60;
+            
+            btn.innerHTML = `
+                <i class="fas fa-clock"></i> 
+                ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}
+                <span class="btn-text" style="display:none">${this.translate('searchSignalsBtn')}</span>
+            `;
+            timeLeft--;
         };
         
         if (this.searchCooldownTimer) {
@@ -358,17 +280,38 @@ class SignalDisplay {
     async loadSignals(force = false) {
         try {
             const timestamp = new Date().getTime();
-            const response = await fetch(`${this.signalsUrl}?t=${timestamp}`);
+            const cacheBuster = force ? `?t=${timestamp}` : `?nocache=${timestamp}`;
+            
+            const response = await fetch(`${this.signalsUrl}${cacheBuster}`, {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
             
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
             const data = await response.json();
             this.processSignals(data, force);
+            
+            // Оновлюємо статистику
+            this.updateStats(data);
+            
         } catch (error) {
-            console.error('Помилка завантаження:', error);
-            this.showError(this.translate('noSignalsYet'));
+            console.error('Помилка завантаження сигналів:', error);
+            // Не показуємо помилку користувачу, щоб не лякати
+            // Просто оновлюємо час останньої спроби
+            const lastUpdate = document.getElementById('last-update');
+            if (lastUpdate) {
+                const now = new Date();
+                lastUpdate.textContent = now.toLocaleTimeString('uk-UA', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                }) + ' (спроба)';
+            }
         }
     }
 
@@ -381,19 +324,25 @@ class SignalDisplay {
         
         if (!data || !data.signals || data.signals.length === 0) {
             container.innerHTML = this.getEmptyStateHTML();
-            lastUpdate.textContent = '--:--:--';
-            activeSignalsElement.textContent = '0';
-            totalSignalsElement.textContent = '0';
+            if (lastUpdate) lastUpdate.textContent = '--:--:--';
+            if (activeSignalsElement) activeSignalsElement.textContent = '0';
+            if (totalSignalsElement) totalSignalsElement.textContent = '0';
+            if (noSignals) noSignals.style.display = 'block';
             return;
         }
         
-        if (data.last_update) {
+        if (data.last_update && lastUpdate) {
             const updateDate = new Date(data.last_update);
             lastUpdate.textContent = this.formatTime(updateDate, true);
         }
         
-        activeSignalsElement.textContent = data.active_signals || 0;
-        totalSignalsElement.textContent = data.total_signals || data.signals.length;
+        if (activeSignalsElement) {
+            activeSignalsElement.textContent = data.active_signals || 0;
+        }
+        
+        if (totalSignalsElement) {
+            totalSignalsElement.textContent = data.total_signals || data.signals.length;
+        }
         
         let html = '';
         let hasActiveSignals = false;
@@ -413,10 +362,10 @@ class SignalDisplay {
         
         if (!hasActiveSignals) {
             container.innerHTML = this.getNoSignalsHTML();
-            noSignals.style.display = 'block';
+            if (noSignals) noSignals.style.display = 'block';
         } else {
             container.innerHTML = html;
-            noSignals.style.display = 'none';
+            if (noSignals) noSignals.style.display = 'none';
             
             data.signals.forEach((signal, index) => {
                 const signalId = `signal-${index}`;
@@ -576,16 +525,6 @@ class SignalDisplay {
         updateTimerDisplay();
     }
 
-    startTimerChecks() {
-        setInterval(() => {
-            this.activeTimers.forEach((timer, signalId) => {
-                if (timer.isActive && Date.now() >= timer.endTime) {
-                    this.setupSignalTimer({}, signalId);
-                }
-            });
-        }, 1000);
-    }
-
     giveFeedback(signalId, feedback) {
         const signalElement = document.getElementById(signalId);
         if (!signalElement) return;
@@ -607,10 +546,32 @@ class SignalDisplay {
     updateSignalCount() {
         const container = document.getElementById('signals-container');
         const activeSignals = container.querySelectorAll('.signal-card').length;
-        document.getElementById('active-signals').textContent = activeSignals;
+        const activeSignalsElement = document.getElementById('active-signals');
+        if (activeSignalsElement) {
+            activeSignalsElement.textContent = activeSignals;
+        }
         
-        if (activeSignals === 0) {
-            document.getElementById('no-signals').style.display = 'block';
+        const noSignals = document.getElementById('no-signals');
+        if (activeSignals === 0 && noSignals) {
+            noSignals.style.display = 'block';
+        }
+    }
+
+    updateStats(data) {
+        const lastUpdate = document.getElementById('last-update');
+        if (lastUpdate && data.last_update) {
+            const updateDate = new Date(data.last_update);
+            lastUpdate.textContent = this.formatTime(updateDate, true);
+        }
+        
+        const activeSignalsElement = document.getElementById('active-signals');
+        if (activeSignalsElement) {
+            activeSignalsElement.textContent = data.active_signals || '0';
+        }
+        
+        const totalSignalsElement = document.getElementById('total-signals');
+        if (totalSignalsElement) {
+            totalSignalsElement.textContent = data.total_signals || '0';
         }
     }
 
@@ -676,21 +637,21 @@ class SignalDisplay {
         `;
     }
 
-    showError(message) {
-        const container = document.getElementById('signals-container');
-        container.innerHTML = `
-            <div class="error-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Помилка</h3>
-                <p>${message}</p>
-                <button onclick="signalDisplay.loadSignals(true)" class="refresh-btn">
-                    <i class="fas fa-redo"></i> Спробувати знову
-                </button>
-            </div>
-        `;
+    startAutoRefresh() {
+        // Автоматично оновлюємо дані кожні 30 секунд
+        // Це просто читання файлу з GitHub Pages, НЕ запуск GitHub Actions
+        if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+        }
+        
+        this.autoRefreshInterval = setInterval(async () => {
+            await this.loadSignals();
+        }, 30000);
+        
+        console.log('🔄 Автоматичне оновлення даних кожні 30 секунд');
     }
 
-    showMessage(type, text) {
+    showMessage(type, html) {
         let messageContainer = document.getElementById('message-container');
         if (!messageContainer) {
             messageContainer = document.createElement('div');
@@ -699,49 +660,33 @@ class SignalDisplay {
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                z-index: 1000;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
+                z-index: 10000;
                 max-width: 400px;
             `;
             document.body.appendChild(messageContainer);
         }
         
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}`;
-        messageDiv.style.cssText = `
+        const message = document.createElement('div');
+        message.className = `message ${type}`;
+        message.style.cssText = `
+            background: ${type === 'success' ? '#38a169' : type === 'error' ? '#e53e3e' : '#3182ce'};
+            color: white;
             padding: 15px 20px;
             border-radius: 10px;
-            color: white;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease-out;
+            margin-bottom: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease-out;
         `;
         
-        if (type === 'success') {
-            messageDiv.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
-        } else if (type === 'error') {
-            messageDiv.style.background = 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)';
-        } else if (type === 'warning') {
-            messageDiv.style.background = 'linear-gradient(135deg, #ed8936 0%, #dd6b20 100%)';
-        }
+        message.innerHTML = html;
         
-        messageDiv.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-            <span>${text}</span>
-        `;
-        
-        messageContainer.appendChild(messageDiv);
+        messageContainer.appendChild(message);
         
         setTimeout(() => {
-            messageDiv.style.animation = 'slideOut 0.3s ease-out';
+            message.style.animation = 'slideOut 0.3s ease-out';
             setTimeout(() => {
-                if (messageDiv.parentNode) {
-                    messageDiv.parentNode.removeChild(messageDiv);
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
                 }
             }, 300);
         }, 5000);
@@ -784,6 +729,7 @@ class SignalDisplay {
     }
 }
 
+// Додаємо CSS для анімацій
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideIn {
@@ -807,12 +753,20 @@ style.textContent = `
             opacity: 0;
         }
     }
+    
+    .message {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .message small {
+        opacity: 0.9;
+        font-size: 12px;
+    }
 `;
 document.head.appendChild(style);
 
-let signalDisplay;
-
+// Ініціалізація при завантаженні сторінки
 document.addEventListener('DOMContentLoaded', () => {
-    signalDisplay = new SignalDisplay();
-    window.signalDisplay = signalDisplay;
+    window.signalDisplay = new SignalDisplay();
 });
