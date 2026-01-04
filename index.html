@@ -158,9 +158,15 @@
             <h3 data-translate="feedbackQuestion">Сигнал був вірний?</h3>
             <p id="feedback-asset"></p>
             <div class="feedback-buttons">
-                <button class="feedback-btn feedback-yes" data-translate="feedbackYes">Так, вірний</button>
-                <button class="feedback-btn feedback-no" data-translate="feedbackNo">Ні, не вірний</button>
-                <button class="feedback-btn feedback-skip" data-translate="feedbackSkip">Пропустити</button>
+                <button class="feedback-btn feedback-yes" onclick="signalDisplay.submitFeedback('yes')">
+                    <i class="fas fa-check-circle"></i> <span data-translate="feedbackYes">Так, вірний</span>
+                </button>
+                <button class="feedback-btn feedback-no" onclick="signalDisplay.submitFeedback('no')">
+                    <i class="fas fa-times-circle"></i> <span data-translate="feedbackNo">Ні, не вірний</span>
+                </button>
+                <button class="feedback-btn feedback-skip" onclick="signalDisplay.submitFeedback('skip')">
+                    <i class="fas fa-forward"></i> <span data-translate="feedbackSkip">Пропустити</span>
+                </button>
             </div>
             <small data-translate="feedbackNote">Ваша відповідь допомагає AI вчитися та покращувати точність</small>
         </div>
