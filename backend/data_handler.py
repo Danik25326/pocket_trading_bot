@@ -76,7 +76,7 @@ class DataHandler:
                     if 'generated_at' in signal:
                         gen_time = self._parse_datetime(signal['generated_at'])
                         if gen_time:
-                            expiry_time = gen_time + timedelta(minutes=5)
+                            expiry_time = gen_time + timedelta(minutes=10)
                             signal['expires_at'] = expiry_time.isoformat()
                     
                     valid_signals.append(signal)
@@ -98,7 +98,7 @@ class DataHandler:
                     gen_time_str = signal.get('generated_at')
                     if gen_time_str:
                         gen_time = self._parse_datetime(gen_time_str)
-                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=5)):
+                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=10)):
                             current_signals.append(signal)
                 except:
                     continue
@@ -107,13 +107,13 @@ class DataHandler:
             all_signals = current_signals + valid_signals
             
             # Обмежуємо загальну кількість сигналів (максимум 5)
-            if len(all_signals) > 5:
+            if len(all_signals) > 6:
                 # Залишаємо тільки найновіші
                 all_signals = sorted(
                     all_signals, 
                     key=lambda x: self._parse_datetime(x.get('generated_at', '') or ''),
                     reverse=True
-                )[:5]
+                )[:6]
             
             # Рахуємо активні сигнали
             active_count = 0
@@ -226,7 +226,7 @@ class DataHandler:
             
             # Сигнал активний тільки 5 хвилин з моменту генерації
             time_since_generation = now_kyiv - generated_at
-            is_active = time_since_generation <= timedelta(minutes=5)
+            is_active = time_since_generation <= timedelta(minutes=10)
             
             if is_active:
                 time_left = 5 - (time_since_generation.total_seconds() / 60)
@@ -471,7 +471,7 @@ class DataHandler:
                     gen_time_str = signal.get('generated_at')
                     if gen_time_str:
                         gen_time = self._parse_datetime(gen_time_str)
-                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=5)):
+                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=10)):
                             # Сигнал ще активний (менше 5 хвилин)
                             active_signals.append(signal)
                         else:
