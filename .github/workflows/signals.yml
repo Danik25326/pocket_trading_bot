@@ -6,16 +6,9 @@ on:
   workflow_dispatch:  # Дозволити ручний запуск
     inputs:
       language:
-        description: 'Мова для генерації сигналів'
-        required: true
+        description: 'Мова'
+        required: false
         default: 'uk'
-        type: choice
-        options:
-          - uk
-          - ru
-
-permissions:
-  contents: write
 
 jobs:
   generate-signals:
@@ -25,7 +18,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
     
     - name: Setup Python
@@ -35,65 +27,40 @@ jobs:
     
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        pip install --upgrade pip
         pip install -r backend/requirements.txt
     
-    - name: Create necessary directories and files
+    - name: Create data directory
       run: |
         mkdir -p data
         mkdir -p logs
         
-        # Створюємо початкові файли, якщо їх немає
-        if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kyiv (UTC+2)"}' > data/signals.json
-        fi
-        if [ ! -f data/history.json ]; then 
-          echo '[]' > data/history.json
-        fi
-        if [ ! -f data/assets_config.json ]; then 
-          echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
-        fi
-        if [ ! -f data/lessons.json ]; then 
-          echo '[]' > data/lessons.json
+        # Створюємо файли якщо немає
+        if [ ! -f data/signals.json ]; then
+          echo '{"last_update": null, "signals": []}' > data/signals.json
         fi
     
-    - name: Generate trading signals
+    - name: Run signal generator
       env:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         POCKET_DEMO: 'true'
-        SIGNAL_INTERVAL: '600'
-        MIN_CONFIDENCE: '0.7'
-        MAX_DURATION: '5.0'
-        SIGNAL_VALIDITY_MINUTES: '10'
-        MAX_SIGNALS_ON_SITE: '6'
-        ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
-        TIMEFRAMES: '120'
-        LOG_LEVEL: 'INFO'
-        GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
       run: |
-        echo "🚀 Початок генерації сигналів..."
-        echo "🌐 Мова: $LANGUAGE"
-        
-        export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
-        
         cd backend
         python signal_generator.py
-        
-        echo "✅ Генерація сигналів завершена"
     
     - name: Commit and push generated signals
       run: |
-        git config --global user.name 'GitHub Actions Bot'
+        git config --global user.name 'github-actions'
         git config --global user.email 'actions@github.com'
         
-        git add data/
+        # Додаємо тільки data/signals.json
+        git add data/signals.json
         
         if git diff --staged --quiet; then
-          echo "⚠️ Немає змін для коміту"
+          echo "No changes to commit"
         else
-          git commit -m "🤖 Автоматична генерація сигналів: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}]"
+          git commit -m "🤖 Auto-generated signals $(date +'%Y-%m-%d %H:%M')"
           git push
-          echo "✅ Зміни закомічено та відправлено"
         fi
