@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🤖 PocketOption AI Trading Signals</title>
+    <title>🤖 AI Trading Signals - Автоматичні сигнали</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
@@ -15,9 +15,10 @@
                 <h1><i class="fas fa-robot"></i> <span data-translate="title">AI Trading Signals</span></h1>
                 <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI</p>
                 <div class="header-stats">
-                    <span class="stat-badge"><i class="fas fa-hand-pointer"></i> <span data-translate="generationType">Генерація:</span> <span data-translate="manualOnly">тільки вручну</span></span>
+                    <span class="stat-badge"><i class="fas fa-sync-alt"></i> <span data-translate="autoUpdate">Оновлення:</span> <span data-translate="every5min">кожні 5 хв</span></span>
                     <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 70%</span>
-                    <span class="stat-badge"><i class="fas fa-chart-line"></i> <span data-translate="model">Модель:</span> GPT OSS 120B</span>
+                    <span class="stat-badge"><i class="fas fa-brain"></i> <span data-translate="model">Модель:</span> GPT OSS 120B</span>
+                    <span class="stat-badge"><i class="fas fa-clock"></i> <span data-translate="entryDelay">Вхід через:</span> 1-2 хв</span>
                 </div>
             </div>
             
@@ -27,14 +28,14 @@
                     <button id="lang-ru" class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
                 </div>
                 
-                <div class="action-buttons">
-                    <button id="search-signals-btn" class="action-btn primary-btn">
-                        <i class="fas fa-search"></i> <span class="btn-text" data-translate="searchSignalsBtn">Пошук сигналів</span>
-                    </button>
-                    <button id="refresh-btn" class="action-btn secondary-btn" disabled>
-                        <i class="fas fa-redo"></i> <span class="btn-text" data-translate="regenerateBtn">Перегенерувати</span>
-                        <span class="timer-badge" id="refresh-timer">5:00</span>
-                    </button>
+                <div class="auto-refresh-status">
+                    <div class="refresh-info">
+                        <i class="fas fa-clock"></i>
+                        <div class="refresh-text">
+                            <span data-translate="nextUpdate">Наступне оновлення:</span>
+                            <span id="next-update-timer" class="timer">5:00</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -68,9 +69,9 @@
                         <i class="fas fa-chart-bar"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 data-translate="totalStats">Загальна статистика</h3>
+                        <h3 data-translate="totalSignals">Всього сигналів</h3>
                         <p id="total-signals" class="stat-value">0</p>
-                        <small data-translate="signalsInHistory">сигналів в історії</small>
+                        <small data-translate="today">сьогодні</small>
                     </div>
                 </div>
                 
@@ -79,21 +80,21 @@
                         <i class="fas fa-percentage"></i>
                     </div>
                     <div class="stat-info">
-                        <h3 data-translate="successRate">Успішність</h3>
+                        <h3 data-translate="successRate">Точність AI</h3>
                         <p id="success-rate" class="stat-value">0%</p>
-                        <small data-translate="historicalAccuracy">історична точність</small>
+                        <small data-translate="learning">навчання активне</small>
                     </div>
                 </div>
             </div>
 
-            <div class="action-info-card">
+            <div class="auto-info-card">
                 <div class="info-icon">
-                    <i class="fas fa-info-circle"></i>
+                    <i class="fas fa-robot"></i>
                 </div>
                 <div class="info-content">
-                    <h3 data-translate="howToStart">Як почати роботу?</h3>
-                    <p data-translate="instructionText">
-                        Натисніть кнопку "Пошук сигналів" для генерації нових сигналів. Після генерації ви зможете перегенерувати сигнали через 5 хвилин.
+                    <h3 data-translate="systemActive">Система активна!</h3>
+                    <p data-translate="autoDescription">
+                        Сигнали генеруються автоматично кожні 5 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини для точнішого прогнозу.
                     </p>
                 </div>
             </div>
@@ -102,7 +103,7 @@
                 <div class="section-header">
                     <h2><i class="fas fa-bell"></i> <span data-translate="currentSignals">Актуальні сигнали</span></h2>
                     <div class="time-info">
-                        <i class="fas fa-globe-europe"></i> <span data-translate="serverTime">Поточний час:</span> <span id="server-time">--:--</span> (Київ)
+                        <i class="fas fa-globe-europe"></i> <span data-translate="serverTime">Київський час:</span> <span id="server-time">--:--</span>
                     </div>
                 </div>
                 
@@ -111,8 +112,8 @@
                         <div class="spinner">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
-                        <p data-translate="noSignalsYet">Сигналів ще немає</p>
-                        <small data-translate="clickSearchToStart">Натисніть "Пошук сигналів" для початку</small>
+                        <p data-translate="loadingSignals">Завантаження сигналів...</p>
+                        <small data-translate="firstLoad">Перше оновлення через <span id="first-load-timer">5</span> сек</small>
                     </div>
                 </div>
                 
@@ -120,7 +121,7 @@
                     <div class="empty-state">
                         <i class="fas fa-chart-line"></i>
                         <h3 data-translate="noSignalsNow">Наразі немає актуальних сигналів</h3>
-                        <p data-translate="searchNewSignals">Знайдіть нові сигнали або зачекайте завершення поточних</p>
+                        <p data-translate="nextAutoUpdate">Наступне автоматичне оновлення через <span id="next-auto-timer">5:00</span></p>
                     </div>
                 </div>
             </div>
@@ -129,23 +130,25 @@
                 <div class="info-card">
                     <h3><i class="fas fa-info-circle"></i> <span data-translate="howItWorks">Як працює система</span></h3>
                     <ul>
-                        <li><strong data-translate="aiAnalysis">AI Аналіз:</strong> <span data-translate="aiAnalysisDesc">GPT OSS 120B для технічного аналізу</span></li>
-                        <li><strong data-translate="realTimeData">Дані в реальному часі:</strong> <span data-translate="realTimeDataDesc">Отримання з PocketOption API</span></li>
-                        <li><strong data-translate="volatilityBased">Тривалість угоди:</strong> <span data-translate="volatilityBasedDesc">1-5 хв на основі волатильності</span></li>
-                        <li><strong data-translate="manualControl">Контроль:</strong> <span data-translate="manualControlDesc">Тільки ручна генерація сигналів</span></li>
+                        <li><strong data-translate="autoGeneration">Автоматична генерація:</strong> <span data-translate="autoGenDesc">кожні 5 хвилин</span></li>
+                        <li><strong data-translate="entryDelay2">Затримка входу:</strong> <span data-translate="entryDelayDesc">1-2 хвилини для точнішого прогнозу</span></li>
+                        <li><strong data-translate="aiLearning">Навчання AI:</strong> <span data-translate="aiLearningDesc">аналізує успішність сигналів</span></li>
+                        <li><strong data-translate="autoCleanup">Автоочищення:</strong> <span data-translate="autoCleanupDesc">сигнали зникають через 5 хвилин</span></li>
                     </ul>
                 </div>
                 
                 <div class="warning-card">
-                    <h3><i class="fas fa-exclamation-triangle"></i> <span data-translate="important">Важливо!</span></h3>
-                    <p data-translate="disclaimer">Торгівля містить високі ризики. Сигнали не є фінансовою рекомендацією.</p>
+                    <h3><i class="fas fa-exclamation-triangle"></i> <span data-translate="tokenLimits">Ліміти використання</span></h3>
+                    <p data-translate="tokenLimitsDesc">
+                        Для економії токенів AI обмежено до 3 сигналів за раз. Система розрахована на тривалу роботу.
+                    </p>
                 </div>
             </div>
         </div>
 
         <footer>
             <p>© 2025 AI Trading Signals | <span data-translate="createdWith">Створено з використанням</span> Groq Cloud & PocketOption API</p>
-            <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT OSS 120B • Python • GitHub Actions</p>
+            <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT OSS 120B • Python • GitHub Actions • Автоматичне навчання</p>
         </footer>
     </div>
 
@@ -155,13 +158,16 @@
             <h3 data-translate="feedbackQuestion">Сигнал був вірний?</h3>
             <p id="feedback-asset"></p>
             <div class="feedback-buttons">
-                <button class="feedback-btn feedback-yes" data-translate="feedbackYes">Так</button>
-                <button class="feedback-btn feedback-no" data-translate="feedbackNo">Ні</button>
-                <button class="feedback-btn feedback-skip" data-translate="feedbackSkip">Я не перевіряв</button>
+                <button class="feedback-btn feedback-yes" data-translate="feedbackYes">Так, вірний</button>
+                <button class="feedback-btn feedback-no" data-translate="feedbackNo">Ні, не вірний</button>
+                <button class="feedback-btn feedback-skip" data-translate="feedbackSkip">Пропустити</button>
             </div>
+            <small data-translate="feedbackNote">Ваша відповідь допомагає AI вчитися та покращувати точність</small>
         </div>
     </div>
-    <script src="config.js"></script>
+
+    <div id="message-container"></div>
+    
     <script src="script.js"></script>
 </body>
 </html>
