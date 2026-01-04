@@ -1,4 +1,3 @@
-
 import json
 import os
 from datetime import datetime, timedelta
@@ -12,7 +11,7 @@ class DataHandler:
         self.history_file = Config.HISTORY_FILE
         self.feedback_file = Config.FEEDBACK_FILE
         self.lessons_file = Config.LESSONS_FILE
-        self.kyiv_tz = pytz.timezone('Europe/Kiev')
+        self.kyiv_tz = pytz.timezone('Europe/Kyiv')
         self.create_data_dir()
     
     def create_data_dir(self):
@@ -25,7 +24,7 @@ class DataHandler:
                 json.dump({
                     "last_update": None,
                     "signals": [],
-                    "timezone": "Europe/Kiev (UTC+2)",
+                    "timezone": "Europe/Kyiv (UTC+2)",
                     "total_signals": 0,
                     "active_signals": 0,
                     "generation_count": 0
@@ -126,7 +125,7 @@ class DataHandler:
             data = {
                 "last_update": now_kyiv.isoformat(),
                 "signals": all_signals,
-                "timezone": "Europe/Kiev (UTC+2)",
+                "timezone": "Europe/Kyiv (UTC+2)",
                 "total_signals": len(all_signals),
                 "active_signals": active_count,
                 "generation_count": existing_data.get('generation_count', 0) + 1
@@ -195,7 +194,7 @@ class DataHandler:
             return {
                 "last_update": None,
                 "signals": [],
-                "timezone": "Europe/Kiev (UTC+2)",
+                "timezone": "Europe/Kyiv (UTC+2)",
                 "total_signals": 0,
                 "active_signals": 0,
                 "generation_count": 0
@@ -205,7 +204,7 @@ class DataHandler:
             return {
                 "last_update": None,
                 "signals": [],
-                "timezone": "Europe/Kiev (UTC+2)",
+                "timezone": "Europe/Kyiv (UTC+2)",
                 "total_signals": 0,
                 "active_signals": 0,
                 "generation_count": 0
@@ -390,6 +389,16 @@ class DataHandler:
             print(f"❌ Помилка навчання ШІ: {e}")
             return []
     
+    def _extract_patterns(self, feedback_entry):
+        """Виділення паттернів з feedback"""
+        # Це заглушка - в реальності потрібна логіка виділення паттернів
+        return []
+    
+    def _update_learned_patterns(self, all_lessons):
+        """Оновлення вивчених паттернів"""
+        # Це заглушка - в реальності потрібна логіка аналізу паттернів
+        return []
+    
     def _analyze_feedback(self, feedback_entry):
         """Аналіз причин успіху/невдачі сигналу"""
         signal_id = feedback_entry.get('signal_id', '')
@@ -445,3 +454,8 @@ class DataHandler:
             
         except Exception as e:
             print(f"❌ Помилка автоочищення: {e}")
+    
+    def update_learning_stats(self):
+        """Оновлення статистики навчання AI"""
+        # Це заглушка - в реальності можна додати логіку оновлення статистики
+        pass
