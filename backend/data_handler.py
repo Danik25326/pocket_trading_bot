@@ -1,4 +1,3 @@
-
 import json
 import os
 from datetime import datetime, timedelta
@@ -27,7 +26,8 @@ class DataHandler:
                     "signals": [],
                     "timezone": "Europe/Kiev (UTC+2)",
                     "total_signals": 0,
-                    "active_signals": 0
+                    "active_signals": 0,
+                    "generation_count": 0
                 }, f, indent=2, ensure_ascii=False)
         
         if not os.path.exists(self.history_file):
@@ -36,14 +36,23 @@ class DataHandler:
                 
         if not os.path.exists(self.feedback_file):
             with open(self.feedback_file, 'w', encoding='utf-8') as f:
-                json.dump([], f, indent=2, ensure_ascii=False)
+                json.dump({
+                    "feedback_history": [],
+                    "success_count": 0,
+                    "total_feedback": 0,
+                    "accuracy_percentage": 0
+                }, f, indent=2, ensure_ascii=False)
         
         if not os.path.exists(self.lessons_file):
             with open(self.lessons_file, 'w', encoding='utf-8') as f:
-                json.dump([], f, indent=2, ensure_ascii=False)
+                json.dump({
+                    "lessons": [],
+                    "last_learning": None,
+                    "learned_patterns": []
+                }, f, indent=2, ensure_ascii=False)
     
     def save_signals(self, signals):
-        """Збереження сигналів - СПРОЩЕНА ВЕРСІЯ"""
+        """Збереження сигналів з обмеженням кількості"""
         try:
             if not signals:
                 print("⚠️ Немає сигналів для збереження")
@@ -63,6 +72,13 @@ class DataHandler:
                         now_kyiv = Config.get_kyiv_time()
                         signal['id'] = f"{signal['asset']}_{now_kyiv.strftime('%Y%m%d%H%M%S')}"
                     
+                    # Додаємо час зникнення (5 хвилин після генерації)
+                    if 'generated_at' in signal:
+                        gen_time = self._parse_datetime(signal['generated_at'])
+                        if gen_time:
+                            expiry_time = gen_time + timedelta(minutes=5)
+                            signal['expires_at'] = expiry_time.isoformat()
+                    
                     valid_signals.append(signal)
             
             if not valid_signals:
@@ -70,25 +86,6 @@ class DataHandler:
                 return False
             
             now_kyiv = Config.get_kyiv_time()
-            
-            # Оновлюємо часові мітки для кожного сигналу
-            for signal in valid_signals:
-                # Додаємо часові мітки, якщо їх немає
-                if 'generated_at' not in signal:
-                    signal['generated_at'] = now_kyiv.isoformat()
-                
-                if 'timestamp' not in signal:
-                    signal['timestamp'] = now_kyiv.strftime('%Y-%m-%d %H:%M:%S')
-                
-                # Переконуємося, що є entry_time
-                if 'entry_time' not in signal:
-                    # Створюємо час входу через 2 хвилини
-                    entry_time_dt = now_kyiv + timedelta(minutes=2)
-                    signal['entry_time'] = entry_time_dt.strftime('%H:%M')
-                
-                # Переконуємося, що є duration
-                if 'duration' not in signal:
-                    signal['duration'] = 2  # Типове значення
             
             # Завантажуємо існуючі сигнали
             existing_data = self.load_signals()
@@ -101,7 +98,7 @@ class DataHandler:
                     gen_time_str = signal.get('generated_at')
                     if gen_time_str:
                         gen_time = self._parse_datetime(gen_time_str)
-                        if now_kyiv - gen_time <= timedelta(minutes=Config.ACTIVE_SIGNAL_TIMEOUT):
+                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=5)):
                             current_signals.append(signal)
                 except:
                     continue
@@ -109,9 +106,14 @@ class DataHandler:
             # Додаємо нові сигнали
             all_signals = current_signals + valid_signals
             
-            # Обмежуємо кількість (максимум 5 сигналів)
+            # Обмежуємо загальну кількість сигналів (максимум 5)
             if len(all_signals) > 5:
-                all_signals = all_signals[-5:]
+                # Залишаємо тільки найновіші
+                all_signals = sorted(
+                    all_signals, 
+                    key=lambda x: self._parse_datetime(x.get('generated_at', '') or ''),
+                    reverse=True
+                )[:5]
             
             # Рахуємо активні сигнали
             active_count = 0
@@ -125,7 +127,8 @@ class DataHandler:
                 "signals": all_signals,
                 "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": len(all_signals),
-                "active_signals": active_count
+                "active_signals": active_count,
+                "generation_count": existing_data.get('generation_count', 0) + 1
             }
             
             # Зберігаємо
@@ -134,6 +137,9 @@ class DataHandler:
             
             # Додаємо в історію
             self._add_to_history(valid_signals)
+            
+            # Оновлюємо статистику навчання
+            self.update_learning_stats()
             
             print(f"💾 Збережено {len(valid_signals)} сигналів. Активних: {active_count}")
             return True
@@ -181,6 +187,8 @@ class DataHandler:
                         data['total_signals'] = len(data.get('signals', []))
                     if 'active_signals' not in data:
                         data['active_signals'] = len([s for s in data.get('signals', []) if self._is_signal_active(s)])
+                    if 'generation_count' not in data:
+                        data['generation_count'] = 0
                     
                     return data
             return {
@@ -188,7 +196,8 @@ class DataHandler:
                 "signals": [],
                 "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": 0,
-                "active_signals": 0
+                "active_signals": 0,
+                "generation_count": 0
             }
         except Exception as e:
             print(f"❌ Помилка завантаження сигналів: {e}")
@@ -197,11 +206,12 @@ class DataHandler:
                 "signals": [],
                 "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": 0,
-                "active_signals": 0
+                "active_signals": 0,
+                "generation_count": 0
             }
     
     def _is_signal_active(self, signal):
-        """Перевірка чи сигнал ще активний - СПРОЩЕНА ВЕРСІЯ"""
+        """Перевірка чи сигнал ще активний (до 5 хвилин після генерації)"""
         try:
             now_kyiv = Config.get_kyiv_time()
             
@@ -214,51 +224,23 @@ class DataHandler:
             if not generated_at:
                 return False
             
-            # Час входу
-            entry_time_str = signal.get('entry_time', '')
-            if not entry_time_str or ':' not in entry_time_str:
-                return False
+            # Сигнал активний тільки 5 хвилин з моменту генерації
+            time_since_generation = now_kyiv - generated_at
+            is_active = time_since_generation <= timedelta(minutes=5)
             
-            # Парсимо час входу
-            hour, minute = map(int, entry_time_str.split(':'))
-            
-            # Створюємо час входу на основі часу генерації
-            entry_datetime = generated_at.replace(
-                hour=hour, 
-                minute=minute, 
-                second=0, 
-                microsecond=0
-            )
-            
-            # Якщо час входу вже минув відносно генерації, додаємо 1 день
-            if entry_datetime < generated_at:
-                entry_datetime = entry_datetime + timedelta(days=1)
-            
-            # Тривалість угоди
-            duration = int(signal.get('duration', 2))
-            
-            # Час закінчення
-            end_time = entry_datetime + timedelta(minutes=duration)
-            
-            # Сигнал активний, якщо зараз між входом і закінченням
-            is_active = entry_datetime <= now_kyiv <= end_time
-            
-            # Додаємо відлагоджувальну інформацію
             if is_active:
-                time_left = (end_time - now_kyiv).total_seconds() / 60
-                print(f"   ✅ Сигнал {signal.get('asset')} активний. Залишилось: {time_left:.1f} хв")
+                time_left = 5 - (time_since_generation.total_seconds() / 60)
+                if time_left > 0:
+                    print(f"   ✅ Сигнал {signal.get('asset')} активний. Залишилось: {time_left:.1f} хв")
             
             return is_active
             
         except Exception as e:
             print(f"⚠️ Помилка перевірки активності сигналу: {e}")
-            import traceback
-            print(f"   Сигнал: {signal.get('asset', 'N/A')}")
-            print(f"   Деталі: {traceback.format_exc()}")
             return False
     
     def _add_to_history(self, signals):
-        """Додавання сигналів до історії"""
+        """Додавання сигналів до історії з обмеженням"""
         try:
             if not signals:
                 return
@@ -274,10 +256,12 @@ class DataHandler:
                 history_entry = signal.copy()
                 history_entry['saved_at'] = now_kyiv.isoformat()
                 history_entry['history_id'] = f"{signal.get('asset', 'unknown')}_{now_kyiv.strftime('%Y%m%d%H%M%S')}"
+                history_entry['status'] = 'saved'  # Позначаємо як збережений
                 history.append(history_entry)
             
             # Обмежуємо історію (останні 100 записів)
             if len(history) > Config.MAX_SIGNALS_HISTORY:
+                # Залишаємо тільки останні 100 записів
                 history = history[-Config.MAX_SIGNALS_HISTORY:]
             
             with open(self.history_file, 'w', encoding='utf-8') as f:
@@ -294,10 +278,13 @@ class DataHandler:
             if not Config.FEEDBACK_ENABLED:
                 return False
             
-            feedback = []
+            # Завантажуємо існуючі feedback
+            feedback_data = {}
             if os.path.exists(self.feedback_file):
                 with open(self.feedback_file, 'r', encoding='utf-8') as f:
-                    feedback = json.load(f)
+                    feedback_data = json.load(f)
+            
+            feedback_history = feedback_data.get('feedback_history', [])
             
             now_kyiv = Config.get_kyiv_time()
             feedback_entry = {
@@ -308,14 +295,28 @@ class DataHandler:
                 'learned': False
             }
             
-            feedback.append(feedback_entry)
+            feedback_history.append(feedback_entry)
+            
+            # Оновлюємо статистику
+            total_feedback = len(feedback_history)
+            success_count = len([f for f in feedback_history if f.get('success', False)])
+            accuracy = (success_count / total_feedback * 100) if total_feedback > 0 else 0
+            
+            feedback_data.update({
+                'feedback_history': feedback_history,
+                'success_count': success_count,
+                'total_feedback': total_feedback,
+                'accuracy_percentage': round(accuracy, 2)
+            })
             
             with open(self.feedback_file, 'w', encoding='utf-8') as f:
-                json.dump(feedback, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(feedback_data, f, indent=2, ensure_ascii=False, default=str)
             
+            # Запускаємо навчання
             self.learn_from_feedback()
             
             print(f"💾 Збережено відгук для сигналу {signal_id}: {'✅ Успіх' if success else '❌ Невдача'}")
+            print(f"📊 Нова точність: {accuracy:.2f}% ({success_count}/{total_feedback})")
             return True
             
         except Exception as e:
@@ -329,7 +330,9 @@ class DataHandler:
                 return []
             
             with open(self.feedback_file, 'r', encoding='utf-8') as f:
-                feedback = json.load(f)
+                feedback_data = json.load(f)
+            
+            feedback = feedback_data.get('feedback_history', [])
             
             if asset:
                 return [f for f in feedback if asset in f.get('signal_id', '')]
@@ -364,89 +367,196 @@ class DataHandler:
                 return []
             
             with open(self.feedback_file, 'r', encoding='utf-8') as f:
-                feedback = json.load(f)
+                feedback_data = json.load(f)
+            
+            feedback = feedback_data.get('feedback_history', [])
             
             unlearned = [fb for fb in feedback if not fb.get('learned', False)]
             
             if not unlearned:
                 return []
             
-            lessons = []
+            # Завантажуємо уроки
+            lessons_data = {}
+            if os.path.exists(self.lessons_file):
+                with open(self.lessons_file, 'r', encoding='utf-8') as f:
+                    lessons_data = json.load(f)
+            
+            lessons = lessons_data.get('lessons', [])
+            
+            now_kyiv = Config.get_kyiv_time()
+            new_lessons = []
+            
             for fb in unlearned:
                 lesson = {
                     'signal_id': fb.get('signal_id', ''),
                     'success': fb.get('success', False),
                     'feedback_at': fb.get('feedback_at', ''),
-                    'learned_at': Config.get_kyiv_time().isoformat(),
-                    'asset': fb.get('signal_id', '').split('_')[0] if '_' in fb.get('signal_id', '') else ''
+                    'learned_at': now_kyiv.isoformat(),
+                    'asset': fb.get('signal_id', '').split('_')[0] if '_' in fb.get('signal_id', '') else '',
+                    'patterns': self._extract_patterns(fb)
                 }
-                lessons.append(lesson)
+                new_lessons.append(lesson)
                 
                 fb['learned'] = True
             
+            # Оновлюємо feedback файл
+            feedback_data['feedback_history'] = feedback
             with open(self.feedback_file, 'w', encoding='utf-8') as f:
-                json.dump(feedback, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(feedback_data, f, indent=2, ensure_ascii=False, default=str)
             
-            existing_lessons = []
-            if os.path.exists(self.lessons_file):
-                with open(self.lessons_file, 'r', encoding='utf-8') as f:
-                    existing_lessons = json.load(f)
+            # Додаємо нові уроки
+            all_lessons = lessons + new_lessons
             
-            all_lessons = existing_lessons + lessons
+            # Оновлюємо уроки
+            lessons_data.update({
+                'lessons': all_lessons,
+                'last_learning': now_kyiv.isoformat(),
+                'learned_patterns': self._update_learned_patterns(all_lessons)
+            })
             
             with open(self.lessons_file, 'w', encoding='utf-8') as f:
-                json.dump(all_lessons, f, indent=2, ensure_ascii=False, default=str)
+                json.dump(lessons_data, f, indent=2, ensure_ascii=False, default=str)
             
-            print(f"🧠 ШІ навчився на {len(lessons)} прикладах")
-            return lessons
+            print(f"🧠 ШІ навчився на {len(new_lessons)} нових прикладах")
+            return new_lessons
             
         except Exception as e:
             print(f"❌ Помилка навчання ШІ: {e}")
             return []
     
-    def cleanup_old_signals(self):
-        """Очищення старих сигналів - СПРОЩЕНА ВЕРСІЯ"""
+    def _extract_patterns(self, feedback_entry):
+        """Витягнення патернів з feedback"""
+        # Тут можна додати логіку для витягнення патернів з сигналів
+        # Наприклад, час доби, актив, волатильність тощо
+        return {
+            'signal_type': 'unknown',
+            'extracted_at': datetime.now().isoformat()
+        }
+    
+    def _update_learned_patterns(self, lessons):
+        """Оновлення вивчених патернів"""
+        successful_patterns = []
+        failed_patterns = []
+        
+        for lesson in lessons:
+            if lesson.get('success'):
+                successful_patterns.append(lesson.get('patterns', {}))
+            else:
+                failed_patterns.append(lesson.get('patterns', {}))
+        
+        return {
+            'successful_patterns': successful_patterns[-10:],  # Останні 10 успішних
+            'failed_patterns': failed_patterns[-10:],         # Останні 10 невдалих
+            'last_updated': datetime.now().isoformat()
+        }
+    
+    def auto_cleanup_old_signals(self):
+        """Автоматичне очищення сигналів старіших 5 хвилин"""
         try:
-            print("🧹 Очищення старих сигналів...")
+            print("🧹 Автоматичне очищення старих сигналів...")
             
             data = self.load_signals()
             signals = data.get('signals', [])
             
-            if len(signals) <= 3:
+            if len(signals) == 0:
                 return
             
             now_kyiv = Config.get_kyiv_time()
-            valid_signals = []
+            active_signals = []
+            removed_count = 0
             
             for signal in signals:
                 try:
                     gen_time_str = signal.get('generated_at')
                     if gen_time_str:
                         gen_time = self._parse_datetime(gen_time_str)
-                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=Config.ACTIVE_SIGNAL_TIMEOUT)):
-                            valid_signals.append(signal)
+                        if gen_time and (now_kyiv - gen_time <= timedelta(minutes=5)):
+                            # Сигнал ще активний (менше 5 хвилин)
+                            active_signals.append(signal)
+                        else:
+                            # Сигнал старіший 5 хвилин - видаляємо
+                            removed_count += 1
+                            print(f"🗑️ Видаляємо старий сигнал: {signal.get('asset')}")
                 except:
                     continue
             
-            # Залишаємо максимум 3 останні сигнали
-            if len(valid_signals) > 3:
-                valid_signals = valid_signals[-3:]
-            
-            # Рахуємо активні
-            active_count = 0
-            for signal in valid_signals:
-                if self._is_signal_active(signal):
-                    active_count += 1
-            
-            # Оновлюємо дані
-            data['signals'] = valid_signals
-            data['total_signals'] = len(valid_signals)
-            data['active_signals'] = active_count
+            # Оновлюємо файл
+            data['signals'] = active_signals
+            data['total_signals'] = len(active_signals)
+            data['active_signals'] = len([s for s in active_signals if self._is_signal_active(s)])
             
             with open(self.signals_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False, default=str)
             
-            print(f"✅ Залишено {len(valid_signals)} актуальних сигналів (активних: {active_count})")
+            print(f"✅ Автоочищення: видалено {removed_count} старих сигналів, залишено {len(active_signals)} актуальних")
             
         except Exception as e:
-            print(f"❌ Помилка очищення сигналів: {e}")
+            print(f"❌ Помилка автоочищення: {e}")
+    
+    def update_learning_stats(self):
+        """Оновлення статистики навчання"""
+        try:
+            if not os.path.exists(self.feedback_file):
+                return
+            
+            with open(self.feedback_file, 'r', encoding='utf-8') as f:
+                feedback_data = json.load(f)
+            
+            feedback_history = feedback_data.get('feedback_history', [])
+            total_feedback = len(feedback_history)
+            
+            if total_feedback > 0:
+                success_count = len([f for f in feedback_history if f.get('success', False)])
+                accuracy = (success_count / total_feedback * 100)
+                
+                # Оновлюємо дані
+                feedback_data.update({
+                    'success_count': success_count,
+                    'total_feedback': total_feedback,
+                    'accuracy_percentage': round(accuracy, 2)
+                })
+                
+                with open(self.feedback_file, 'w', encoding='utf-8') as f:
+                    json.dump(feedback_data, f, indent=2, ensure_ascii=False, default=str)
+                
+                print(f"📊 Статистика навчання: {accuracy:.2f}% ({success_count}/{total_feedback})")
+            
+        except Exception as e:
+            print(f"⚠️ Помилка оновлення статистики: {e}")
+    
+    def get_accuracy_percentage(self):
+        """Отримання відсотка точності AI"""
+        try:
+            if not os.path.exists(self.feedback_file):
+                return 0
+            
+            with open(self.feedback_file, 'r', encoding='utf-8') as f:
+                feedback_data = json.load(f)
+            
+            return feedback_data.get('accuracy_percentage', 0)
+            
+        except Exception as e:
+            print(f"❌ Помилка отримання точності: {e}")
+            return 0
+    
+    def cleanup_old_history(self):
+        """Очищення старої історії (залишаємо тільки останні 100 записів)"""
+        try:
+            if not os.path.exists(self.history_file):
+                return
+            
+            with open(self.history_file, 'r', encoding='utf-8') as f:
+                history = json.load(f)
+            
+            if len(history) > Config.MAX_SIGNALS_HISTORY:
+                # Залишаємо тільки останні 100 записів
+                history = history[-Config.MAX_SIGNALS_HISTORY:]
+                
+                with open(self.history_file, 'w', encoding='utf-8') as f:
+                    json.dump(history, f, indent=2, ensure_ascii=False, default=str)
+                
+                print(f"📚 Очищено історію: залишено {len(history)} записів")
+            
+        except Exception as e:
+            print(f"❌ Помилка очищення історії: {e}")
