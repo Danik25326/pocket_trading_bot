@@ -92,6 +92,7 @@ body {
     white-space: nowrap;
 }
 
+/* Автоматичне оновлення статус */
 .header-controls {
     display: flex;
     flex-direction: column;
@@ -150,122 +151,45 @@ body {
     box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
 
-.action-buttons {
+.auto-refresh-status {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.refresh-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.refresh-info i {
+    font-size: 1.5rem;
+    color: #667eea;
+}
+
+.refresh-text {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
-@media (min-width: 480px) {
-    .action-buttons {
-        flex-direction: row;
-    }
+.refresh-text span:first-child {
+    color: #718096;
+    font-size: 0.85rem;
 }
 
-.action-btn {
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: all 0.3s;
-    font-weight: 600;
-    width: 100%;
-    position: relative;
-}
-
-@media (min-width: 480px) {
-    .action-btn {
-        width: auto;
-        min-width: 180px;
-    }
-}
-
-.primary-btn {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
-}
-
-.primary-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.6);
-}
-
-.secondary-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.secondary-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-}
-
-.action-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.timer-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #ed8936;
-    color: white;
-    font-size: 0.7rem;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-weight: bold;
-    min-width: 40px;
-    text-align: center;
-}
-
-/* Action Info Card */
-.action-info-card {
-    background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
-    border-left: 5px solid #38b2ac;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.info-icon {
-    width: 50px;
-    height: 50px;
-    background: white;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: #38b2ac;
-    flex-shrink: 0;
-}
-
-.info-content {
-    flex: 1;
-}
-
-.info-content h3 {
-    color: #2d3748;
+.refresh-text .timer {
     font-size: 1.2rem;
-    margin-bottom: 5px;
+    font-weight: 700;
+    color: #2d3748;
 }
 
-.info-content p {
-    color: #4a5568;
-    font-size: 0.95rem;
-    line-height: 1.5;
+/* Dashboard */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 /* Stats Grid */
@@ -351,6 +275,48 @@ body {
     display: block;
 }
 
+/* Авто-інфо картка */
+.auto-info-card {
+    background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
+    border-left: 5px solid #38b2ac;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.auto-info-card .info-icon {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #38b2ac;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-content h3 {
+    color: #2d3748;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.info-content p {
+    color: #4a5568;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
 /* Signals Section */
 .signals-section {
     background: white;
@@ -404,11 +370,16 @@ body {
 }
 
 /* Signal Cards */
+.signals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .signal-card {
     background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
     border-radius: 12px;
     padding: 20px;
-    margin-bottom: 15px;
     border-left: 5px solid;
     transition: all 0.3s;
     position: relative;
@@ -483,6 +454,9 @@ body {
     white-space: nowrap;
     text-align: center;
     align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .up .direction-badge {
@@ -495,6 +469,31 @@ body {
     background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
     color: white;
     box-shadow: 0 4px 10px rgba(245, 101, 101, 0.3);
+}
+
+.confidence-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.confidence-high { 
+    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); 
+    color: #22543d; 
+    box-shadow: 0 2px 5px rgba(38, 179, 97, 0.2);
+}
+.confidence-medium { 
+    background: linear-gradient(135deg, #fed7d7 0%, #fc8181 100%); 
+    color: #742a2a; 
+    box-shadow: 0 2px 5px rgba(245, 101, 101, 0.2);
+}
+.confidence-low { 
+    background: linear-gradient(135deg, #feebc8 0%, #fbd38d 100%); 
+    color: #744210; 
+    box-shadow: 0 2px 5px rgba(237, 137, 54, 0.2);
 }
 
 .signal-details {
@@ -543,125 +542,25 @@ body {
     flex-wrap: wrap;
 }
 
-.confidence-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    white-space: nowrap;
+/* Таймери в сигналах */
+.loading-timer {
+    color: #718096;
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
-.confidence-high { 
-    background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); 
-    color: #22543d; 
-    box-shadow: 0 2px 5px rgba(38, 179, 97, 0.2);
-}
-.confidence-medium { 
-    background: linear-gradient(135deg, #fed7d7 0%, #fc8181 100%); 
-    color: #742a2a; 
-    box-shadow: 0 2px 5px rgba(245, 101, 101, 0.2);
-}
-.confidence-low { 
-    background: linear-gradient(135deg, #feebc8 0%, #fbd38d 100%); 
-    color: #744210; 
-    box-shadow: 0 2px 5px rgba(237, 137, 54, 0.2);
-}
-
-/* Signal Timer */
-.signal-timer {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border-left: 4px solid #ffc107;
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 10px;
-    animation: pulse 2s infinite;
-}
-
-.timer-display {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #856404;
-    text-align: center;
+.expiry-timer {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 5px;
+    gap: 8px;
+    color: #ed8936;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
-.signal-timer small {
-    display: block;
-    text-align: center;
-    color: #b78c08;
-    font-size: 0.85rem;
-}
-
-/* Signal Feedback */
-.signal-feedback {
-    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-    padding: 18px;
-    border-radius: 10px;
-    margin: 15px 0;
-    border-left: 4px solid #6c757d;
-}
-
-.signal-feedback p {
-    margin-bottom: 15px;
-    font-weight: 600;
-    color: #495057;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-.feedback-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-@media (min-width: 480px) {
-    .feedback-buttons {
-        flex-direction: row;
-        justify-content: center;
-    }
-}
-
-.feedback-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s;
-    text-align: center;
-    flex: 1;
-    min-width: 140px;
-}
-
-@media (min-width: 480px) {
-    .feedback-btn {
-        flex: none;
-    }
-}
-
-.feedback-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.feedback-yes { 
-    background: linear-gradient(135deg, #28a745 0%, #218838 100%); 
-    color: white; 
-}
-.feedback-no { 
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
-    color: white; 
-}
-.feedback-skip { 
-    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); 
-    color: white; 
+.expiry-timer .expiry-time {
+    font-weight: 700;
+    color: #dd6b20;
 }
 
 .signal-reason {
@@ -694,9 +593,7 @@ body {
     border-top: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    color: #a0aec0;
-    font-size: 0.8rem;
+    gap: 12px;
 }
 
 @media (min-width: 480px) {
@@ -705,6 +602,27 @@ body {
         justify-content: space-between;
         align-items: center;
     }
+}
+
+/* Кнопка фідбеку в сигналі */
+.feedback-trigger {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.feedback-trigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
 }
 
 /* Loading State */
@@ -751,6 +669,10 @@ body {
 .empty-state p {
     color: #a0aec0;
     font-size: 1rem;
+}
+
+.no-signals {
+    display: none;
 }
 
 /* Info Section */
@@ -836,7 +758,7 @@ footer p {
     opacity: 0.7;
 }
 
-/* Modal */
+/* Модальне вікно фідбеку */
 .modal {
     display: none;
     position: fixed;
@@ -872,6 +794,128 @@ footer p {
     color: #4a5568;
     margin-bottom: 20px;
     font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.feedback-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+@media (min-width: 480px) {
+    .feedback-buttons {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+.feedback-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s;
+    text-align: center;
+    flex: 1;
+    min-width: 140px;
+}
+
+@media (min-width: 480px) {
+    .feedback-btn {
+        flex: none;
+    }
+}
+
+.feedback-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.feedback-yes { 
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%); 
+    color: white; 
+}
+.feedback-no { 
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
+    color: white; 
+}
+.feedback-skip { 
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%); 
+    color: white; 
+}
+
+.modal-content small {
+    color: #a0aec0;
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Message Container */
+#message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.message.success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+.message.error {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+}
+
+.message.warning {
+    background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+}
+
+/* Таймер дисплей */
+.timer-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.timer-display i {
+    color: #667eea;
+}
+
+.timer-text {
+    font-size: 1.1rem;
+    color: #2d3748;
+}
+
+/* Анімації для сигналів */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0.3; }
+}
+
+.signal-card.fading {
+    animation: fadeOut 0.5s ease-out;
 }
 
 /* Animations */
@@ -895,35 +939,38 @@ footer p {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Error State */
-.error-state {
-    text-align: center;
-    padding: 50px 20px;
-    background: #fff5f5;
-    border-radius: 12px;
-    border-left: 5px solid #f56565;
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
-.error-state i {
-    font-size: 3rem;
-    color: #f56565;
-    margin-bottom: 20px;
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
 }
 
-.error-state h3 {
-    color: #742a2a;
-    margin-bottom: 15px;
-}
-
-.error-state p {
-    color: #744210;
-    margin-bottom: 20px;
-    font-size: 1rem;
-}
-
-/* Utility Classes */
-.hidden {
-    display: none !important;
+/* Адаптивність для мобільних */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .auto-refresh-status {
+        width: 100%;
+    }
+    
+    .refresh-info {
+        justify-content: center;
+    }
+    
+    .feedback-buttons {
+        flex-direction: column;
+    }
+    
+    .feedback-btn {
+        width: 100%;
+    }
 }
 
 /* Mobile Optimizations */
@@ -986,12 +1033,8 @@ footer p {
         font-size: 1.2rem;
     }
     
-    .feedback-btn {
+    .feedback-trigger {
         padding: 10px 15px;
         font-size: 0.9rem;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
     }
 }
