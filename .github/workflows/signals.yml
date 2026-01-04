@@ -1,8 +1,9 @@
-
-name: Generate Trading Signals and Deploy
+name: Generate Trading Signals
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'  # Кожні 10 хвилин
+  workflow_dispatch:  # Дозволити ручний запуск
     inputs:
       language:
         description: 'Мова для генерації сигналів'
@@ -12,26 +13,9 @@ on:
         options:
           - uk
           - ru
-      trigger_source:
-        description: 'Джерело запуску'
-        default: 'manual'
-        type: string
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - 'data/**'
-      - 'logs/**'
-      - '*.md'
-      - '*.css'
-      - '*.js'
-      - '*.html'
-  schedule:
-    - cron: '*/10 * * * *'  # Кожні 10 хвилин
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   generate-signals:
@@ -49,26 +33,15 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Clear all caches
-      run: |
-        echo "🧹 Очищення кешу..."
-        pip cache purge
-        rm -rf ~/.cache/pip
-        rm -rf ~/.cache/apt
-        sudo apt-get clean
-        echo "✅ Кеш очищено"
-    
-    - name: Upgrade pip and install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade setuptools wheel
-        pip install --no-cache-dir -r backend/requirements.txt
+        pip install -r backend/requirements.txt
     
-    - name: Create necessary directories
+    - name: Create necessary directories and files
       run: |
         mkdir -p data
         mkdir -p logs
-        touch .nojekyll
         
         # Створюємо початкові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then 
@@ -89,26 +62,19 @@ jobs:
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         POCKET_DEMO: 'true'
-        SIGNAL_INTERVAL: '600'  # 10 хвилин
+        SIGNAL_INTERVAL: '600'
         MIN_CONFIDENCE: '0.7'
         MAX_DURATION: '5.0'
-        SIGNAL_VALIDITY_MINUTES: '10'  # Сигнали зникають через 10 хвилин
-        MAX_SIGNALS_ON_SITE: '6'       # Макс 6 сигналів на сайті
+        SIGNAL_VALIDITY_MINUTES: '10'
+        MAX_SIGNALS_ON_SITE: '6'
         ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
-        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'manual' }}
       run: |
         echo "🚀 Початок генерації сигналів..."
         echo "🌐 Мова: $LANGUAGE"
-        echo "📊 Активи: $ASSETS"
-        echo "🧠 Модель AI: $GROQ_MODEL"
-        echo "🕐 Часовий пояс: Київ (UTC+2)"
-        echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
-        echo "⏱️  Інтервал генерації: 10 хвилин"
-        echo "📈 Сигналів на сайті: максимум 6"
         
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
@@ -117,43 +83,17 @@ jobs:
         
         echo "✅ Генерація сигналів завершена"
     
-    - name: Commit and push all changes
+    - name: Commit and push generated signals
       run: |
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
         
         git add data/
-        git add logs/
-        git add .nojekyll
         
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [skip ci]"
-          git push origin main
+          git commit -m "🤖 Автоматична генерація сигналів: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}]"
+          git push
           echo "✅ Зміни закомічено та відправлено"
         fi
-
-  deploy:
-    needs: generate-signals
-    if: success()
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: '.'
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
