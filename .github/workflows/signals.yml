@@ -25,11 +25,9 @@ on:
       - '.github/workflows/signals.yml'
       - 'data/assets_config.json'
 
-# Дозволити запити з інших workflow
 permissions:
   contents: write
   actions: write
-  pages: write
 
 jobs:
   generate-signals:
@@ -136,8 +134,9 @@ jobs:
         echo "📊 Перевірка змін у файлах даних..."
         git status
         
-        # Додаємо файли даних
-        git add data/
+        # Додаємо тільки файли даних
+        git add data/signals.json
+        git add data/history.json
         git add logs/
         git add .nojekyll
         
@@ -149,13 +148,6 @@ jobs:
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
-    
-    - name: Deploy to GitHub Pages
-      if: success()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
-        publish_branch: main
-        force_orphan: false
-        keep_files: true
+
+    # УВАГА: НЕ додавайте Deploy to GitHub Pages тут!
+    # GitHub Pages автоматично оновлюється при push в main
