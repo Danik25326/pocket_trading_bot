@@ -1,4 +1,4 @@
-name: Generate Trading Signals and Deploy
+name: Generate Trading Signals
 
 on:
   workflow_dispatch:
@@ -20,8 +20,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   generate-signals:
@@ -62,7 +60,7 @@ jobs:
         
         # Створюємо початкові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then 
-          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kyiv (UTC+2)"}' > data/signals.json
+          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
         fi
         if [ ! -f data/history.json ]; then 
           echo '[]' > data/history.json
@@ -107,6 +105,19 @@ jobs:
         
         echo "✅ Генерація сигналів завершена"
     
+    - name: Generate config.js
+      run: |
+        echo "// config.js - automatically generated" > config.js
+        echo "window.GH_CONFIG = {" >> config.js
+        echo "    token: '${{ secrets.GH_PAT }}'," >> config.js
+        echo "    owner: 'Danik25326'," >> config.js
+        echo "    repo: 'pocket_trading_bot'," >> config.js
+        echo "    workflowId: 'signals.yml'" >> config.js
+        echo "};" >> config.js
+        
+        echo "✅ Config.js generated"
+        cat config.js
+    
     - name: Commit and push all changes
       run: |
         git config --global user.name 'GitHub Actions Bot'
@@ -115,6 +126,7 @@ jobs:
         git add data/
         git add logs/
         git add .nojekyll
+        git add config.js
         
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
@@ -123,27 +135,3 @@ jobs:
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
         fi
-
-  deploy:
-    needs: generate-signals
-    if: success()
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
-      
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: '.'
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
