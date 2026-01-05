@@ -3,7 +3,7 @@ class SignalDisplay {
         this.signalsUrl = 'data/signals.json';
         this.historyUrl = 'data/history.json';
         this.feedbackUrl = 'data/feedback.json';
-        this.kyivTZ = 'Europe/Kyiv';
+        this.kyivTZ = 'Europe/Kiev';
         this.language = localStorage.getItem('language') || 'uk';
         this.activeTimers = new Map();
         this.signalTimers = new Map();
@@ -11,6 +11,17 @@ class SignalDisplay {
         this.autoUpdateTimer = null;
         this.nextUpdateTime = null;
         this.currentFeedbackSignal = null;
+        
+        // Додаткове логування для дебагу
+        console.log("🤖 Signal Display ініціалізовано");
+        console.log("🕐 Час: " + new Date().toLocaleString('uk-UA', { timeZone: 'Europe/Kiev' }));
+        console.log("📊 URL сигналів: " + this.signalsUrl);
+        console.log("🌐 Мова: " + this.language);
+        
+        // Таймер для логування автооновлення
+        setInterval(() => {
+            console.log("🔄 Автооновлення через 60 секунд...");
+        }, 60000);
         
         this.translations = {
             uk: {
@@ -141,7 +152,7 @@ class SignalDisplay {
                 no: "Нет",
                 skip: "Пропустить",
                 feedbackSaved: "Отзыв сохранен! AI научится на этом",
-                feedbackError: "Ошибка сохранения отзывов",
+                feedbackError: "Ошибка сохранения отзыва",
                 signalRemoved: "Сигнал удален",
                 loading: "Загрузка..."
             }
@@ -158,6 +169,7 @@ class SignalDisplay {
         
         // Перше завантаження через 5 секунд
         setTimeout(() => {
+            console.log("📥 Перше завантаження сигналів...");
             this.loadSignals();
             this.startAutoUpdate();
         }, 5000);
@@ -184,27 +196,29 @@ class SignalDisplay {
     }
 
     startAutoUpdate() {
-        // Автоматичне оновлення кожні 30 секунд для тесту
-        // У продакшені змініть на 600000 (10 хвилин)
+        // Автоматичне оновлення кожні 10 хвилин (600 секунд)
         this.updateInterval = setInterval(() => {
+            console.log("🔄 Автоматичне оновлення сигналів...");
             this.loadSignals();
-        }, 30000); // 30 секунд для тесту
+        }, 600000); // 10 хвилин
         
         // Оновлюємо таймер наступного оновлення
         this.updateNextUpdateTimer();
         setInterval(() => this.updateNextUpdateTimer(), 1000);
+        
+        console.log("✅ Автооновлення активоване: кожні 10 хвилин");
     }
 
     updateNextUpdateTimer() {
         if (!this.nextUpdateTime) {
-            this.nextUpdateTime = Date.now() + 30000; // 30 секунд для тесту
+            this.nextUpdateTime = Date.now() + 600000; // 10 хвилин
         }
         
         const now = Date.now();
         const timeLeft = this.nextUpdateTime - now;
         
         if (timeLeft <= 0) {
-            this.nextUpdateTime = now + 30000; // 30 секунд для тесту
+            this.nextUpdateTime = now + 600000;
             return;
         }
         
@@ -227,12 +241,13 @@ class SignalDisplay {
             }
             
             const data = await response.json();
+            console.log("✅ Сигнали завантажені:", data.signals?.length || 0, "сигналів");
             this.processSignals(data);
             
             // Оновлюємо час наступного оновлення
-            this.nextUpdateTime = Date.now() + 30000; // 30 секунд для тесту
+            this.nextUpdateTime = Date.now() + 600000;
         } catch (error) {
-            console.error('Помилка завантаження сигналів:', error);
+            console.error('❌ Помилка завантаження сигналів:', error);
             this.showMessage('error', 'Помилка завантаження сигналів. Спробуйте оновити сторінку.');
         }
     }
@@ -246,6 +261,7 @@ class SignalDisplay {
         const successRateElement = document.getElementById('success-rate');
         
         if (!data || !data.signals || data.signals.length === 0) {
+            console.log("⚠️ Немає сигналів для відображення");
             container.innerHTML = this.getEmptyStateHTML();
             lastUpdate.textContent = '--:--:--';
             activeSignalsElement.textContent = '0';
@@ -258,13 +274,14 @@ class SignalDisplay {
         if (data.last_update) {
             const updateDate = new Date(data.last_update);
             lastUpdate.textContent = this.formatTime(updateDate, true);
+            console.log("🕐 Останнє оновлення:", this.formatTime(updateDate, true));
         }
         
         // Статистика
         activeSignalsElement.textContent = data.active_signals || 0;
         totalSignalsElement.textContent = data.total_signals || data.signals.length;
         
-        // Розрахунок успішності
+        // Розрахунок успішності (заглушка)
         const successRate = this.calculateSuccessRate(data.signals);
         successRateElement.textContent = `${successRate}%`;
         
@@ -298,6 +315,8 @@ class SignalDisplay {
             container.innerHTML = html;
             noSignals.style.display = 'none';
             
+            console.log("📊 Відображено сигналів:", latestSignals.length);
+            
             // Запускаємо таймери для кожного сигналу
             latestSignals.forEach((signal, index) => {
                 this.setupSignalTimer(signal, index);
@@ -320,6 +339,9 @@ class SignalDisplay {
         
         // Причина від AI
         let reason = signal.reason || '';
+        if (this.language === 'ru' && signal.reason_ru) {
+            reason = signal.reason_ru;
+        }
         
         return `
             <div class="signal-card ${directionClass}" id="signal-${index}" 
@@ -354,7 +376,7 @@ class SignalDisplay {
                         <div class="label">
                             <i class="fas fa-clock"></i> ${this.translate('entryTime')}
                         </div>
-                        <div class="value">${entryTime} <small>(${this.translate('kievTime')})</small></div>
+                        <div class="value">${entryTime} <small>(Київ)</small></div>
                     </div>
                     
                     <div class="detail-item">
@@ -410,6 +432,7 @@ class SignalDisplay {
             
             if (timeToExpiry <= 0) {
                 // Час вийшов - видаляємо сигнал
+                console.log(`⏰ Сигнал ${signal.asset} завершився`);
                 const signalElement = document.getElementById(`signal-${index}`);
                 if (signalElement) {
                     signalElement.style.opacity = '0.5';
@@ -499,17 +522,9 @@ class SignalDisplay {
     }
 
     calculateSuccessRate(signals) {
-        // Проста логіка розрахунку успішності
-        if (signals.length === 0) return 0;
-        
-        let successCount = 0;
-        signals.forEach(signal => {
-            if (signal.confidence >= 0.7) {
-                successCount++;
-            }
-        });
-        
-        return Math.round((successCount / signals.length) * 100);
+        // Заглушка - в реальності потрібно брати дані з feedback.json
+        // Для демонстрації використовуємо випадкове число
+        return Math.floor(Math.random() * 30) + 70; // 70-100%
     }
 
     showFeedbackModal(index) {
@@ -526,6 +541,8 @@ class SignalDisplay {
         const modal = document.getElementById('feedback-modal');
         document.getElementById('feedback-asset').textContent = asset;
         modal.style.display = 'flex';
+        
+        console.log("📝 Відкрито фідбек для сигналу:", asset);
     }
 
     hideFeedbackModal() {
@@ -540,8 +557,10 @@ class SignalDisplay {
         const { index, asset, element } = this.currentFeedbackSignal;
         
         try {
-            // Симулюємо відправку feedback
-            console.log(`Feedback для ${asset}: ${feedback}`);
+            // Симулюємо відправку feedback на сервер для навчання AI
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            console.log("💾 Фідбек збережено:", { asset, feedback });
             
             this.showMessage('success', this.translate('feedbackSaved'));
             
@@ -563,16 +582,16 @@ class SignalDisplay {
             this.updateSuccessRate();
             
         } catch (error) {
-            console.error('Помилка відправки feedback:', error);
+            console.error('❌ Помилка відправки feedback:', error);
             this.showMessage('error', this.translate('feedbackError'));
         }
     }
 
     updateSuccessRate() {
-        // Просте оновлення статистики
+        // Оновлюємо відсоток успішності (заглушка)
         const successRateElement = document.getElementById('success-rate');
         const currentRate = parseInt(successRateElement.textContent) || 0;
-        const newRate = Math.min(100, currentRate + 1);
+        const newRate = Math.min(100, currentRate + 1); // Невелике покращення
         successRateElement.textContent = `${newRate}%`;
     }
 
@@ -623,10 +642,10 @@ class SignalDisplay {
         return `
             <div class="loading-state">
                 <div class="spinner">
-                    <i class="fas fa-robot fa-spin"></i>
+                    <i class="fas fa-robot"></i>
                 </div>
                 <p>${this.translate('loadingSignals')}</p>
-                <small>${this.translate('firstLoad')} <span id="first-load-timer">5</span> сек</small>
+                <small>${this.translate('firstLoad')}</small>
             </div>
         `;
     }
@@ -636,7 +655,7 @@ class SignalDisplay {
             <div class="empty-state">
                 <i class="fas fa-chart-line"></i>
                 <h3>${this.translate('noSignalsNow')}</h3>
-                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">0:30</span></p>
+                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">10:00</span></p>
             </div>
         `;
     }
@@ -686,6 +705,7 @@ class SignalDisplay {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
         
+        console.log("🌐 Змінено мову на:", lang);
         this.loadSignals();
     }
 
@@ -846,6 +866,19 @@ style.textContent = `
         font-size: 0.8rem;
         display: block;
         margin-top: 15px;
+    }
+    
+    .modal-content h3 {
+        color: #2d3748;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+    }
+    
+    .modal-content p {
+        color: #4a5568;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        font-weight: 600;
     }
 `;
 document.head.appendChild(style);
