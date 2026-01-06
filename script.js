@@ -596,16 +596,17 @@ class SignalDisplay {
     }
 
     updateKyivTime() {
+        // ✅ НОВА ФУНКЦІЯ: коректне відображення київського часу
         const now = new Date();
-        const timeElement = document.getElementById('server-time');
+        const kyivTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Kiev"}));
         
+        const hours = kyivTime.getHours().toString().padStart(2, '0');
+        const minutes = kyivTime.getMinutes().toString().padStart(2, '0');
+        const seconds = kyivTime.getSeconds().toString().padStart(2, '0');
+        
+        const timeElement = document.getElementById('server-time');
         if (timeElement) {
-            timeElement.textContent = now.toLocaleTimeString('uk-UA', {
-                timeZone: this.kyivTZ,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+            timeElement.textContent = `${hours}:${minutes}:${seconds}`;
         }
     }
 
