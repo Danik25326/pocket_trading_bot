@@ -16,7 +16,7 @@ on:
         default: 'manual'
         type: string
   schedule:
-    - cron: '*/9 * * * *'  # Чітко кожні 10 хвилин
+    - cron: '*/10 * * * *'  # Чітко кожні 10 хвилин
 
 permissions:
   contents: write
@@ -44,118 +44,85 @@ jobs:
     - name: Clear all caches
       run: |
         echo "🧹 Очищення кешу..."
-        pip cache purge || echo "Не вдалося очистити pip cache"
-        rm -rf ~/.cache/pip 2>/dev/null || true
+        pip cache purge
+        rm -rf ~/.cache/pip
+        rm -rf ~/.cache/apt
+        sudo apt-get clean
         echo "✅ Кеш очищено"
     
     - name: Upgrade pip and install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade setuptools wheel
-        if [ -f backend/requirements.txt ]; then
-          pip install --no-cache-dir -r backend/requirements.txt
-          echo "✅ Залежності встановлено"
-        else
-          echo "❌ Файл backend/requirements.txt не знайдено!"
-          exit 1
-        fi
-    
-    - name: Verify Python files exist
-      run: |
-        echo "📂 Перевірка наявності Python файлів..."
-        if [ ! -f backend/signal_generator.py ]; then
-          echo "❌ Файл backend/signal_generator.py не знайдено!"
-          exit 1
-        fi
-        if [ ! -f backend/groq_analyzer.py ]; then
-          echo "❌ Файл backend/groq_analyzer.py не знайдено!"
-          exit 1
-        fi
-        echo "✅ Всі Python файли на місці"
+        pip install --no-cache-dir -r backend/requirements.txt
     
     - name: Create necessary directories
       run: |
-        echo "📁 Створення директорій..."
-        mkdir -p data logs
+        mkdir -p data
+        mkdir -p logs
         touch .nojekyll
         
         # Створюємо початкові файли, якщо їх немає
         if [ ! -f data/signals.json ]; then 
           echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
-          echo "✅ Створено signals.json"
         fi
         if [ ! -f data/history.json ]; then 
           echo '[]' > data/history.json
-          echo "✅ Створено history.json"
         fi
         if [ ! -f data/assets_config.json ]; then 
           echo '{"preferred_assets": ["GBPJPY_otc", "EURUSD_otc", "USDJPY_otc"]}' > data/assets_config.json
-          echo "✅ Створено assets_config.json"
         fi
         if [ ! -f data/lessons.json ]; then 
           echo '[]' > data/lessons.json
-          echo "✅ Створено lessons.json"
         fi
     
     - name: Generate trading signals
       env:
+        # 🔴 ДОДАЄМО ЧАСОВИЙ ПОЯС
         TZ: 'Europe/Kiev'
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         POCKET_DEMO: 'true'
-        SIGNAL_INTERVAL: '600'
+        SIGNAL_INTERVAL: '600'  # 10 хвилин
         MIN_CONFIDENCE: '0.7'
         MAX_DURATION: '5.0'
-        SIGNAL_VALIDITY_MINUTES: '10'
-        MAX_SIGNALS_ON_SITE: '6'
+        SIGNAL_VALIDITY_MINUTES: '10'  # Сигнали зникають через 10 хвилин
+        MAX_SIGNALS_ON_SITE: '6'       # Макс 6 сигналів на сайті
         ASSETS: 'GBPJPY_otc,EURUSD_otc,USDJPY_otc'
         TIMEFRAMES: '120'
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
-        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'schedule' }}  # 🆕 Змінив на 'schedule'
+        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'manual' }}
       run: |
         echo "🚀 ПОЧАТОК ГЕНЕРАЦІЇ СИГНАЛІВ"
-        echo "========================================"
-        echo "⏰ Запущено: $(date '+%Y-%m-%d %H:%M:%S') UTC"
-        echo "🏠 Київський час: $(TZ='Europe/Kiev' date '+%Y-%m-%d %H:%M:%S')"
-        echo "📅 Наступний запуск: через 10 хвилин"
+        echo "⏰ Запущено за розкладом: $(date '+%Y-%m-%d %H:%M:%S') UTC"
+        echo "📅 Наступний запуск: через 10 хвилин (у :00, :10, :20, :30, :40, :50)"
         echo "🌐 Мова: $LANGUAGE"
         echo "📊 Активи: $ASSETS"
-        echo "🧠 AI: $GROQ_MODEL"
-        echo "🔧 Джерело: $TRIGGER_SOURCE"
-        echo "========================================"
+        echo "🧠 Модель AI: $GROQ_MODEL"
+        echo "🕐 Часовий пояс: $TZ (UTC+2)"
+        echo "🔧 Джерело запуску: $TRIGGER_SOURCE"
+        echo "⏱️  Інтервал генерації: 10 хвилин"
+        echo "📈 Сигналів на сайті: максимум 6"
+        
+        # Додаткове логування для дебагу
+        echo "📋 Перевірка часу:"
+        date
+        echo "Таймзона:"
+        timedatectl status 2>/dev/null || echo "Timedatectl не доступний"
         
         export PYTHONPATH=$PYTHONPATH:$(pwd)/backend:$(pwd):$(pwd)/utils
         
         cd backend
-        echo "▶️ Запуск signal_generator.py..."
         python signal_generator.py
         
-        echo "✅ Генерація завершена о $(date '+%H:%M:%S') UTC"
-        echo "⏳ Наступна через 10 хвилин"
-    
-    - name: Verify signals were created
-      run: |
-        echo "🔍 Перевірка результатів..."
-        if [ -f data/signals.json ]; then
-          SIGNALS_COUNT=$(jq '.signals | length' data/signals.json 2>/dev/null || echo "0")
-          echo "📊 Згенеровано сигналів: $SIGNALS_COUNT"
-          
-          if [ "$SIGNALS_COUNT" -gt 0 ]; then
-            echo "🎯 Сигнали успішно згенеровані!"
-          else
-            echo "⚠️  Сигналів не знайдено (можливо AI не повернув результати)"
-          fi
-        else
-          echo "❌ Файл signals.json не створено!"
-          exit 1
-        fi
+        echo "✅ Генерація сигналів завершена"
+        echo "🕐 Час завершення: $(date '+%H:%M:%S') UTC"
+        echo "⏳ Наступна генерація: через 10 хвилин"
     
     - name: Commit and push all changes
-      if: success()  # 🆕 Тільки при успіху
       run: |
-        echo "💾 Підготовка до коміту..."
         git config --global user.name 'GitHub Actions Bot'
         git config --global user.email 'actions@github.com'
         
@@ -167,20 +134,14 @@ jobs:
         if git diff --staged --quiet; then
           echo "⚠️ Немає змін для коміту"
         else
-          CURRENT_TIME=$(TZ='Europe/Kiev' date '+%H:%M')
           git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [Auto]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
-          echo "🕐 Час коміту (Київ): $CURRENT_TIME"
+          echo "📤 Запущено пуш з оновленими сигналами"
         fi
     
     - name: Log completion time
-      if: always()  # 🆕 Завжди виконуємо
       run: |
-        echo "========================================"
-        echo "🏁 Завершено о $(date '+%H:%M:%S') UTC"
-        echo "🏠 Київський час: $(TZ='Europe/Kiev' date '+%H:%M:%S')"
-        echo "⏳ Наступна генерація через 10 хвилин"
-        echo "📊 Перевірка: Actions -> signals.yml"
-        echo "🌐 Сайт: https://danik25326.github.io/pocket_trading_bot/"
-        echo "========================================"
+        echo "🏁 Генерація завершена о $(date '+%H:%M:%S') UTC"
+        echo "⏳ Наступна генерація через 10 хвилин (у :00, :10, :20, :30, :40, :50)"
+        echo "📊 Для перевірки: перейдіть у Actions -> signals.yml"
