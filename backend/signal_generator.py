@@ -251,12 +251,27 @@ async def main():
     
     # Важливо: Повідомляємо про наступний автоматичний запуск
     print(f"\n⏰ НАСТУПНИЙ АВТОМАТИЧНИЙ ЗАПУСК:")
-    now = datetime.utcnow()
-    next_minute = (now.minute // 10 + 1) * 10
+    
+    # ВИПРАВЛЕНИЙ КОД:
+    now_utc = datetime.utcnow()
+    
+    # Розраховуємо наступний 10-хвилинний інтервал
+    current_minute = now_utc.minute
+    next_minute = ((current_minute // 10) + 1) * 10
+    
     if next_minute >= 60:
-        next_minute = 0
-    print(f"   • О {next_minute:02d}:00 UTC")
-    print(f"   • Через {(next_minute - now.minute) % 10} хвилин")
+        # Перехід на наступну годину
+        next_time_utc = now_utc.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+    else:
+        # Це ж година
+        next_time_utc = now_utc.replace(minute=next_minute, second=0, microsecond=0)
+    
+    # Розраховуємо різницю в часі
+    time_diff = next_time_utc - now_utc
+    minutes_left = int(time_diff.total_seconds() // 60)
+    
+    print(f"   • О {next_time_utc.strftime('%H:%M')} UTC")
+    print(f"   • Через {minutes_left} хвилин")
     print("="*60)
 
 if __name__ == "__main__":
