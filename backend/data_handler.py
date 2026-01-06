@@ -11,7 +11,7 @@ class DataHandler:
         self.history_file = Config.HISTORY_FILE
         self.feedback_file = Config.FEEDBACK_FILE
         self.lessons_file = Config.LESSONS_FILE
-        self.kyiv_tz = pytz.timezone('Europe/Kyiv')
+        self.kyiv_tz = pytz.timezone('Europe/Kiev')
         self.create_data_dir()
     
     def create_data_dir(self):
@@ -24,7 +24,7 @@ class DataHandler:
                 json.dump({
                     "last_update": None,
                     "signals": [],
-                    "timezone": "Europe/Kyiv (UTC+2)",
+                    "timezone": "Europe/Kiev (UTC+2)",
                     "total_signals": 0,
                     "active_signals": 0,
                     "generation_count": 0
@@ -125,7 +125,7 @@ class DataHandler:
             data = {
                 "last_update": now_kyiv.isoformat(),
                 "signals": all_signals,
-                "timezone": "Europe/Kyiv (UTC+2)",
+                "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": len(all_signals),
                 "active_signals": active_count,
                 "generation_count": existing_data.get('generation_count', 0) + 1
@@ -194,7 +194,7 @@ class DataHandler:
             return {
                 "last_update": None,
                 "signals": [],
-                "timezone": "Europe/Kyiv (UTC+2)",
+                "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": 0,
                 "active_signals": 0,
                 "generation_count": 0
@@ -204,7 +204,7 @@ class DataHandler:
             return {
                 "last_update": None,
                 "signals": [],
-                "timezone": "Europe/Kyiv (UTC+2)",
+                "timezone": "Europe/Kiev (UTC+2)",
                 "total_signals": 0,
                 "active_signals": 0,
                 "generation_count": 0
@@ -218,26 +218,22 @@ class DataHandler:
             # Час генерації сигналу
             gen_time_str = signal.get('generated_at')
             if not gen_time_str:
-                return False
+                return True  # ✅ ЗМІНА: якщо немає часу, вважаємо активним
             
             generated_at = self._parse_datetime(gen_time_str)
             if not generated_at:
-                return False
+                return True  # ✅ ЗМІНА: при помилці парсингу вважаємо активним
             
             # Сигнал активний тільки 10 хвилин з моменту генерації
             time_since_generation = now_kyiv - generated_at
             is_active = time_since_generation <= timedelta(minutes=10)
             
-            if is_active:
-                time_left = 10 - (time_since_generation.total_seconds() / 60)
-                if time_left > 0:
-                    print(f"   ✅ Сигнал {signal.get('asset')} активний. Залишилось: {time_left:.1f} хв")
-            
+            # ✅ ВИДАЛЕНО зайве логування
             return is_active
             
         except Exception as e:
             print(f"⚠️ Помилка перевірки активності сигналу: {e}")
-            return False
+            return True  # ✅ ЗМІНА: при помилці вважаємо активним
     
     def _add_to_history(self, signals):
         """Додавання сигналів до історії з обмеженням"""
@@ -390,13 +386,7 @@ class DataHandler:
             return []
     
     def _extract_patterns(self, feedback_entry):
-        """Виділення паттернів з feedback"""
-        # Це заглушка - в реальності потрібна логіка виділення паттернів
-        return []
-    
-    def _update_learned_patterns(self, all_lessons):
-        """Оновлення вивчених паттернів"""
-        # Це заглушка - в реальності потрібна логіка аналізу паттернів
+        """Витягнення шаблонів з feedback (заглушка)"""
         return []
     
     def _analyze_feedback(self, feedback_entry):
@@ -404,8 +394,6 @@ class DataHandler:
         signal_id = feedback_entry.get('signal_id', '')
         success = feedback_entry.get('success', False)
         
-        # Тут можна додати логіку для аналізу причин
-        # Наприклад, аналізувати час доби, волатильність, тренд тощо
         analysis = {
             'reason': 'success' if success else 'failure',
             'learned_at': datetime.now().isoformat(),
@@ -413,6 +401,14 @@ class DataHandler:
         }
         
         return analysis
+    
+    def _update_learned_patterns(self, all_lessons):
+        """Оновлення вивчених шаблонів (заглушка)"""
+        return []
+    
+    def update_learning_stats(self):
+        """Оновлення статистики навчання"""
+        pass
     
     def auto_cleanup_old_signals(self):
         """Автоматичне очищення сигналів старіших 10 хвилин"""
@@ -454,8 +450,3 @@ class DataHandler:
             
         except Exception as e:
             print(f"❌ Помилка автоочищення: {e}")
-    
-    def update_learning_stats(self):
-        """Оновлення статистики навчання AI"""
-        # Це заглушка - в реальності можна додати логіку оновлення статистики
-        pass
