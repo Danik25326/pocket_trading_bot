@@ -3,17 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🤖 AI Trading Signals - Автоматичні сигнали</title>
+    <title>🤖 AI Trading Signals - Автоматичні сигнали кожні 10 хвилин</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    
+    <!-- Мета-теги для відключення кешування -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <style>
+        /* Додаткові стилі для покращення відображення */
+        .up-icon {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+            color: white !important;
+        }
+        
+        .down-icon {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%) !important;
+            color: white !important;
+        }
+        
+        .signal-card.expired {
+            border-left-color: #a0aec0 !important;
+            opacity: 0.7;
+        }
+        
+        .signal-card.feedback-given {
+            border-left-color: #9f7aea !important;
+        }
+        
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 11px;
+            z-index: 10000;
+            display: none;
+        }
+        
+        .debug-toggle {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10000;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header class="main-header">
             <div class="header-content">
                 <h1><i class="fas fa-robot"></i> <span data-translate="title">AI Trading Signals</span></h1>
-                <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI</p>
+                <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI (оновлення кожні 10 хвилин)</p>
                 <div class="header-stats">
                     <span class="stat-badge"><i class="fas fa-sync-alt"></i> <span data-translate="autoUpdate">Оновлення:</span> <span data-translate="every10min">кожні 10 хв</span></span>
                     <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 70%</span>
@@ -33,10 +87,11 @@
                         <i class="fas fa-clock"></i>
                         <div class="refresh-text">
                             <span data-translate="nextUpdate">Наступне оновлення:</span>
-                            <span id="next-update-timer" class="timer">5:00</span>
+                            <span id="next-update-timer" class="timer">10:00</span>
                         </div>
                     </div>
                 </div>
+                <!-- Кнопки додадуться автоматично через JavaScript -->
             </div>
         </header>
 
@@ -94,14 +149,14 @@
                 <div class="info-content">
                     <h3 data-translate="systemActive">Система активна!</h3>
                     <p data-translate="autoDescription">
-                        Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини для точнішого прогнозу.
+                        Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини для точнішого прогнозу. Максимум 6 сигналів одночасно.
                     </p>
                 </div>
             </div>
 
             <div class="signals-section">
                 <div class="section-header">
-                    <h2><i class="fas fa-bell"></i> <span data-translate="currentSignals">Актуальні сигнали</span></h2>
+                    <h2><i class="fas fa-bell"></i> <span data-translate="currentSignals">Актуальні сигнали (останні 6)</span></h2>
                     <div class="time-info">
                         <i class="fas fa-globe-europe"></i> <span data-translate="serverTime">Київський час:</span> <span id="server-time">--:--</span>
                     </div>
@@ -113,7 +168,7 @@
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
                         <p data-translate="loadingSignals">Завантаження сигналів...</p>
-                        <small data-translate="firstLoad">Перше оновлення через <span id="first-load-timer">5</span> сек</small>
+                        <small data-translate="firstLoad">Перше оновлення через <span id="first-load-timer">3</span> сек</small>
                     </div>
                 </div>
                 
@@ -149,6 +204,10 @@
         <footer>
             <p>© 2025 AI Trading Signals | <span data-translate="createdWith">Створено з використанням</span> Groq Cloud & PocketOption API</p>
             <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT OSS 120B • Python • GitHub Actions • Автоматичне навчання</p>
+            <p class="tech-info" style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">
+                Репозиторій: <a href="https://github.com/Danik25326/pocket_trading_bot" style="color: white; text-decoration: underline;">Danik25326/pocket_trading_bot</a> | 
+                Версія: 2.0 | Оновлення: кожні 10 хв
+            </p>
         </footer>
     </div>
 
@@ -156,7 +215,7 @@
     <div id="feedback-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <h3 data-translate="feedbackQuestion">Сигнал був вірний?</h3>
-            <p id="feedback-asset"></p>
+            <p id="feedback-asset" style="margin: 10px 0; font-weight: bold; color: #2d3748;"></p>
             <div class="feedback-buttons">
                 <button class="feedback-btn feedback-yes" onclick="signalDisplay.submitFeedback('yes')">
                     <i class="fas fa-check-circle"></i> <span data-translate="feedbackYes">Так, вірний</span>
@@ -168,12 +227,50 @@
                     <i class="fas fa-forward"></i> <span data-translate="feedbackSkip">Пропустити</span>
                 </button>
             </div>
-            <small data-translate="feedbackNote">Ваша відповідь допомагає AI вчитися та покращувати точність</small>
+            <small data-translate="feedbackNote" style="display: block; margin-top: 15px; color: #718096;">Ваша відповідь допомагає AI вчитися та покращувати точність</small>
         </div>
     </div>
 
     <div id="message-container"></div>
     
+    <!-- Кнопка для перемикання debug інформації -->
+    <button class="debug-toggle" onclick="toggleDebug()">🧪 Debug</button>
+    
+    <!-- Debug інформація -->
+    <div id="debug-info" class="debug-info">
+        <div><strong>Debug Info</strong></div>
+        <div>URL: <span id="debug-url"></span></div>
+        <div>Час: <span id="debug-time"></span></div>
+        <div>Сигналів: <span id="debug-signals">0</span></div>
+    </div>
+    
     <script src="script.js"></script>
+    
+    <script>
+        // Додатковий debug скрипт
+        function toggleDebug() {
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.style.display = debugInfo.style.display === 'block' ? 'none' : 'block';
+            updateDebugInfo();
+        }
+        
+        function updateDebugInfo() {
+            document.getElementById('debug-url').textContent = window.location.href;
+            document.getElementById('debug-time').textContent = new Date().toLocaleTimeString();
+            
+            if (window.signalDisplay && window.signalDisplay.signalsUrl) {
+                document.getElementById('debug-url').textContent = window.signalDisplay.signalsUrl;
+            }
+        }
+        
+        // Оновлюємо debug інформацію кожні 5 секунд
+        setInterval(updateDebugInfo, 5000);
+        
+        // Автоматичне оновлення сторінки кожні 30 хвилин на випадок проблем з пам'яттю
+        setTimeout(() => {
+            console.log("🔄 Планове оновлення сторінки для стабільності...");
+            location.reload();
+        }, 30 * 60 * 1000);
+    </script>
 </body>
 </html>
