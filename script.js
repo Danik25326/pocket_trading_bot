@@ -17,6 +17,9 @@ class SignalDisplay {
         console.log("🌐 URL сигналів: " + this.signalsUrl);
         console.log("💾 Збережена мова: " + this.language);
         
+        // ЗМІНА: Встановлюємо оновлення кожні 30 секунд для швидшого відображення
+        this.updateIntervalTime = 30000; // 30 секунд
+        
         this.translations = {
             uk: {
                 title: "AI Trading Signals",
@@ -194,45 +197,44 @@ class SignalDisplay {
     }
 
     startAutoUpdate() {
-        // Автоматичне оновлення кожні 60 секунд (1 хвилина)
+        // Автоматичне оновлення кожні 30 секунд для швидшого відображення
         this.updateInterval = setInterval(() => {
             console.log("🔄 Автоматичне оновлення сигналів...");
             this.loadSignals();
-        }, 60000);
+        }, this.updateIntervalTime);
         
         // Оновлюємо таймер наступного оновлення
         this.updateNextUpdateTimer();
         setInterval(() => this.updateNextUpdateTimer(), 1000);
         
-        console.log("✅ Автооновлення активоване: кожну хвилину");
+        console.log("✅ Автооновлення активоване: кожні " + (this.updateIntervalTime / 1000) + " секунд");
     }
 
     updateNextUpdateTimer() {
         if (!this.nextUpdateTime) {
-            this.nextUpdateTime = Date.now() + 60000; // 1 хвилина
+            this.nextUpdateTime = Date.now() + this.updateIntervalTime;
         }
         
         const now = Date.now();
         const timeLeft = this.nextUpdateTime - now;
         
         if (timeLeft <= 0) {
-            this.nextUpdateTime = now + 60000;
+            this.nextUpdateTime = now + this.updateIntervalTime;
             return;
         }
         
-        const minutes = Math.floor(timeLeft / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        const seconds = Math.floor(timeLeft / 1000);
         
         // Безпечне оновлення елементів
         const updateTimer = document.getElementById('next-update-timer');
         const autoTimer = document.getElementById('next-auto-timer');
         
         if (updateTimer) {
-            updateTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            updateTimer.textContent = `${seconds}s`;
         }
         
         if (autoTimer) {
-            autoTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            autoTimer.textContent = `${seconds}s`;
         }
     }
 
@@ -247,13 +249,27 @@ class SignalDisplay {
             
             const data = await response.json();
             console.log("✅ Сигнали завантажені:", data.signals?.length || 0, "сигналів");
-            console.log("📊 Активних сигналів:", data.active_signals || 0);
-            console.log("🕐 Останнє оновлення:", data.last_update);
-            console.log("📅 Форматований час:", data.last_update_formatted);
+            
+            // ЗМІНА: Фільтруємо тільки актуальні сигнали (останні 10 хвилин)
+            const nowKyiv = new Date();
+            const tenMinutesAgo = new Date(nowKyiv.getTime() - 10 * 60000);
+            
+            // Перевіряємо, що сигнали дійсно актуальні
+            if (data.signals && data.signals.length > 0) {
+                console.log("🕐 Актуальність сигналів:");
+                data.signals.forEach((signal, index) => {
+                    if (signal.generated_at) {
+                        const genTime = new Date(signal.generated_at);
+                        const isRecent = genTime > tenMinutesAgo;
+                        console.log(`  ${index + 1}. ${signal.asset}: ${genTime.toLocaleTimeString()} - ${isRecent ? '✅ Актуальний' : '❌ Старий'}`);
+                    }
+                });
+            }
+            
             this.processSignals(data);
             
             // Оновлюємо час наступного оновлення
-            this.nextUpdateTime = Date.now() + 60000;
+            this.nextUpdateTime = Date.now() + this.updateIntervalTime;
             
         } catch (error) {
             console.error('❌ Помилка завантаження сигналів:', error);
@@ -272,20 +288,7 @@ class SignalDisplay {
         if (!data || !data.signals || data.signals.length === 0) {
             console.log("⚠️ Немає сигналів для відображення");
             container.innerHTML = this.getEmptyStateHTML();
-            
-            // Оновлюємо час останнього оновлення
-            if (data.last_update) {
-                try {
-                    const updateTime = this.convertToKyivTime(data.last_update, true);
-                    lastUpdate.textContent = updateTime;
-                    console.log("🕐 Останнє оновлення:", updateTime);
-                } catch (e) {
-                    lastUpdate.textContent = data.last_update_formatted || '--:--:--';
-                }
-            } else {
-                lastUpdate.textContent = '--:--:--';
-            }
-            
+            lastUpdate.textContent = '--:--:--';
             activeSignalsElement.textContent = '0';
             totalSignalsElement.textContent = '0';
             successRateElement.textContent = '0%';
@@ -293,59 +296,90 @@ class SignalDisplay {
             return;
         }
         
-        if (data.last_update) {
+        // ЗМІНА: Отримуємо час останнього оновлення з signals.json
+        // Використовуємо last_update або час найновішого сигналу
+        let lastUpdateTime = data.last_update;
+        
+        // Якщо немає last_update, беремо час найновішого сигналу
+        if (!lastUpdateTime) {
+            const latestSignal = data.signals.reduce((latest, current) => {
+                const currentTime = new Date(current.generated_at || 0);
+                const latestTime = new Date(latest.generated_at || 0);
+                return currentTime > latestTime ? current : latest;
+            });
+            
+            if (latestSignal && latestSignal.generated_at) {
+                lastUpdateTime = latestSignal.generated_at;
+                console.log("📊 Використано час з найновішого сигналу:", latestSignal.asset);
+            }
+        }
+        
+        // Конвертуємо час в київський формат
+        if (lastUpdateTime) {
             try {
-                const updateTime = this.convertToKyivTime(data.last_update, true);
+                const updateTime = this.convertToKyivTime(lastUpdateTime, true);
                 lastUpdate.textContent = updateTime;
-                console.log("🕐 Останнє оновлення:", updateTime);
+                console.log("🕐 Останнє оновлення (форматоване):", updateTime);
             } catch (e) {
-                lastUpdate.textContent = data.last_update_formatted || '--:--:--';
+                console.error("❌ Помилка конвертації часу:", e);
+                lastUpdate.textContent = '--:--:--';
             }
         } else {
             lastUpdate.textContent = '--:--:--';
         }
         
+        // Фільтруємо сигнали: тільки актуальні (не старіші 10 хвилин)
+        const nowKyiv = new Date();
+        const tenMinutesAgo = new Date(nowKyiv.getTime() - 10 * 60000);
+        
+        const recentSignals = data.signals.filter(signal => {
+            if (!signal.generated_at) return false;
+            const genTime = new Date(signal.generated_at);
+            return genTime > tenMinutesAgo;
+        });
+        
+        console.log(`📊 Загалом сигналів: ${data.signals.length}, Актуальних: ${recentSignals.length}`);
+        
         // Статистика
-        activeSignalsElement.textContent = data.active_signals || 0;
+        activeSignalsElement.textContent = recentSignals.length;
         totalSignalsElement.textContent = data.total_signals || data.signals.length;
         
         // Розрахунок успішності
-        const successRate = this.calculateSuccessRate(data.signals);
+        const successRate = this.calculateSuccessRate(recentSignals);
         successRateElement.textContent = `${successRate}%`;
         
         // Відображення сигналів
-        let html = '';
-        let hasSignals = false;
-        
-        // Сортуємо сигнали за часом генерації (новіші перші)
-        const sortedSignals = [...data.signals].sort((a, b) => {
-            const timeA = new Date(a.generated_at || a.last_updated || 0);
-            const timeB = new Date(b.generated_at || b.last_updated || 0);
-            return timeB - timeA;
-        });
-        
-        // Обмежуємо до 6 останніх сигналів
-        const latestSignals = sortedSignals.slice(0, 6);
-        
-        latestSignals.forEach((signal, index) => {
-            const confidencePercent = Math.round(signal.confidence * 100);
-            if (confidencePercent < 70) return;
-            
-            const signalHTML = this.createSignalHTML(signal, index);
-            if (signalHTML) {
-                html += signalHTML;
-                hasSignals = true;
-            }
-        });
-        
-        if (!hasSignals) {
+        if (recentSignals.length === 0) {
             container.innerHTML = this.getNoSignalsHTML();
             noSignals.style.display = 'block';
+            console.log("📭 Немає актуальних сигналів (старіші 10 хвилин)");
         } else {
+            let html = '';
+            
+            // Сортуємо сигнали за часом генерації (новіші перші)
+            const sortedSignals = [...recentSignals].sort((a, b) => {
+                const timeA = new Date(a.generated_at || 0);
+                const timeB = new Date(b.generated_at || 0);
+                return timeB - timeA;
+            });
+            
+            // Обмежуємо до 6 останніх сигналів
+            const latestSignals = sortedSignals.slice(0, 6);
+            
+            latestSignals.forEach((signal, index) => {
+                const confidencePercent = Math.round(signal.confidence * 100);
+                if (confidencePercent < 70) return;
+                
+                const signalHTML = this.createSignalHTML(signal, index);
+                if (signalHTML) {
+                    html += signalHTML;
+                }
+            });
+            
             container.innerHTML = html;
             noSignals.style.display = 'none';
             
-            console.log("📊 Відображено сигналів:", latestSignals.length);
+            console.log("📊 Відображено актуальних сигналів:", latestSignals.length);
             
             // Запускаємо таймери для кожного сигналу
             latestSignals.forEach((signal, index) => {
@@ -684,7 +718,7 @@ class SignalDisplay {
             <div class="empty-state">
                 <i class="fas fa-chart-line"></i>
                 <h3>${this.translate('noSignalsNow')}</h3>
-                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">01:00</span></p>
+                <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">30s</span></p>
             </div>
         `;
     }
