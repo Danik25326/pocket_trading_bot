@@ -124,7 +124,7 @@ class SignalDisplay {
                 aiLearningDesc: "анализирует успешность сигналов",
                 autoCleanup: "Автоочистка:",
                 autoCleanupDesc: "сигналы исчезают через 10 минут",
-                tokenLimits: "Лимиты использования",
+                tokenLimits: "Ліміты использования",
                 tokenLimitsDesc: "Для экономии токенов AI ограничено до 3 сигналов за раз. Система рассчитана на длительную работу.",
                 createdWith: "Создано с использованием",
                 technologies: "Технологии:",
