@@ -16,7 +16,7 @@ on:
         default: 'manual'
         type: string
   schedule:
-    - cron: '*/10 * * * *'  # Чітко кожні 10 хвилин
+    - cron: '*/9 * * * *'  # Чітко кожні 10 хвилин
 
 permissions:
   contents: write
