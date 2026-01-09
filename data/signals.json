@@ -1,36 +1,6 @@
 {
-  "last_update": "2026-01-09T21:50:03.012551+02:00",
+  "last_update": "2026-01-09T21:58:50.301773+02:00",
   "signals": [
-    {
-      "asset": "EURUSD_otc",
-      "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "21:42",
-      "duration": 5,
-      "reason": "Тренд визначений як UP, SMA5 вище поточної ціни, а SMA10 підтримує підвищення. Волатильність низька, тому обираємо тривалість 5 хв., що підвищує ймовірність успішного результату.",
-      "timestamp": "2026-01-09 21:40:05",
-      "generated_at": "2026-01-09T21:40:06.486388+02:00",
-      "volatility": 0.1181,
-      "id": "EURUSD_otc_20260109214006",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-09T19:40:06.486437Z",
-      "expires_at": "2026-01-09T21:50:06.486388+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.73,
-      "entry_time": "21:42",
-      "duration": 5,
-      "reason": "Тренд зазначений як DOWN, SMA5 нижче поточної ціни, а SMA10 майже збігається з нею. Волатильність низька (0.12%), тому обираємо тривалість 5 хв. Останні кілька свічок показують короткочасний підйом, проте загальна динаміка та розташування цін під SMA5 вказують на подальший спад.",
-      "timestamp": "2026-01-09 21:40:08",
-      "generated_at": "2026-01-09T21:40:10.484222+02:00",
-      "volatility": 0.1221,
-      "id": "USDJPY_otc_20260109214010",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-09T19:40:10.484297Z",
-      "expires_at": "2026-01-09T21:50:10.484222+02:00"
-    },
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
@@ -75,10 +45,55 @@
       "entry_delay": 1,
       "generated_at_utc": "2026-01-09T19:50:01.011443Z",
       "expires_at": "2026-01-09T22:00:01.011401+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "21:59",
+      "duration": 3,
+      "reason": "Ціна нижче SMA5 і SMA10, тренд DOWN, волатильність 0.28% (середня) → обираємо тривалість 3‑хвилинну. Показники підтверджують подальший спад.",
+      "timestamp": "2026-01-09 21:58:41",
+      "generated_at": "2026-01-09T21:58:42.212298+02:00",
+      "volatility": 0.28,
+      "id": "GBPJPY_otc_20260109215842",
+      "entry_delay": 1,
+      "generated_at_utc": "2026-01-09T19:58:42.212341Z",
+      "expires_at": "2026-01-09T22:08:42.212298+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "21:59",
+      "duration": 5,
+      "reason": "Ціна вище SMA5 і SMA10, тренд UP, низька волатильність, тому обираємо 5‑хвилинний таймфрейм",
+      "timestamp": "2026-01-09 21:58:44",
+      "generated_at": "2026-01-09T21:58:45.338573+02:00",
+      "volatility": 0.0609,
+      "id": "EURUSD_otc_20260109215845",
+      "entry_delay": 1,
+      "generated_at_utc": "2026-01-09T19:58:45.338614Z",
+      "expires_at": "2026-01-09T22:08:45.338573+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "21:59",
+      "duration": 5,
+      "reason": "Ціна вище SMA5 і SMA5 вище SMA10, тренд визначено як UP, волатильність низька (<0.2%), тому обираємо тривалість 5 хвилин, впевненість вище 70%",
+      "timestamp": "2026-01-09 21:58:47",
+      "generated_at": "2026-01-09T21:58:48.300593+02:00",
+      "volatility": 0.1764,
+      "id": "USDJPY_otc_20260109215848",
+      "entry_delay": 1,
+      "generated_at_utc": "2026-01-09T19:58:48.300639Z",
+      "expires_at": "2026-01-09T22:08:48.300593+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 5,
-  "active_signals": 5,
-  "generation_count": 165
+  "total_signals": 6,
+  "active_signals": 6,
+  "generation_count": 166
 }
