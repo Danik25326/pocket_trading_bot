@@ -1,24 +1,54 @@
 {
-  "last_update": "2026-01-12T18:26:03.678629+02:00",
+  "last_update": "2026-01-12T18:36:10.337589+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "UP",
-      "confidence": 0.81,
-      "entry_time": "18:27",
-      "duration": 4,
-      "reason": "Ціна знаходиться вище SMA5 і SMA10, тренд визначений як UP, а волатильність 0.2096% потрапляє у середню категорію, що підказує тривалість 3‑4 хвилини. Останні свічки демонструють поступове підвищення закриття, тому ймовірність подальшого зростання висока.",
-      "timestamp": "2026-01-12 18:25:52",
-      "generated_at": "2026-01-12T18:25:53.795474+02:00",
-      "volatility": 0.2096,
-      "id": "GBPJPY_otc_20260112182553",
+      "confidence": 0.75,
+      "entry_time": "18:38",
+      "duration": 3,
+      "reason": "Тренд вгору. SMA5 (218.92360) > SMA10 (218.86560). Волатильність: 0.16%",
+      "timestamp": "2026-01-12 18:35:58",
+      "generated_at": "2026-01-12T18:36:00.651494+02:00",
+      "volatility": 0.1572,
+      "id": "GBPJPY_otc_20260112183600",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-12T16:25:53.795540Z",
-      "expires_at": "2026-01-12T18:35:53.795474+02:00"
+      "generated_at_utc": "2026-01-12T16:36:00.651529Z",
+      "expires_at": "2026-01-12T18:46:00.651494+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.81,
+      "entry_time": "18:38",
+      "duration": 3,
+      "reason": "Ціна знижується, EMA9 нижче EMA21, MACD показує негативний гістограм, RSI та Stochastic під 50, Bollinger %B ближче до нижньої смуги – підтверджує подальший спад.",
+      "timestamp": "2026-01-12 18:36:03",
+      "generated_at": "2026-01-12T18:36:04.060622+02:00",
+      "volatility": 0.0744,
+      "id": "EURUSD_otc_20260112183604",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-12T16:36:04.060656Z",
+      "expires_at": "2026-01-12T18:46:04.060622+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "18:38",
+      "duration": 3,
+      "reason": "RSI близько 40, стохастик під 20 – перепроданість, MACD показує негативний гістограм, EMA9 нижче EMA21, останні 5 свічок формують низхідний тренд, ціна торкається нижньої смуги Bollinger, немає сильних патернів.",
+      "timestamp": "2026-01-12 18:36:06",
+      "generated_at": "2026-01-12T18:36:08.336244+02:00",
+      "volatility": 0.0683,
+      "id": "USDJPY_otc_20260112183608",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-12T16:36:08.336277Z",
+      "expires_at": "2026-01-12T18:46:08.336244+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 335
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 336
 }
