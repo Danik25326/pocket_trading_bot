@@ -1,51 +1,6 @@
 {
-  "last_update": "2026-01-12T21:50:12.186508+02:00",
+  "last_update": "2026-01-12T21:59:43.426279+02:00",
   "signals": [
-    {
-      "asset": "GBPJPY_otc",
-      "direction": "UP",
-      "confidence": 0.82,
-      "entry_time": "21:42",
-      "duration": 3,
-      "reason": "Recent bullish candle at 22:08 (close > open), EMA9 crossing above EMA21, RSI moving upward above 50, price holding above the lower Bollinger Band, Stochastic exiting oversold region – all pointing to short‑term upward momentum.",
-      "timestamp": "2026-01-12 21:40:27",
-      "generated_at": "2026-01-12T21:40:28.674043+02:00",
-      "volatility": 0.2192,
-      "id": "GBPJPY_otc_20260112214028",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-12T19:40:28.674082Z",
-      "expires_at": "2026-01-12T21:50:28.674043+02:00"
-    },
-    {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.75,
-      "entry_time": "21:42",
-      "duration": 3,
-      "reason": "Тренд вниз. Волатильність: 0.10%",
-      "timestamp": "2026-01-12 21:40:30",
-      "generated_at": "2026-01-12T21:40:32.821881+02:00",
-      "volatility": 0.0981,
-      "id": "EURUSD_otc_20260112214032",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-12T19:40:32.821920Z",
-      "expires_at": "2026-01-12T21:50:32.821881+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "UP",
-      "confidence": 0.75,
-      "entry_time": "21:42",
-      "duration": 3,
-      "reason": "Тренд вгору. Волатильність: 0.06%",
-      "timestamp": "2026-01-12 21:40:35",
-      "generated_at": "2026-01-12T21:40:36.958529+02:00",
-      "volatility": 0.0577,
-      "id": "USDJPY_otc_20260112214036",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-12T19:40:36.958565Z",
-      "expires_at": "2026-01-12T21:50:36.958529+02:00"
-    },
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
@@ -90,10 +45,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-12T19:50:10.185449Z",
       "expires_at": "2026-01-12T22:00:10.185411+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "Короткий аналіз: останні 8 хвилинних свічок показують легке підвищення ціни (від 212.957 до 213.065) при низькій волатильності 0.17%. EMA 9 перебуває вище EMA 21, що вказує на короткостроковий висхідний тренд. RSI, розрахований за останні 14 періодів, знаходиться в діапазоні 55‑60, що підтверджує відсутність перекупленості. MACD лінія трохи вище сигнальної, а гістограма позитивна, що підсилює сигнал BUY. Stochastic знаходиться в зоні 60‑70, не досягнувши перекупленості. Свічковий патерн на 22:27 – маленька «doji», що вказує на можливу продовжуваність поточного тренду після короткої паузи. Враховуючи всі індикатори, ймовірність подальшого зростання ціни протягом наступних 3 хвилин оцінюється як 78%.",
+      "timestamp": "2026-01-12 21:59:30",
+      "generated_at": "2026-01-12T21:59:33.681027+02:00",
+      "volatility": 0.1703,
+      "id": "GBPJPY_otc_20260112215933",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-12T19:59:33.681067Z",
+      "expires_at": "2026-01-12T22:09:33.681027+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "Середня ціна знижується, EMA9 нижче EMA21, MACD негативний, RSI ~45, ціна торкається нижньої межі Bollinger, Stochastic ~15, переважають медвежі свічки, немає сильних патернів, тому очікуємо падіння.",
+      "timestamp": "2026-01-12 21:59:35",
+      "generated_at": "2026-01-12T21:59:37.852882+02:00",
+      "volatility": 0.0792,
+      "id": "EURUSD_otc_20260112215937",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-12T19:59:37.852923Z",
+      "expires_at": "2026-01-12T22:09:37.852882+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "Recent 1‑minute candles show a slight downtrend after a short peak at 22:25. EMA‑9 is below EMA‑21, indicating bearish momentum. RSI is around 48‑52 (neutral‑slightly bearish). MACD histogram turned negative after 22:25. Stochastic %K/%D are near 45/50, not overbought. A doji at 22:26 followed by a bearish candle at 22:27 suggests a short‑term reversal to the downside. Combined with low volatility (0.08%) the setup favors a brief down move.",
+      "timestamp": "2026-01-12 21:59:40",
+      "generated_at": "2026-01-12T21:59:41.423956+02:00",
+      "volatility": 0.0793,
+      "id": "USDJPY_otc_20260112215941",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-12T19:59:41.423993Z",
+      "expires_at": "2026-01-12T22:09:41.423956+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 6,
   "active_signals": 6,
-  "generation_count": 347
+  "generation_count": 348
 }
