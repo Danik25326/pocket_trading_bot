@@ -23,7 +23,7 @@ class SignalGenerator:
         self.REQUEST_DELAY = 2  # секунд між запитами
 
     async def generate_signal(self, asset):
-        """Генерація одного сигналу з випадковою затримкою входу 1-2 хвилини"""
+        """Генерація одного сигналу з фіксованою затримкою входу 2 хвилини"""
         try:
             logger.info(f"📈 Аналіз активу: {asset}")
             
@@ -75,11 +75,11 @@ class SignalGenerator:
                     
                     now_kyiv = Config.get_kyiv_time()
                     
-                    # Додаємо випадкову затримку 1-2 хвилини для входу
-                    delay_minutes = random.randint(1, 2)
-                    entry_time_dt = now_kyiv + timedelta(minutes=delay_minutes)
+                    # Фіксована затримка 2 хвилини для входу
+                    delay_minutes = 2
+                    entry_time_dt = now_kyiv + timedelta(minutes=2)  # Чітко через 2 хвилини
                     signal['entry_time'] = entry_time_dt.strftime('%H:%M')
-                    signal['entry_delay'] = delay_minutes
+                    signal['entry_delay'] = 2
                     
                     signal['generated_at'] = now_kyiv.isoformat()
                     signal['generated_at_utc'] = datetime.utcnow().isoformat() + 'Z'
@@ -124,7 +124,7 @@ class SignalGenerator:
             logger.info(f"  - Модель AI: {Config.GROQ_MODEL}")
             logger.info(f"  - Мова: {Config.LANGUAGE}")
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
-            logger.info(f"  - Затримка входу: 1-2 хвилини")
+            logger.info(f"  - Затримка входу: 2 хвилини")
             
             # ⚠️ ВИДАЛЕНО ВСІ ПЕРЕВІРКИ ЧАСУ! Генеруємо завжди
             logger.info("🔗 Підключення до PocketOption...")
