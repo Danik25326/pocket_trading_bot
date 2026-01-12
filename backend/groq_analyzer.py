@@ -1,4 +1,3 @@
-
 import json
 import logging
 import os
@@ -85,20 +84,23 @@ class GroqAnalyzer:
         
         now_kyiv = Config.get_kyiv_time()
         
-        import random
-        minutes_to_add = random.randint(1, 2)
-        entry_time_dt = now_kyiv + timedelta(minutes=minutes_to_add)
+        # Розрахунок волатильності для тривалості
+        volatility = self.calculate_volatility(candles_data)
+        
+        # Визначення тривалості за волатильністю (2-3 хвилини)
+        if volatility > 0.5:
+            duration = 2  # Висока волатильність -> 2 хвилини
+        elif volatility > 0.2:
+            duration = 3  # Середня волатильність -> 3 хвилини
+        else:
+            duration = 3  # Низька волатильність -> 3 хвилини
+        
+        # Час входу точно через 2 хвилини
+        entry_time_dt = now_kyiv + timedelta(minutes=2)
         entry_time = entry_time_dt.strftime('%H:%M')
         
-        if volatility > 0.5:
-            duration = random.randint(1, 2)
-        elif volatility > 0.2:
-            duration = random.randint(3, 4)
-        else:
-            duration = 5
-        
         candles_str = ""
-        for i, candle in enumerate(candles_data[-8:]):
+        for i, candle in enumerate(candles_data[-20:]):
             if hasattr(candle, 'timestamp'):
                 time_str = candle.timestamp.strftime('%H:%M')
             else:
@@ -111,38 +113,52 @@ class GroqAnalyzer:
 Ты экспертный трейдер с 10-летним опытом торговли бинарными опционами.
 
 АКТИВ: {asset}
-ТАЙМФРЕЙМ: 2 минуты
+ТАЙМФРЕЙМ: 1 минута
 ТЕКУЩЕЕ ВРЕМЯ (Киев): {now_kyiv.strftime('%H:%M:%S')}
 
-ТЕХНИЧЕСКИЕ ПОКАЗАТЕЛИ:
-- Текущая цена: {technical_indicators.get('current_price', 0):.5f}
-- SMA 5: {technical_indicators.get('sma_5', 0):.5f}
-- SMA 10: {technical_indicators.get('sma_10', 0):.5f}
-- Тренд: {technical_indicators.get('trend', 'NEUTRAL')}
-- Волатильность: {volatility:.4f}%
+ПРОАНАЛИЗИРУЙ СЛЕДУЮЩИЕ ИНДИКАТОРЫ:
+1. RSI (14) - перекупленность/перепроданность
+2. MACD - момент и тренд
+3. Bollinger Bands %B - волатильность
+4. EMA 9/21 - кроссовер
+5. Stochastic - перекупленность/перепроданность
+6. Тренд последних 5 свечей
+7. Паттерны свечей (поглощение, молот, доджи и т.д.)
 
-ПОСЛЕДНИЕ СВЕЧИ:
+ДАННЫЕ ПОСЛЕДНИХ 20 СВЕЧЕЙ (1 минута):
 {candles_str}
 
-ВАЖНЫЕ ПРАВИЛА:
-1. Если тренд неясен (флет) - НЕ давай сигнал
-2. Минимальная уверенность: 70%
-3. Максимальная длительность: 5 минут
-4. ВЫБОР ДЛИТЕЛЬНОСТИ:
-   - Высокая волатильность (>0.5%) → 1-2 минуты
-   - Средняя волатильность (0.2-0.5%) → 3-4 минуты  
-   - Низкая волатильность (<0.2%) → 5 минут
+ВАЖНЫЕ ПРАВИЛА АНАЛИЗА:
+1. Сигнал должен быть четким с минимальной уверенностью 75%
+2. Если тренд неясен (флет) - НЕ давай сигнал
+3. Анализируй все 7 указанных индикаторов комплексно
+4. Чекни свечные паттерны на разворотах/продолжении
+5. Учти уровни поддержки/сопротивления
 
-ДАЙ ПРОГНОЗ НА СЛЕДУЮЩИЕ 2-5 МИНУТ:
+ТЕХНИЧЕСКИЕ ПАРАМЕТРЫ:
+- Волатильность: {volatility:.4f}%
+- Время экспирации: {duration} мин (рассчитано по волатильности)
+- Время входа: точно через 2 минуты ({entry_time})
 
-ОТВЕТ В JSON ФОРМАТЕ:
+ДАЙ ПРОГНОЗ НА {duration} МИНУТ ВПЕРЕД:
+
+ОТВЕТ В СТРОГОМ JSON ФОРМАТЕ:
 {{
     "asset": "{asset}",
     "direction": "UP или DOWN",
-    "confidence": 0.85,
+    "confidence": 0.85 (от 0.75 до 0.95),
     "entry_time": "{entry_time}",
     "duration": {duration},
-    "reason": "Короткий анализ на русском языке",
+    "technical_analysis": {{
+        "rsi_analysis": "анализ RSI",
+        "macd_analysis": "анализ MACD", 
+        "bb_analysis": "анализ Bollinger Bands",
+        "ema_cross": "анализ EMA 9/21",
+        "stochastic_analysis": "анализ Stochastic",
+        "candle_trend": "тренд 5 свечей",
+        "candle_patterns": "обнаруженные паттерны"
+    }},
+    "reason": "Краткое обоснование сигнала на русском",
     "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
 }}
 """
@@ -151,38 +167,52 @@ class GroqAnalyzer:
 Ти експертний трейдер з бінарними опціонами з 10-річним досвідом.
 
 АКТИВ: {asset}
-ТАЙМФРЕЙМ: 2 хвилини
+ТАЙМФРЕЙМ: 1 хвилина
 ПОТОЧНИЙ ЧАС (Київ): {now_kyiv.strftime('%H:%M:%S')}
 
-ТЕХНІЧНІ ПОКАЗНИКИ:
-- Поточна ціна: {technical_indicators.get('current_price', 0):.5f}
-- SMA 5: {technical_indicators.get('sma_5', 0):.5f}
-- SMA 10: {technical_indicators.get('sma_10', 0):.5f}
-- Тренд: {technical_indicators.get('trend', 'NEUTRAL')}
-- Волатильність: {volatility:.4f}%
+ПРОАНАЛІЗУЙ НАСТУПНІ ІНДИКАТОРИ:
+1. RSI (14) - перекупленість/перепроданість
+2. MACD - моментум та тренд
+3. Bollinger Bands %B - волатильність
+4. EMA 9/21 - кросовер
+5. Stochastic - перекупленість/перепроданість
+6. Тренд останніх 5 свічок
+7. Патерни свічок (поглинання, молот, доджі тощо)
 
-ОСТАННІ СВІЧКИ:
+ДАНІ ОСТАННІХ 20 СВІЧОК (1 хвилина):
 {candles_str}
 
-ВАЖЛИВІ ПРАВИЛА:
-1. Якщо тренд неясний (флет) - НЕ давай сигнал
-2. Мінімальна впевненість: 70%
-3. Максимальна тривалість: 5 хвилин
-4. ВИБІР ТРИВАЛОСТІ:
-   - Висока волатильність (>0.5%) → 1-2 хвилини
-   - Середня волатильність (0.2-0.5%) → 3-4 хвилини  
-   - Низька волатильність (<0.2%) → 5 хвилин
+ВАЖЛИВІ ПРАВИЛА АНАЛІЗУ:
+1. Сигнал має бути чітким з мінімальною впевненістю 75%
+2. Якщо тренд неясний (флет) - НЕ давай сигнал
+3. Аналізуй всі 7 вказаних індикаторів комплексно
+4. Перевір свічкові патерни на розворотах/продовженні
+5. Врахуй рівні підтримки/опору
 
-ДАЙ ПРОГНОЗ НА НАСТУПНІ 2-5 ХВИЛИН:
+ТЕХНІЧНІ ПАРАМЕТРИ:
+- Волатильність: {volatility:.4f}%
+- Час експірації: {duration} хв (розраховано за волатильністю)
+- Час входу: точно через 2 хвилини ({entry_time})
 
-ВІДПОВІДЬ У JSON ФОРМАТІ:
+ДАЙ ПРОГНОЗ НА {duration} ХВИЛИН ВПЕРЕД:
+
+ВІДПОВІДЬ У СУВОРОМУ JSON ФОРМАТІ:
 {{
     "asset": "{asset}",
     "direction": "UP або DOWN",
-    "confidence": 0.85,
+    "confidence": 0.85 (від 0.75 до 0.95),
     "entry_time": "{entry_time}",
     "duration": {duration},
-    "reason": "Короткий аналіз українською мовою",
+    "technical_analysis": {{
+        "rsi_analysis": "аналіз RSI",
+        "macd_analysis": "аналіз MACD",
+        "bb_analysis": "аналіз Bollinger Bands", 
+        "ema_cross": "аналіз EMA 9/21",
+        "stochastic_analysis": "аналіз Stochastic",
+        "candle_trend": "тренд 5 свічок",
+        "candle_patterns": "виявлені патерни"
+    }},
+    "reason": "Коротке обґрунтування сигналу українською",
     "timestamp": "{now_kyiv.strftime('%Y-%m-%d %H:%M:%S')}"
 }}
 """
@@ -277,7 +307,7 @@ class GroqAnalyzer:
         elif volatility > 0.2:
             duration = 3
         else:
-            duration = 5
+            duration = 3
         
         return {
             "asset": asset,
