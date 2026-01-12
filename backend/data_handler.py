@@ -211,29 +211,28 @@ class DataHandler:
             }
     
     def _is_signal_active(self, signal):
-        """Перевірка чи сигнал ще активний (до 10 хвилин після генерації)"""
+        """Перевірка чи сигнал ще активний (точно 10 хвилин з моменту генерації)"""
         try:
             now_kyiv = Config.get_kyiv_time()
             
             # Час генерації сигналу
             gen_time_str = signal.get('generated_at')
             if not gen_time_str:
-                return True  # ✅ ЗМІНА: якщо немає часу, вважаємо активним
+                return False
             
             generated_at = self._parse_datetime(gen_time_str)
             if not generated_at:
-                return True  # ✅ ЗМІНА: при помилці парсингу вважаємо активним
+                return False
             
-            # Сигнал активний тільки 10 хвилин з моменту генерації
+            # Сигнал активний точно 10 хвилин з моменту генерації
             time_since_generation = now_kyiv - generated_at
             is_active = time_since_generation <= timedelta(minutes=10)
             
-            # ✅ ВИДАЛЕНО зайве логування
             return is_active
             
         except Exception as e:
             print(f"⚠️ Помилка перевірки активності сигналу: {e}")
-            return True  # ✅ ЗМІНА: при помилці вважаємо активним
+            return False
     
     def _add_to_history(self, signals):
         """Додавання сигналів до історії з обмеженням"""
