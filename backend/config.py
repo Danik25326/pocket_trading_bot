@@ -1,4 +1,3 @@
-
 import os
 import sys
 import json
@@ -28,7 +27,7 @@ class Config:
     
     # Сигнали
     SIGNAL_INTERVAL = int(os.getenv('SIGNAL_INTERVAL', 600))  # 10 хвилин
-    MIN_CONFIDENCE = float(os.getenv('MIN_CONFIDENCE', 0.7))
+    MIN_CONFIDENCE = float(os.getenv('MIN_CONFIDENCE', 0.75))  # Змінено з 0.7 на 0.75
     MAX_DURATION = float(os.getenv('MAX_DURATION', 5.0))
     MAX_SIGNALS_HISTORY = int(os.getenv('MAX_SIGNALS_HISTORY', 100))
     ACTIVE_SIGNAL_TIMEOUT = int(os.getenv('ACTIVE_SIGNAL_TIMEOUT', 10))  # 10 хвилин
@@ -38,7 +37,7 @@ class Config:
     ASSETS_RAW = [asset.strip() for asset in os.getenv('ASSETS', 'GBPJPY_otc,EURUSD_otc,USDJPY_otc').split(',')]
     ASSETS = [asset.replace('/', '') for asset in ASSETS_RAW]
     
-    TIMEFRAMES = int(os.getenv('TIMEFRAMES', 120))
+    TIMEFRAMES = int(os.getenv('TIMEFRAMES', 60))  # Змінено з 120 на 60 (1 хвилина)
     
     # Навчання
     FEEDBACK_ENABLED = os.getenv('FEEDBACK_ENABLED', 'true').lower() == 'true'
@@ -57,7 +56,7 @@ class Config:
     LOG_FILE = BASE_DIR / 'logs' / 'signals.log'
     
     # Часовий пояс
-    KYIV_TZ = pytz.timezone('Europe/Kyiv')
+    KYIV_TZ = pytz.timezone('Europe/Kiev')
 
     # Мова
     LANGUAGE = os.getenv('LANGUAGE', 'uk')
