@@ -1,19 +1,17 @@
 class SignalDisplay {
     constructor() {
-        // 🛠 ВИПРАВЛЕНО: Автоматичне визначення шляхів для GitHub Pages
         const isLocal = window.location.hostname.includes('localhost') || 
                        window.location.hostname === '127.0.0.1' ||
                        window.location.protocol === 'file:';
         
-        const repoName = 'pocket_trading_bot'; // Назва вашого репозиторію
+        const repoName = 'pocket_trading_bot';
         
         if (isLocal) {
             this.signalsUrl = 'data/signals.json';
             this.historyUrl = 'data/history.json';
             this.feedbackUrl = 'data/feedback.json';
         } else {
-            // Для GitHub Pages
-            this.signalsUrl = `https://raw.githubusercontent.com/Danik25326/pocket_trading_bot/main/data/signals.json?t=${Date.now()}`;
+            this.signalsUrl = `/${repoName}/data/signals.json`;
             this.historyUrl = `/${repoName}/data/history.json`;
             this.feedbackUrl = `/${repoName}/data/feedback.json`;
         }
@@ -26,13 +24,6 @@ class SignalDisplay {
         this.autoUpdateTimer = null;
         this.nextUpdateTime = null;
         this.currentFeedbackSignal = null;
-        
-        // Детальне логування
-        console.log("🤖 Signal Display ініціалізовано");
-        console.log("🌐 Хост:", window.location.hostname);
-        console.log("📊 Signals URL:", this.signalsUrl);
-        console.log("🔄 Мова:", this.language);
-        console.log("📁 Репозиторій:", repoName);
         
         this.translations = {
             uk: {
@@ -47,13 +38,13 @@ class SignalDisplay {
                 lastUpdate: "Останнє оновлення",
                 kievTime: "(Київський час)",
                 activeSignals: "Активних сигналів",
-                withConfidence: "з впевненістю >70%",
+                withConfidence: "з впевненістю >75%",
                 totalSignals: "Всього сигналів",
                 today: "сьогодні",
                 successRate: "Точність AI",
                 learning: "навчання активне",
                 systemActive: "Система активна!",
-                autoDescription: "Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини. Максимум 6 сигналів одночасно.",
+                autoDescription: "Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 2 хвилини. Максимум 6 сигналів одночасно.",
                 currentSignals: "Актуальні сигнали (останні 6)",
                 serverTime: "Київський час:",
                 loadingSignals: "Завантаження сигналів...",
@@ -64,7 +55,7 @@ class SignalDisplay {
                 autoGeneration: "Автоматична генерація:",
                 autoGenDesc: "кожні 10 хвилин",
                 entryDelay2: "Затримка входу:",
-                entryDelayDesc: "1-2 хвилини для точнішого прогнозу",
+                entryDelayDesc: "2 хвилини для точнішого прогнозу",
                 aiLearning: "Навчання AI:",
                 aiLearningDesc: "аналізує успішність сигналів",
                 autoCleanup: "Автоочищення:",
@@ -99,10 +90,7 @@ class SignalDisplay {
                 feedbackSaved: "Відгук збережено! AI навчиться на цьому",
                 feedbackError: "Помилка збереження відгуку",
                 signalRemoved: "Сигнал видалено",
-                loading: "Завантаження...",
-                testConnection: "Тест підключення",
-                testSuccess: "Тест успішний!",
-                testFailed: "Тест не пройшов"
+                loading: "Завантаження..."
             },
             ru: {
                 title: "AI Торговые Сигналы",
@@ -116,13 +104,13 @@ class SignalDisplay {
                 lastUpdate: "Последнее обновление",
                 kievTime: "(Киевское время)",
                 activeSignals: "Активных сигналов",
-                withConfidence: "с уверенностью >70%",
+                withConfidence: "с уверенностью >75%",
                 totalSignals: "Всего сигналов",
                 today: "сегодня",
                 successRate: "Точность AI",
                 learning: "обучение активно",
                 systemActive: "Система активна!",
-                autoDescription: "Сигналы генерируются автоматически каждые 10 минут. AI анализирует рынок и указывает время входа через 1-2 минуты. Максимум 6 сигналов одновременно.",
+                autoDescription: "Сигналы генерируются автоматически каждые 10 минут. AI анализирует рынок и указывает время входа через 2 минуты. Максимум 6 сигналов одновременно.",
                 currentSignals: "Актуальные сигналы (последние 6)",
                 serverTime: "Киевское время:",
                 loadingSignals: "Загрузка сигналов...",
@@ -133,7 +121,7 @@ class SignalDisplay {
                 autoGeneration: "Автоматическая генерация:",
                 autoGenDesc: "каждые 10 минут",
                 entryDelay2: "Задержка входа:",
-                entryDelayDesc: "1-2 минуты для более точного прогноза",
+                entryDelayDesc: "2 минуты для более точного прогноза",
                 aiLearning: "Обучение AI:",
                 aiLearningDesc: "анализирует успешность сигналов",
                 autoCleanup: "Автоочистка:",
@@ -168,10 +156,7 @@ class SignalDisplay {
                 feedbackSaved: "Отзыв сохранен! AI научится на этом",
                 feedbackError: "Ошибка сохранения отзыва",
                 signalRemoved: "Сигнал удален",
-                loading: "Загрузка...",
-                testConnection: "Тест подключения",
-                testSuccess: "Тест успешен!",
-                testFailed: "Тест не пройден"
+                loading: "Загрузка..."
             }
         };
         
@@ -184,7 +169,6 @@ class SignalDisplay {
         this.updateKyivTime();
         setInterval(() => this.updateKyivTime(), 1000);
         
-        // Перше завантаження через 2 секунди
         setTimeout(() => {
             console.log("📥 Перше завантаження сигналів...");
             this.loadSignals();
@@ -193,7 +177,6 @@ class SignalDisplay {
         
         this.startSignalCleanupCheck();
         
-        // Закриття модального вікна при кліку поза ним
         document.addEventListener('click', (e) => {
             const modal = document.getElementById('feedback-modal');
             if (e.target === modal) {
@@ -210,86 +193,15 @@ class SignalDisplay {
         document.getElementById('lang-ru').addEventListener('click', () => {
             this.switchLanguage('ru');
         });
-        
-        // Додаємо кнопку ручного оновлення
-        this.addManualRefreshButton();
-        
-        // Додаємо кнопку тестування
-        this.addTestButton();
-    }
-
-    addManualRefreshButton() {
-        const refreshBtn = document.createElement('button');
-        refreshBtn.className = 'refresh-btn';
-        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Оновити зараз';
-        refreshBtn.title = 'Примусове оновлення сигналів';
-        refreshBtn.onclick = () => {
-            console.log("🔄 Ручне оновлення сигналів...");
-            this.showMessage('info', 'Оновлення сигналів...');
-            this.loadSignals();
-        };
-        
-        const headerControls = document.querySelector('.header-controls');
-        if (headerControls) {
-            headerControls.appendChild(refreshBtn);
-        }
-    }
-
-    addTestButton() {
-        const testBtn = document.createElement('button');
-        testBtn.className = 'refresh-btn';
-        testBtn.style.background = '#9f7aea';
-        testBtn.innerHTML = '<i class="fas fa-vial"></i> Тест JSON';
-        testBtn.title = 'Тестування підключення до signals.json';
-        testBtn.onclick = async () => {
-            console.log("🧪 Тестування підключення...");
-            await this.testConnection();
-        };
-        
-        const headerControls = document.querySelector('.header-controls');
-        if (headerControls) {
-            headerControls.appendChild(testBtn);
-        }
-    }
-
-    async testConnection() {
-        try {
-            const testUrl = this.signalsUrl + '?test=' + Date.now();
-            console.log("🔗 Тестування URL:", testUrl);
-            
-            const response = await fetch(testUrl);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            const message = `
-✅ Тест успішний!
-📊 Сигналів: ${data.signals?.length || 0}
-🕐 Останнє оновлення: ${data.last_update || 'Немає'}
-📍 URL: ${this.signalsUrl}
-            `.trim();
-            
-            console.log("🧪 Результат тесту:", data);
-            alert(message);
-            
-        } catch (error) {
-            console.error("❌ Тест не пройшов:", error);
-            alert(`❌ Тест не пройшов:\n${error.message}\n\nURL: ${this.signalsUrl}`);
-        }
     }
 
     startAutoUpdate() {
-        // Автоматичне оновлення кожні 10 хвилин (600000 мс)
         this.updateInterval = setInterval(() => {
             console.log("🔄 Автоматичне оновлення сигналів (кожні 10 хвилин)...");
             this.showMessage('info', 'Автоматичне оновлення сигналів...');
             this.loadSignals();
         }, 600000);
         
-        // Оновлюємо таймер наступного оновлення
         this.updateNextUpdateTimer();
         setInterval(() => this.updateNextUpdateTimer(), 1000);
         
@@ -298,7 +210,7 @@ class SignalDisplay {
 
     updateNextUpdateTimer() {
         if (!this.nextUpdateTime) {
-            this.nextUpdateTime = Date.now() + 600000; // 10 хвилин
+            this.nextUpdateTime = Date.now() + 600000;
         }
         
         const now = Date.now();
@@ -326,7 +238,6 @@ class SignalDisplay {
 
     async loadSignals() {
         try {
-            // Додаємо timestamp для уникнення кешування
             const timestamp = Date.now();
             const url = `${this.signalsUrl}?t=${timestamp}`;
             
@@ -355,13 +266,11 @@ class SignalDisplay {
             
             this.processSignals(data);
             
-            // Оновлюємо час наступного оновлення
             this.nextUpdateTime = Date.now() + 600000;
             
         } catch (error) {
             console.error('❌ Помилка завантаження сигналів:', error);
             
-            // Спробуємо альтернативний шлях
             this.tryAlternativePaths(error);
         }
     }
@@ -369,7 +278,6 @@ class SignalDisplay {
     tryAlternativePaths(error) {
         console.log("🔄 Спробую альтернативні шляхи...");
         
-        // Список альтернативних шляхів для тестування
         const alternativePaths = [
             'data/signals.json',
             '/data/signals.json',
@@ -377,7 +285,6 @@ class SignalDisplay {
             'https://raw.githubusercontent.com/Danik25326/pocket_trading_bot/main/data/signals.json'
         ];
         
-        // По черзі пробуємо кожен шлях
         let currentIndex = 0;
         
         const tryNextPath = () => {
@@ -418,13 +325,11 @@ class SignalDisplay {
         const totalSignalsElement = document.getElementById('total-signals');
         const successRateElement = document.getElementById('success-rate');
         
-        // Перевірка наявності елементів DOM
         if (!container || !lastUpdate || !activeSignalsElement || !totalSignalsElement || !successRateElement) {
             console.error("❌ Не знайдено необхідні елементи DOM");
             return;
         }
         
-        // Очищуємо старі таймери
         this.clearAllTimers();
         
         if (!data || !data.signals || data.signals.length === 0) {
@@ -453,7 +358,6 @@ class SignalDisplay {
             return;
         }
         
-        // Оновлення часу останнього оновлення
         if (data.last_update) {
             try {
                 const updateDate = new Date(data.last_update);
@@ -464,32 +368,27 @@ class SignalDisplay {
             }
         }
         
-        // Статистика
         activeSignalsElement.textContent = data.active_signals || data.signals.length;
         totalSignalsElement.textContent = data.total_signals || data.signals.length;
         
-        // Розрахунок успішності
         const successRate = this.calculateSuccessRate(data);
         successRateElement.textContent = `${successRate}%`;
         
-        // Відображення сигналів
         let html = '';
         let displayedSignals = 0;
         
-        // Сортуємо сигнали за часом генерації (новіші перші)
         const sortedSignals = [...data.signals].sort((a, b) => {
             const timeA = a.generated_at ? new Date(a.generated_at).getTime() : 0;
             const timeB = b.generated_at ? new Date(b.generated_at).getTime() : 0;
             return timeB - timeA;
         });
         
-        // Обмежуємо до 6 останніх сигналів
         const latestSignals = sortedSignals.slice(0, 6);
         
         latestSignals.forEach((signal, index) => {
             const confidencePercent = Math.round((signal.confidence || 0) * 100);
-            if (confidencePercent < 70) {
-                console.log(`⚠️ Сигнал ${signal.asset} пропущено (впевненість ${confidencePercent}% < 70%)`);
+            if (confidencePercent < 75) {
+                console.log(`⚠️ Сигнал ${signal.asset} пропущено (впевненість ${confidencePercent}% < 75%)`);
                 return;
             }
             
@@ -514,7 +413,6 @@ class SignalDisplay {
             
             console.log("📊 Відображено сигналів:", displayedSignals);
             
-            // Запускаємо таймери для кожного сигналу
             latestSignals.forEach((signal, index) => {
                 if (index < displayedSignals) {
                     this.setupSignalTimer(signal, index);
@@ -536,19 +434,17 @@ class SignalDisplay {
         const confidencePercent = Math.round(signal.confidence * 100);
         const confidenceClass = this.getConfidenceClass(confidencePercent);
         const directionClass = signal.direction.toLowerCase();
-        const duration = signal.duration || 2;
+        const duration = signal.duration || 3;
         
         const generatedTime = signal.generated_at ? 
             this.convertToKyivTime(signal.generated_at) : '--:--';
         const entryTime = signal.entry_time || '--:--';
-        const entryDelay = signal.entry_delay || '1-2';
         
         let reason = signal.reason || '';
         if (this.language === 'ru' && signal.reason_ru) {
             reason = signal.reason_ru;
         }
         
-        // Обрізаємо довгий текст причини
         if (reason.length > 150) {
             reason = reason.substring(0, 150) + '...';
         }
@@ -566,7 +462,7 @@ class SignalDisplay {
                         </div>
                         <div>
                             <div class="asset-name">${signal.asset.replace('_otc', '').replace('/', ' ')}</div>
-                            <small>${this.translate('entryTime')} ${entryTime} | ${duration} ${this.translate('minutesShort')} | Затримка: ${entryDelay}хв</small>
+                            <small>${this.translate('entryTime')} ${entryTime} | ${duration} ${this.translate('minutesShort')}</small>
                         </div>
                     </div>
                     <div class="direction-badge">
@@ -635,14 +531,18 @@ class SignalDisplay {
         if (!timerElement || !expiryElement) return;
         
         const generatedTime = new Date(signal.generated_at);
-        const expiryTime = new Date(generatedTime.getTime() + 10 * 60000); // 10 хвилин
+        
+        // Час експірації: точно 10 хвилин після генерації
+        const expiryTime = new Date(generatedTime.getTime() + 10 * 60000);
+        
+        // Час входу: точно 2 хвилини після генерації
+        const entryTime = new Date(generatedTime.getTime() + 2 * 60000);
         
         const updateTimer = () => {
             const now = new Date();
             const timeToExpiry = expiryTime - now;
             
             if (timeToExpiry <= 0) {
-                // Час вийшов - видаляємо сигнал
                 const signalElement = document.getElementById(`signal-${index}`);
                 if (signalElement) {
                     signalElement.classList.add('expired');
@@ -651,12 +551,10 @@ class SignalDisplay {
                         if (signalElement.parentNode) {
                             signalElement.remove();
                             this.updateSignalCount();
-                            this.showMessage('info', `${this.translate('signalRemoved')}: ${signal.asset}`);
                         }
                     }, 1000);
                 }
                 
-                // Очищаємо таймер
                 if (this.signalTimers.has(index)) {
                     clearInterval(this.signalTimers.get(index));
                     this.signalTimers.delete(index);
@@ -664,55 +562,48 @@ class SignalDisplay {
                 return;
             }
             
-            // Оновлюємо таймер
-            const minutes = Math.floor(timeToExpiry / 60000);
-            const seconds = Math.floor((timeToExpiry % 60000) / 1000);
+            const expiryMinutes = Math.floor(timeToExpiry / 60000);
+            const expirySeconds = Math.floor((timeToExpiry % 60000) / 1000);
             
             if (expiryElement) {
                 const expiryTimeSpan = expiryElement.querySelector('.expiry-time');
                 if (expiryTimeSpan) {
-                    expiryTimeSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    expiryTimeSpan.textContent = `${expiryMinutes}:${expirySeconds.toString().padStart(2, '0')}`;
                 }
             }
             
-            // Оновлюємо статус сигналу
-            const entryTime = signal.entry_time;
-            if (entryTime && timerElement) {
-                const [hours, mins] = entryTime.split(':').map(Number);
-                const entryDate = new Date(generatedTime);
-                entryDate.setHours(hours, mins, 0, 0);
-                
-                const timeToEntry = entryDate - now;
-                if (timeToEntry > 0) {
-                    const entryMinutes = Math.floor(timeToEntry / 60000);
-                    const entrySeconds = Math.floor((timeToEntry % 60000) / 1000);
-                    timerElement.innerHTML = `
-                        <div class="timer-display">
-                            <i class="fas fa-clock"></i>
-                            <span class="timer-text">${entryMinutes}:${entrySeconds.toString().padStart(2, '0')}</span>
-                        </div>
-                        <small>${this.translate('signalActive')}</small>
-                    `;
-                } else {
-                    timerElement.innerHTML = `
-                        <div class="timer-display">
-                            <i class="fas fa-check-circle"></i>
-                            <span class="timer-text">${this.translate('signalCompleted')}</span>
-                        </div>
-                        <small>${this.translate('signalExpires')} ${minutes}:${seconds.toString().padStart(2, '0')}</small>
-                    `;
-                }
+            const timeToEntry = entryTime - now;
+            
+            if (timeToEntry > 0) {
+                const entryMinutes = Math.floor(timeToEntry / 60000);
+                const entrySeconds = Math.floor((timeToEntry % 60000) / 1000);
+                timerElement.innerHTML = `
+                    <div class="timer-display">
+                        <i class="fas fa-clock"></i>
+                        <span class="timer-text">${entryMinutes}:${entrySeconds.toString().padStart(2, '0')}</span>
+                    </div>
+                    <small>${this.translate('signalActive')}</small>
+                `;
+            } else {
+                const timeAfterEntry = Math.abs(timeToEntry);
+                const minutesAfter = Math.floor(timeAfterEntry / 60000);
+                const secondsAfter = Math.floor((timeAfterEntry % 60000) / 1000);
+                timerElement.innerHTML = `
+                    <div class="timer-display">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="timer-text">${minutesAfter}:${secondsAfter.toString().padStart(2, '0')}</span>
+                    </div>
+                    <small>${this.translate('signalCompleted')}</small>
+                `;
             }
         };
         
-        // Запускаємо таймер
         updateTimer();
         const timerInterval = setInterval(updateTimer, 1000);
         this.signalTimers.set(index, timerInterval);
     }
 
     startSignalCleanupCheck() {
-        // Перевірка кожну секунду для видалення старих сигналів
         setInterval(() => {
             this.signalTimers.forEach((timer, index) => {
                 const signalElement = document.getElementById(`signal-${index}`);
@@ -743,14 +634,12 @@ class SignalDisplay {
 
     calculateSuccessRate(data) {
         try {
-            // Якщо є статистика в data, використовуємо її
             if (data.success_rate !== undefined) {
                 return Math.round(data.success_rate * 100);
             }
             
-            // Якщо є сигнали, обчислюємо середню впевненість
             if (data.signals && data.signals.length > 0) {
-                const validSignals = data.signals.filter(s => s.confidence >= 0.7);
+                const validSignals = data.signals.filter(s => s.confidence >= 0.75);
                 if (validSignals.length > 0) {
                     const totalConfidence = validSignals.reduce((sum, signal) => {
                         return sum + (signal.confidence || 0);
@@ -760,10 +649,10 @@ class SignalDisplay {
                 }
             }
             
-            return 75; // Стандартне значення
+            return 75;
         } catch (e) {
             console.warn("⚠️ Помилка розрахунку успішності:", e);
-            return 70;
+            return 75;
         }
     }
 
@@ -802,14 +691,12 @@ class SignalDisplay {
         const { id, index, asset, element } = this.currentFeedbackSignal;
         
         try {
-            // Симулюємо відправку feedback на сервер для навчання AI
             await new Promise(resolve => setTimeout(resolve, 300));
             
             console.log("💾 Фідбек збережено:", { id, asset, feedback });
             
             this.showMessage('success', this.translate('feedbackSaved'));
             
-            // Приховуємо сигнал
             element.classList.add('feedback-given');
             element.style.opacity = '0.3';
             
@@ -820,10 +707,8 @@ class SignalDisplay {
                 }
             }, 500);
             
-            // Закриваємо модальне вікно
             this.hideFeedbackModal();
             
-            // Оновлюємо статистику успішності
             this.updateSuccessRate();
             
         } catch (error) {
@@ -837,7 +722,7 @@ class SignalDisplay {
         if (!successRateElement) return;
         
         const currentRate = parseInt(successRateElement.textContent) || 0;
-        const newRate = Math.min(100, currentRate + 2); // Невелике покращення
+        const newRate = Math.min(100, currentRate + 2);
         successRateElement.textContent = `${newRate}%`;
     }
 
@@ -915,9 +800,6 @@ class SignalDisplay {
                 <i class="fas fa-chart-line"></i>
                 <h3>${this.translate('noSignalsNow')}</h3>
                 <p>${this.translate('nextAutoUpdate')} <span id="next-auto-timer">10:00</span></p>
-                <button class="refresh-btn" onclick="signalDisplay.loadSignals()" style="margin-top: 15px;">
-                    <i class="fas fa-sync-alt"></i> Спробувати знову
-                </button>
             </div>
         `;
     }
@@ -941,7 +823,6 @@ class SignalDisplay {
         
         messageContainer.appendChild(messageDiv);
         
-        // Автоматичне видалення повідомлення через 5 секунд
         setTimeout(() => {
             messageDiv.style.animation = 'slideOut 0.3s ease-out';
             setTimeout(() => {
@@ -994,26 +875,9 @@ class SignalDisplay {
     }
 }
 
-// Ініціалізація
 let signalDisplay;
 
 document.addEventListener('DOMContentLoaded', () => {
     signalDisplay = new SignalDisplay();
     window.signalDisplay = signalDisplay;
 });
-
-// Глобальна функція для тестування (можна викликати з консолі)
-window.testConnection = function() {
-    if (signalDisplay) {
-        signalDisplay.testConnection();
-    } else {
-        console.error("SignalDisplay не ініціалізовано!");
-    }
-};
-
-// Функція для примусового оновлення
-window.forceRefresh = function() {
-    if (signalDisplay) {
-        signalDisplay.loadSignals();
-    }
-};
