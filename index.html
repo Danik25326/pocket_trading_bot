@@ -70,9 +70,9 @@
                 <p class="subtitle" data-translate="subtitle">Автоматичні сигнали для бінарних опціонів з використанням GPT OSS 120B AI (оновлення кожні 10 хвилин)</p>
                 <div class="header-stats">
                     <span class="stat-badge"><i class="fas fa-sync-alt"></i> <span data-translate="autoUpdate">Оновлення:</span> <span data-translate="every10min">кожні 10 хв</span></span>
-                    <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 70%</span>
+                    <span class="stat-badge"><i class="fas fa-bullseye"></i> <span data-translate="minAccuracy">Мін. точність:</span> 75%</span>
                     <span class="stat-badge"><i class="fas fa-brain"></i> <span data-translate="model">Модель:</span> GPT OSS 120B</span>
-                    <span class="stat-badge"><i class="fas fa-clock"></i> <span data-translate="entryDelay">Вхід через:</span> 1-2 хв</span>
+                    <span class="stat-badge"><i class="fas fa-clock"></i> <span data-translate="entryDelay">Вхід через:</span> 2 хв</span>
                 </div>
             </div>
             
@@ -80,6 +80,18 @@
                 <div class="language-switcher">
                     <button id="lang-uk" class="lang-btn active" data-lang="uk">🇺🇦 Українська</button>
                     <button id="lang-ru" class="lang-btn" data-lang="ru">🇷🇺 Русский</button>
+                </div>
+                
+                <div class="manual-generate-section">
+                    <button id="manual-generate-btn" class="manual-generate-btn">
+                        <i class="fas fa-search"></i> <span data-translate="generateSignals">Пошук сигналів</span>
+                    </button>
+                    <div id="generate-status" class="generate-status" style="display: none;">
+                        <div class="status-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <span class="status-text">Генерація...</span>
+                    </div>
                 </div>
                 
                 <div class="auto-refresh-status">
@@ -91,7 +103,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Кнопки додадуться автоматично через JavaScript -->
             </div>
         </header>
 
@@ -115,7 +126,7 @@
                     <div class="stat-info">
                         <h3 data-translate="activeSignals">Активних сигналів</h3>
                         <p id="active-signals" class="stat-value">0</p>
-                        <small data-translate="withConfidence">з впевненістю >70%</small>
+                        <small data-translate="withConfidence">з впевненістю >75%</small>
                     </div>
                 </div>
                 
@@ -149,7 +160,7 @@
                 <div class="info-content">
                     <h3 data-translate="systemActive">Система активна!</h3>
                     <p data-translate="autoDescription">
-                        Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 1-2 хвилини для точнішого прогнозу. Максимум 6 сигналів одночасно.
+                        Сигнали генеруються автоматично кожні 10 хвилин. AI аналізує ринок та вказує час входу через 2 хвилини для точнішого прогнозу. Максимум 6 сигналів одночасно. Можна запустити ручну генерацію кнопкою вище.
                     </p>
                 </div>
             </div>
@@ -186,7 +197,8 @@
                     <h3><i class="fas fa-info-circle"></i> <span data-translate="howItWorks">Як працює система</span></h3>
                     <ul>
                         <li><strong data-translate="autoGeneration">Автоматична генерація:</strong> <span data-translate="autoGenDesc">кожні 10 хвилин</span></li>
-                        <li><strong data-translate="entryDelay2">Затримка входу:</strong> <span data-translate="entryDelayDesc">1-2 хвилини для точнішого прогнозу</span></li>
+                        <li><strong data-translate="entryDelay2">Затримка входу:</strong> <span data-translate="entryDelayDesc">2 хвилини для точнішого прогнозу</span></li>
+                        <li><strong>Ручна генерація:</strong> <span>кнопка "Пошук сигналів" запускає генерацію на GitHub</span></li>
                         <li><strong data-translate="aiLearning">Навчання AI:</strong> <span data-translate="aiLearningDesc">аналізує успішність сигналів</span></li>
                         <li><strong data-translate="autoCleanup">Автоочищення:</strong> <span data-translate="autoCleanupDesc">сигнали зникають через 10 хвилин</span></li>
                     </ul>
@@ -195,7 +207,7 @@
                 <div class="warning-card">
                     <h3><i class="fas fa-exclamation-triangle"></i> <span data-translate="tokenLimits">Ліміти використання</span></h3>
                     <p data-translate="tokenLimitsDesc">
-                        Для економії токенів AI обмежено до 3 сигналів за раз. Система розрахована на тривалу роботу.
+                        Для економії токенів AI обмежено до 3 сигналів за раз. Система розрахована на тривалу роботу. Ручна генерація використовує ваш GitHub токен.
                     </p>
                 </div>
             </div>
@@ -206,7 +218,7 @@
             <p class="tech-info"><span data-translate="technologies">Технології:</span> GPT OSS 120B • Python • GitHub Actions • Автоматичне навчання</p>
             <p class="tech-info" style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">
                 Репозиторій: <a href="https://github.com/Danik25326/pocket_trading_bot" style="color: white; text-decoration: underline;">Danik25326/pocket_trading_bot</a> | 
-                Версія: 2.0 | Оновлення: кожні 10 хв
+                Версія: 3.0 | Оновлення: кожні 10 хв | Ручна генерація: доступна
             </p>
         </footer>
     </div>
@@ -228,6 +240,42 @@
                 </button>
             </div>
             <small data-translate="feedbackNote" style="display: block; margin-top: 15px; color: #718096;">Ваша відповідь допомагає AI вчитися та покращувати точність</small>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для введення токена -->
+    <div id="token-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>🔑 <span data-translate="enterToken">Введіть GitHub Token</span></h3>
+            <p data-translate="tokenRequired">Для ручної генерації сигналів потрібен токен доступу.</p>
+            
+            <div class="token-form">
+                <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
+                       style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                
+                <div class="token-actions">
+                    <button id="save-token-btn" class="feedback-btn feedback-yes" style="flex: 1;">
+                        <i class="fas fa-save"></i> <span data-translate="save">Зберегти</span>
+                    </button>
+                    <button onclick="signalDisplay.hideTokenModal()" class="feedback-btn feedback-skip" style="flex: 1;">
+                        <i class="fas fa-times"></i> <span data-translate="cancel">Скасувати</span>
+                    </button>
+                </div>
+                
+                <div class="token-help">
+                    <small>
+                        <i class="fas fa-info-circle"></i> 
+                        <span data-translate="howToGetToken">Як отримати токен:</span> 
+                        <a href="https://github.com/settings/tokens" target="_blank" 
+                           style="color: #4299e1; text-decoration: underline;">
+                            GitHub → Settings → Developer settings → Tokens
+                        </a>
+                    </small>
+                    <small>
+                        <span data-translate="permissions">Права:</span> <code>repo</code> та <code>workflow</code>
+                    </small>
+                </div>
+            </div>
         </div>
     </div>
 
