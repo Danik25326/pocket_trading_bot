@@ -31,7 +31,8 @@ class PocketOptionClient:
                 logger.error("❌ Не вдалося отримати валідний SSID!")
                 return self
             
-            logger.info(f"🔗 Ініціалізація PocketOption клієнта (Demo: {Config.POCKET_DEMO})...")
+            logger.info(f"🔗 Ініціалізація PocketOption клієнта")
+            logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")  # Додано інформацію про режим
             
             # Імпортуємо асинхронного клієнта
             try:
@@ -68,7 +69,13 @@ class PocketOptionClient:
                 logger.error("❌ Клієнт не ініціалізований")
                 return False
             
-            logger.info("🔗 Підключення до PocketOption...")
+            logger.info(f"🔗 Підключення до PocketOption...")
+            logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")  # Додано
+            
+            # Додаємо попередження для реального рахунку
+            if not Config.POCKET_DEMO:
+                logger.warning("⚠️  УВАГА: Використовується РЕАЛЬНИЙ рахунок!")
+                logger.warning("⚠️  Усі операції будуть з реальними грошима!")
             
             # Спробуємо підключитися
             try:
@@ -86,7 +93,13 @@ class PocketOptionClient:
                 if balance and hasattr(balance, 'balance'):
                     self.connected = True
                     logger.info(f"✅ Успішно підключено до PocketOption!")
+                    logger.info(f"💰 Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")  # Додано
                     logger.info(f"💰 Баланс: {balance.balance} {balance.currency}")
+                    
+                    # Додаткова інформація для реального рахунку
+                    if not Config.POCKET_DEMO:
+                        logger.info("🎉 Вітаю! Ви підключені до РЕАЛЬНОГО рахунку!")
+                    
                     return True
                 else:
                     logger.error("❌ Баланс не отримано або неправильний формат")
@@ -118,6 +131,8 @@ class PocketOptionClient:
                     return None
             
             logger.info(f"📊 Запит свічок для {asset_clean}...")
+            logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")  # Додано
+            
             candles = await self.client.get_candles(
                 asset=asset_clean,
                 timeframe=timeframe,
@@ -143,6 +158,12 @@ class PocketOptionClient:
                         return None
             
             logger.info(f"✅ Отримано {len(candles)} коректних свічок для {asset_clean}")
+            
+            # Додаткова інформація для реального рахунку
+            if not Config.POCKET_DEMO and len(candles) > 0:
+                last_candle = candles[-1]
+                logger.info(f"📈 Остання свічка: {last_candle.close} (час: {last_candle.timestamp})")
+            
             return candles
             
         except Exception as e:
@@ -154,6 +175,11 @@ class PocketOptionClient:
     
     async def _get_mock_candles(self, count=50):
         """Повернення тестових свічок для демо-режиму"""
+        # Додаємо перевірку, щоб для реального рахунку не генерувати тестові дані
+        if not Config.POCKET_DEMO:
+            logger.warning("🚫 Тестові дані недоступні для реального рахунку!")
+            return None
+            
         import random
         from collections import namedtuple
         
