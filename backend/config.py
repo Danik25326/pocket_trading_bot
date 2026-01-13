@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).parent.parent
 class Config:
     # Pocket Option
     POCKET_SSID = os.getenv('POCKET_SSID')
-    POCKET_DEMO = os.getenv('POCKET_DEMO', 'true').lower() == 'true'
+    POCKET_DEMO = os.getenv('POCKET_DEMO', 'false').lower() == 'true'  # ЗМІНА: 'true' → 'false'
     
     # Groq AI
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
@@ -91,7 +91,9 @@ class Config:
             logger.warning(f"SSID не у повному форматі, конвертую...")
             logger.info(f"Оригінальний SSID: {ssid[:50]}...")
             
-            ssid = f'42["auth",{{"session":"{ssid}","isDemo":1,"uid":12345,"platform":1}}]'
+            # ЗМІНА: Для реального рахунку ставимо isDemo=0
+            is_demo_value = 1 if cls.POCKET_DEMO else 0
+            ssid = f'42["auth",{{"session":"{ssid}","isDemo":{is_demo_value},"uid":12345,"platform":1}}]'
             logger.info(f"Конвертований SSID: {ssid[:50]}...")
         
         is_valid, message = cls.validate_ssid_format(ssid)
