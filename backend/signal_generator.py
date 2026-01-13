@@ -20,7 +20,7 @@ class SignalGenerator:
         
         # Обмеження для економії токенів
         self.MAX_SIGNALS_PER_GENERATION = 3
-        self.REQUEST_DELAY = 2  # секунд між запитами
+        self.REQUEST_DELAY = 2
 
     async def generate_signal(self, asset):
         """Генерація одного сигналу з фіксованою затримкою входу 2 хвилини"""
@@ -77,7 +77,7 @@ class SignalGenerator:
                     
                     # Фіксована затримка 2 хвилини для входу
                     delay_minutes = 2
-                    entry_time_dt = now_kyiv + timedelta(minutes=2)  # Чітко через 2 хвилини
+                    entry_time_dt = now_kyiv + timedelta(minutes=2)
                     signal['entry_time'] = entry_time_dt.strftime('%H:%M')
                     signal['entry_delay'] = 2
                     
@@ -86,7 +86,6 @@ class SignalGenerator:
                     signal['asset'] = asset
                     signal['id'] = f"{asset}_{now_kyiv.strftime('%Y%m%d%H%M%S')}"
                     
-                    # Додаємо інформацію про волатильність
                     if 'volatility' not in signal:
                         signal['volatility'] = 0.0
                     
@@ -116,7 +115,8 @@ class SignalGenerator:
 
         try:
             logger.info(f"⚙️ Конфігурація:")
-            logger.info(f"  - Реальний рахунок: ТАК")  # ЗМІНА: замість демо
+            # ========== ВИПРАВЛЕНО: Виводимо правильний режим ==========
+            logger.info(f"  - Режим: {'DEMO' if Config.POCKET_DEMO else 'РЕАЛЬНИЙ'}")
             logger.info(f"  - Активи: {Config.ASSETS}")
             logger.info(f"  - Таймфрейм: {Config.TIMEFRAMES} сек ({Config.TIMEFRAMES/60} хв)")
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
@@ -126,9 +126,9 @@ class SignalGenerator:
             logger.info(f"  - Часовий пояс: Київ (UTC+2)")
             logger.info(f"  - Затримка входу: 2 хвилини")
             
-            # ⚠️ ВИДАЛЕНО ВСІ ПЕРЕВІРКИ ЧАСУ! Генеруємо завжди
             logger.info("🔗 Підключення до PocketOption...")
-            logger.info(f"   Режим: РЕАЛЬНИЙ РАХУНОК")  # ЗМІНА
+            # ========== ВИПРАВЛЕНО: Виводимо правильний режим ==========
+            logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'РЕАЛЬНИЙ'}")
             
             connection_result = await self.pocket_client.connect()
             
@@ -143,7 +143,6 @@ class SignalGenerator:
             valid_signals = []
             failed_assets = []
             
-            # Обмежуємо кількість активів для аналізу
             assets_to_process = Config.ASSETS[:self.MAX_SIGNALS_PER_GENERATION]
             logger.info(f"📊 Обробляємо активи: {assets_to_process}")
             
@@ -160,7 +159,6 @@ class SignalGenerator:
                     logger.warning(f"⚠️ Не створено сигнал для {asset}")
                     failed_assets.append(asset)
                 
-                # Затримка між запитами для економії токенів
                 await asyncio.sleep(self.REQUEST_DELAY)
 
             if valid_signals:
@@ -188,7 +186,6 @@ class SignalGenerator:
             await self.pocket_client.disconnect()
             logger.info("✅ Відключено від PocketOption")
             
-            # Автоматичне очищення старих сигналів
             logger.info("🧹 Автоматичне очищення старих сигналів...")
             self.data_handler.auto_cleanup_old_signals()
             
@@ -212,10 +209,10 @@ async def main():
     print(f"⏰ Автоматичний запуск: кожні 10 хвилин (у :00, :10, :20, :30, :40, :50)")
     print(f"🌐 Мова: {Config.LANGUAGE}")
     print(f"💰 Обмеження: 3 сигнали для економії токенів Groq")
-    print(f"🔄 Режим: РЕАЛЬНИЙ РАХУНОК")  # ЗМІНА
+    # ========== ВИПРАВЛЕНО: Виводимо правильний режим ==========
+    print(f"🔄 Режим: {'DEMO' if Config.POCKET_DEMO else 'РЕАЛЬНИЙ'}")
     print("="*60)
     
-    # Перевірка конфігурації
     if not Config.validate():
         print("❌ Помилка валідації конфігурації. Перевірте ваші змінні оточення.")
         return []
@@ -246,27 +243,19 @@ async def main():
     print(f"\n✅ Генерація сигналів завершена о {Config.get_kyiv_time().strftime('%H:%M:%S')}")
     print("="*60)
     
-    # Очищаємо старі сигнали після генерації
     generator.data_handler.auto_cleanup_old_signals()
     
-    # Важливо: Повідомляємо про наступний автоматичний запуск
     print(f"\n⏰ НАСТУПНИЙ АВТОМАТИЧНИЙ ЗАПУСК:")
     
-    # ВИПРАВЛЕНИЙ КОД:
     now_utc = datetime.utcnow()
-    
-    # Розраховуємо наступний 10-хвилинний інтервал
     current_minute = now_utc.minute
     next_minute = ((current_minute // 10) + 1) * 10
     
     if next_minute >= 60:
-        # Перехід на наступну годину
         next_time_utc = now_utc.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
     else:
-        # Це ж година
         next_time_utc = now_utc.replace(minute=next_minute, second=0, microsecond=0)
     
-    # Розраховуємо різницю в часі
     time_diff = next_time_utc - now_utc
     minutes_left = int(time_diff.total_seconds() // 60)
     
