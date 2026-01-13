@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).parent.parent
 class Config:
     # Pocket Option - ТІЛЬКИ РЕАЛЬНИЙ
     POCKET_SSID = os.getenv('POCKET_SSID')
-    POCKET_DEMO = os.getenv('POCKET_DEMO', 'false').lower() == 'false'  # false для реального
+    POCKET_DEMO = os.getenv('POCKET_DEMO', 'false').lower() == 'true'  # false для реального
     
     # Groq AI
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
