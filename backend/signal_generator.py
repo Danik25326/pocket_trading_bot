@@ -116,7 +116,7 @@ class SignalGenerator:
 
         try:
             logger.info(f"⚙️ Конфігурація:")
-            logger.info(f"  - Демо режим: {Config.POCKET_DEMO}")
+            logger.info(f"  - Реальний рахунок: ТАК")  # ЗМІНА: замість демо
             logger.info(f"  - Активи: {Config.ASSETS}")
             logger.info(f"  - Таймфрейм: {Config.TIMEFRAMES} сек ({Config.TIMEFRAMES/60} хв)")
             logger.info(f"  - Мін. впевненість: {Config.MIN_CONFIDENCE*100}%")
@@ -128,7 +128,7 @@ class SignalGenerator:
             
             # ⚠️ ВИДАЛЕНО ВСІ ПЕРЕВІРКИ ЧАСУ! Генеруємо завжди
             logger.info("🔗 Підключення до PocketOption...")
-            logger.info(f"   Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")
+            logger.info(f"   Режим: РЕАЛЬНИЙ РАХУНОК")  # ЗМІНА
             
             connection_result = await self.pocket_client.connect()
             
@@ -212,7 +212,7 @@ async def main():
     print(f"⏰ Автоматичний запуск: кожні 10 хвилин (у :00, :10, :20, :30, :40, :50)")
     print(f"🌐 Мова: {Config.LANGUAGE}")
     print(f"💰 Обмеження: 3 сигнали для економії токенів Groq")
-    print(f"🔄 Режим: {'DEMO' if Config.POCKET_DEMO else 'REAL'}")
+    print(f"🔄 Режим: РЕАЛЬНИЙ РАХУНОК")  # ЗМІНА
     print("="*60)
     
     # Перевірка конфігурації
