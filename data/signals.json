@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-13T13:49:00.926701+02:00",
+  "last_update": "2026-01-13T13:57:46.140143+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -45,10 +45,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-13T11:48:58.925041Z",
       "expires_at": "2026-01-13T13:58:58.925001+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.86,
+      "entry_time": "13:59",
+      "duration": 3,
+      "reason": "Recent 1‑min candles show a steady rise from 215.036 to 215.727, EMA9 is above EMA21, MACD histogram is positive and widening, RSI is around 55‑60 indicating bullish momentum without being overbought, Bollinger Bands are expanding upward with price near the upper band, and a bullish engulfing pattern appears at 14:24‑14:25. Overall trend is bullish, meeting the 75% confidence threshold.",
+      "timestamp": "2026-01-13 13:57:34",
+      "generated_at": "2026-01-13T13:57:35.992123+02:00",
+      "volatility": 0.3249,
+      "id": "GBPJPY_otc_20260113135735",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-13T11:57:35.992161Z",
+      "expires_at": "2026-01-13T14:07:35.992123+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.84,
+      "entry_time": "13:59",
+      "duration": 3,
+      "reason": "RSI ~52 (neutral‑slightly bullish), MACD line above signal and rising, price above EMA9 and EMA21, Stochastic %K≈62 > %D≈56, Bollinger Bands show price near upper‑mid band with slight expansion, short‑term uptrend confirmed by higher highs/lows in last 8 min and a bullish candle at 14:25. Combined signals give a confident long bias.",
+      "timestamp": "2026-01-13 13:57:38",
+      "generated_at": "2026-01-13T13:57:40.004162+02:00",
+      "volatility": 0.0471,
+      "id": "EURUSD_otc_20260113135740",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-13T11:57:40.004205Z",
+      "expires_at": "2026-01-13T14:07:40.004162+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "13:59",
+      "duration": 3,
+      "reason": "Trend is upward but RSI is above 70, Stochastic near 95 and price sits at the upper Bollinger Band, indicating overbought conditions. MACD is still positive but the fast line is converging with the slow line, and a bearish candle appeared at 14:22. These mixed signals suggest a short‑term pullback, so a DOWN position for 3 minutes is recommended.",
+      "timestamp": "2026-01-13 13:57:42",
+      "generated_at": "2026-01-13T13:57:44.138224+02:00",
+      "volatility": 0.0733,
+      "id": "USDJPY_otc_20260113135744",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-13T11:57:44.138262Z",
+      "expires_at": "2026-01-13T14:07:44.138224+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 381
+  "total_signals": 6,
+  "active_signals": 6,
+  "generation_count": 382
 }
