@@ -83,62 +83,84 @@ class Config:
         logger.info(f"🔍 Оригінальний SSID: {ssid[:100]}...")
         logger.info(f"🔍 Довжина: {len(ssid)} символів")
         
-        # Перевіряємо наявність PHP серіалізації
+        # АНАЛІЗ СТРУКТУРИ ТОКЕНА
         if '"session":"a:4:' in ssid:
-            logger.info("⚙️ Виявлено PHP серіалізацію, спробую конвертувати...")
+            logger.info("⚙️ Виявлено PHP серіалізацію, обробляю...")
             
-            # Шукаємо session_id в PHP серіалізації
-            pattern = r'session_id";s:32:"([a-f0-9]{32})"'
-            match = re.search(pattern, ssid)
+            # 1. Спроба отримати session_id з PHP серіалізації
+            php_pattern = r'session_id";s:32:"([a-f0-9]{32})"'
+            match = re.search(php_pattern, ssid)
             
             if match:
                 session_id = match.group(1)
                 logger.info(f"✅ Витягнуто session_id: {session_id}")
                 
-                # Спробуємо створюємо кілька варіантів токена
-                
-                # Варіант 1: Просто sessionToken
-                new_ssid = ssid.replace(
-                    '"session":"a:4:{s:10:\\"session_id\\";s:32:\\"' + session_id + '\\";',
-                    '"sessionToken":"' + session_id + '",'
+                # 2. ВИКОРИСТОВУЄМО ВАРІАНТ 1: sessionToken
+                # Створюємо новий SSID з sessionToken
+                new_ssid = re.sub(
+                    r'"session":"a:4:\{[^}]+\}[^"]+"',
+                    f'"sessionToken":"{session_id}"',
+                    ssid
                 )
                 
-                # Видаляємо зайву PHP серіалізацію
+                # 3. Додатково видаляємо залишки серіалізації
                 new_ssid = new_ssid.replace('f6f547041e4a7965fb57feb838eba278",', '",')
                 
-                # Видаляємо залишки серіалізації
-                new_ssid = re.sub(r'";s:10:"ip_address"[^"]+"[^"]+";s:10:"user_agent"[^"]+"[^"]+";s:13:"last_activity";i:\d+;}', '', new_ssid)
+                # 4. Переконуємось що isDemo=0
+                if '"isDemo":0' not in new_ssid:
+                    new_ssid = new_ssid.replace('"sessionToken"', '"isDemo":0,"sessionToken"')
                 
-                logger.info("✅ Конвертовано PHP серіалізацію в простий токен")
-                logger.info(f"📋 Новий SSID: {new_ssid[:100]}...")
+                # 5. Перевіряємо platform - завжди ставимо 8 (сучасна версія)
+                if '"platform":2' in new_ssid:
+                    new_ssid = new_ssid.replace('"platform":2', '"platform":8')
+                elif '"platform":8' not in new_ssid:
+                    # Додаємо platform якщо немає
+                    new_ssid = new_ssid.replace('"isDemo":0,', '"isDemo":0,"platform":8,')
                 
-                # Перевіряємо чи це реальний рахунок
+                # 6. Переконуємось що є всі обов'язкові поля
+                required_fields = ['isDemo', 'uid', 'platform', 'isFastHistory', 'isOptimized']
+                for field in required_fields:
+                    if f'"{field}":' not in new_ssid:
+                        logger.warning(f"⚠️ Відсутнє поле {field} в SSID")
+                
+                logger.info("✅ Конвертовано PHP серіалізацію в sessionToken формат")
+                logger.info(f"📋 Новий SSID: {new_ssid[:120]}...")
+                logger.info(f"📏 Довжина нового SSID: {len(new_ssid)}")
+                
+                # Перевірка на реальний рахунок
                 if '"isDemo":0' in new_ssid:
                     logger.info("🎯 Режим: реальний рахунок (isDemo=0)")
                 else:
-                    logger.warning("⚠️ Увага: SSID не містить явного isDemo:0")
+                    logger.error("❌ Увага: SSID не містить isDemo:0")
+                    return None
                 
                 return new_ssid
             else:
                 logger.error("❌ Не вдалося витягти session_id з PHP серіалізації")
                 logger.warning("⚠️ Спробую використати оригінальний SSID")
         
-        # Якщо немає PHP серіалізації або не вдалося конвертувати
+        # Якщо PHP серіалізації немає
         else:
-            logger.info("ℹ️ PHP серіалізація не виявлена, використовую оригінальний SSID")
+            logger.info("ℹ️ PHP серіалізація не виявлена")
             
-            # Перевіряємо чи це реальний рахунок
+            # Перевіряємо який формат використовується
+            if '"sessionToken"' in ssid:
+                logger.info("✅ Використовується sessionToken формат (варіант 1)")
+            elif '"session"' in ssid and 'a:4:' not in ssid:
+                logger.info("ℹ️ Використовується простий session формат (варіант 2)")
+            else:
+                logger.warning("⚠️ Невідомий формат SSID")
+            
+            # Перевірка на реальний рахунок
             if '"isDemo":0' in ssid:
                 logger.info("✅ Режим: реальний рахунок (isDemo=0)")
             elif '"isDemo":1' in ssid:
                 logger.error("❌ Це DEMO рахунок! (isDemo=1)")
-                logger.error("❌ Отримай REAL токен з реального кабінету")
                 return None
             else:
                 logger.warning("⚠️ Увага: SSID не містить поля isDemo")
-                logger.warning("⚠️ Але продовжуємо підключення як до реального рахунку")
         
-        # Фінальна валідація формату
+        # Фінальна валідація
         is_valid, message = cls.validate_ssid_format(ssid)
         
         if is_valid:
@@ -171,6 +193,11 @@ class Config:
             # Перевіряємо наявність обов'язкових полів
             if '"uid"' not in cls.POCKET_SSID:
                 errors.append("⚠️ В токені відсутнє поле uid")
+            
+            # Перевіряємо формат
+            is_valid, message = cls.validate_ssid_format(cls.POCKET_SSID)
+            if not is_valid:
+                errors.append(f"❌ {message}")
         
         if errors:
             for error in errors:
