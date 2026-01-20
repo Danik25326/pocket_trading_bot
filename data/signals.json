@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-21T00:49:57.757790+02:00",
+  "last_update": "2026-01-21T00:58:57.965132+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -45,10 +45,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-20T22:49:55.756548Z",
       "expires_at": "2026-01-21T00:59:55.756508+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "01:00",
+      "duration": 3,
+      "reason": "Bearish downtrend confirmed by lower EMA9 vs EMA21, price below Bollinger middle band, RSI likely under 50, MACD histogram negative, Stochastic descending and recent bearish candles",
+      "timestamp": "2026-01-21 00:58:47",
+      "generated_at": "2026-01-21T00:58:49.130768+02:00",
+      "volatility": 0.2158,
+      "id": "GBPJPY_otc_20260121005849",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-20T22:58:49.130807Z",
+      "expires_at": "2026-01-21T01:08:49.130768+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.84,
+      "entry_time": "01:00",
+      "duration": 3,
+      "reason": "Price shows a clear short‑term uptrend: last 8 candles mostly higher closes, EMA 9 and EMA 21 are sloping upward, RSI is approaching overbought but still below 70, Stochastic is high yet not crossed down, Bollinger Bands are expanding with price near the upper band, and bullish candle patterns (e.g., bullish engulfing at 01:24‑01:25) support continuation. Confidence meets the 75% minimum.",
+      "timestamp": "2026-01-21 00:58:51",
+      "generated_at": "2026-01-21T00:58:52.658412+02:00",
+      "volatility": 0.1563,
+      "id": "EURUSD_otc_20260121005852",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-20T22:58:52.658452Z",
+      "expires_at": "2026-01-21T01:08:52.658412+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "01:00",
+      "duration": 3,
+      "reason": "Цены снижаются, EMA9 ниже EMA21, RSI около 45 указывает на ослабление быков, MACD отрицательный и убывает, цена торгуется около нижней полосы Bollinger Bands, стохастик ниже 20, наблюдаются медвежьи свечные паттерны (нижние тени).",
+      "timestamp": "2026-01-21 00:58:54",
+      "generated_at": "2026-01-21T00:58:55.963694+02:00",
+      "volatility": 0.1117,
+      "id": "USDJPY_otc_20260121005855",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-20T22:58:55.963730Z",
+      "expires_at": "2026-01-21T01:08:55.963694+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 415
+  "total_signals": 6,
+  "active_signals": 6,
+  "generation_count": 416
 }
