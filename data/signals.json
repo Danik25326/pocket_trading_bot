@@ -1,54 +1,39 @@
 {
-  "last_update": "2026-01-20T14:55:58.990780+02:00",
+  "last_update": "2026-01-20T15:44:46.596506+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "14:57",
+      "entry_time": "15:46",
       "duration": 3,
-      "reason": "RSI ~55 (neutral), MACD shows bearish crossover, price is below EMA9 and EMA21, touching lower Bollinger Band, recent candles close lower than open indicating short momentum",
-      "timestamp": "2026-01-20 14:55:48",
-      "generated_at": "2026-01-20T14:55:49.973541+02:00",
-      "volatility": 0.1644,
-      "id": "GBPJPY_otc_20260120145549",
+      "reason": "Bearish short‑term trend: price fell from ~209.80 to 209.14, EMA9 and EMA21 lie above current price, MACD histogram negative, RSI near 48 (neutral‑slightly bearish), Stochastic below 50 and falling, no bullish candlestick pattern, volatility low (0.33%).",
+      "timestamp": "2026-01-20 15:44:35",
+      "generated_at": "2026-01-20T15:44:37.095597+02:00",
+      "volatility": 0.3338,
+      "id": "GBPJPY_otc_20260120154437",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T12:55:49.973574Z",
-      "expires_at": "2026-01-20T15:05:49.973541+02:00"
+      "generated_at_utc": "2026-01-20T13:44:37.095634Z",
+      "expires_at": "2026-01-20T15:54:37.095597+02:00"
     },
     {
       "asset": "EURUSD_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "14:57",
-      "duration": 3,
-      "reason": "Ціна після короткого сплеску на 15:20 починає падати, EMA 9 нижче EMA 21, RSI та Stochastic підказують надмірну покупку, а ціна торкається верхньої межі Bollinger Bands і повертається вниз, що підтверджує медвежий сигнал.",
-      "timestamp": "2026-01-20 14:55:52",
-      "generated_at": "2026-01-20T14:55:53.371653+02:00",
-      "volatility": 0.0382,
-      "id": "EURUSD_otc_20260120145553",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T12:55:53.371708Z",
-      "expires_at": "2026-01-20T15:05:53.371653+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "14:57",
+      "entry_time": "15:46",
       "duration": 3,
-      "reason": "Останні 8 свічок показують змішаний, але переважає низхідний тиск: 5 з 8 закриттів нижчі за відкриття, остання свічка (15:23) – маленька медвежа, що слідує за підвищеним обсягом. RSI, розрахований за 14‑періодами, приблизно 48‑50 (нейтраль/трохи нижче 50). MACD близько нуля, лінія сигналу трохи вище MACD, що підказує слабку медвежу динаміку. Ціна торкається нижньої межі середньої Bollinger Band, EMA9 нижча за EMA21, що підтверджує короткостроковий спад. Stochastic знаходиться в діапазоні 45‑55, без перекупленості/перепроданості. Враховуючи патерн «bearish engulfing» та згадані індикатори, рекомендація – короткостроковий продаж на 3 хвилини.",
-      "timestamp": "2026-01-20 14:55:55",
-      "generated_at": "2026-01-20T14:55:56.989778+02:00",
-      "volatility": 0.0486,
-      "id": "USDJPY_otc_20260120145556",
+      "reason": "Останні 8 хвилинних свічок показують слабке, проти‑трендові рухи: більшість закриттів нижче відкриттів, ціна торкається нижньої межі Bollinger Bands, EMA9 перебуває під EMA21, RSI (за оцінкою) нижче 50, MACD у негативній зоні, Stochastic ближче до нижньої межі. При низькій волатильності (0.05%) це вказує на продовження короткострокового падіння.",
+      "timestamp": "2026-01-20 15:44:39",
+      "generated_at": "2026-01-20T15:44:40.543419+02:00",
+      "volatility": 0.0501,
+      "id": "EURUSD_otc_20260120154440",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T12:55:56.989822Z",
-      "expires_at": "2026-01-20T15:05:56.989778+02:00"
+      "generated_at_utc": "2026-01-20T13:44:40.543461Z",
+      "expires_at": "2026-01-20T15:54:40.543419+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 397
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 398
 }
