@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-20T12:36:44.320702+02:00",
+  "last_update": "2026-01-20T12:59:34.098583+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "13:01",
+      "duration": 3,
+      "reason": "RSI ~55 (neutral‑bullish), MACD line above signal, EMA9 above EMA21, price near the middle of Bollinger Bands with slight upward bias, Stochastic around 60‑70 indicating momentum, recent candles show more bullish than bearish (3 bullish vs 2 bearish) and a bullish engulfing at 13:26. Combined signals suggest a short‑term upward move with confidence above 75%.",
+      "timestamp": "2026-01-20 12:59:23",
+      "generated_at": "2026-01-20T12:59:24.525442+02:00",
+      "volatility": 0.2835,
+      "id": "GBPJPY_otc_20260120125924",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-20T10:59:24.525475Z",
+      "expires_at": "2026-01-20T13:09:24.525442+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "12:38",
+      "entry_time": "13:01",
       "duration": 3,
-      "reason": "Останні три свічки (13:02‑13:04) показують низхідний рух (закриття нижче відкриття) і формують короткостроковий медвежий патерн. RSI, розрахований за останні 14 періодів, перебуває близько 55‑60, що вказує на відсутність сильної перекупленості, а MACD показує негативний гістограмний розрив, підтверджуючи слабкість. Bollinger Bands стискаються, ціна торкається нижньої межі, що часто передбачає подальший спад. EMA9 лежить під EMA21, що підкреслює медвежий тренд. Stochastic знаходиться в зоні 20‑30, підтверджуючи можливий продовження вниз. Враховуючи низьку волатильність (0.24 %) і підтвердження з кількох індикаторів, рекомендація – короткостроковий продаж.",
-      "timestamp": "2026-01-20 12:36:32",
-      "generated_at": "2026-01-20T12:36:33.949265+02:00",
-      "volatility": 0.2387,
-      "id": "GBPJPY_otc_20260120123633",
+      "reason": "RSI≈48 (slightly below 50), MACD line just under signal indicating mild bearish momentum, price trading near the lower half of Bollinger Bands with bands tight due to 0.06% volatility, EMA9 is below EMA21 confirming short‑term downtrend, recent 8‑minute candles show more down closes than up closes, Stochastic around 45‑50 reinforces lack of bullish strength. All indicators point to a modest continuation of a down move for the next 3 minutes.",
+      "timestamp": "2026-01-20 12:59:26",
+      "generated_at": "2026-01-20T12:59:28.106529+02:00",
+      "volatility": 0.064,
+      "id": "EURUSD_otc_20260120125928",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T10:36:33.949321Z",
-      "expires_at": "2026-01-20T12:46:33.949265+02:00"
+      "generated_at_utc": "2026-01-20T10:59:28.106564Z",
+      "expires_at": "2026-01-20T13:09:28.106529+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 392
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 393
 }
