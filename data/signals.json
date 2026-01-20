@@ -1,54 +1,54 @@
 {
-  "last_update": "2026-01-21T00:31:06.991874+02:00",
+  "last_update": "2026-01-21T00:49:57.757790+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "UP",
-      "confidence": 0.82,
-      "entry_time": "00:32",
+      "confidence": 0.78,
+      "entry_time": "00:51",
       "duration": 3,
-      "reason": "Більшість останніх 8 хвилинних свічок – bullish, EMA9 перебуває вище EMA21, MACD показує позитивний гістограм, RSI та Stochastic перебувають у зоні перекупленості, але ще не сформували розворот. Ціна торкається верхньої межі Bollinger Bands, що підтверджує сильний імпульс. Невелика корекція (00:55, 00:53) не зламала тренд, тому очікується подальший рух UP протягом наступних 3 хвилин.",
-      "timestamp": "2026-01-21 00:30:55",
-      "generated_at": "2026-01-21T00:30:56.984884+02:00",
-      "volatility": 0.2571,
-      "id": "GBPJPY_otc_20260121003056",
+      "reason": "RSI ~50, MACD slightly positive, EMA9 above EMA21 indicating mild uptrend, price near Bollinger middle, Stochastic around 50, recent bullish candle at 01:13 supports continuation",
+      "timestamp": "2026-01-21 00:49:47",
+      "generated_at": "2026-01-21T00:49:48.395077+02:00",
+      "volatility": 0.3173,
+      "id": "GBPJPY_otc_20260121004948",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T22:30:56.984908Z",
-      "expires_at": "2026-01-21T00:40:56.984884+02:00"
+      "generated_at_utc": "2026-01-20T22:49:48.395118Z",
+      "expires_at": "2026-01-21T00:59:48.395077+02:00"
     },
     {
       "asset": "EURUSD_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "00:33",
+      "entry_time": "00:51",
       "duration": 3,
-      "reason": "Слабка низхідна динаміка: EMA9 нижче EMA21, остання свічка – бичача, але загальний рух вниз, RSI ~48, MACD близько нуля, стохастик у нижній половині, ціна торкається нижньої Bollinger Band, що вказує на можливий продовження падіння.",
-      "timestamp": "2026-01-21 00:30:59",
-      "generated_at": "2026-01-21T00:31:01.015242+02:00",
-      "volatility": 0.0531,
-      "id": "EURUSD_otc_20260121003101",
+      "reason": "Остання свічка знижується, переважає низхідний імпульс, EMA9 нижче EMA21, RSI близько 48, MACD у негативній зоні, Bollinger Bands показують відхилення до нижньої межі, Stochastic під 40, підтверджує медвежий тренд",
+      "timestamp": "2026-01-21 00:49:50",
+      "generated_at": "2026-01-21T00:49:51.990998+02:00",
+      "volatility": 0.0513,
+      "id": "EURUSD_otc_20260121004951",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T22:31:01.015275Z",
-      "expires_at": "2026-01-21T00:41:01.015242+02:00"
+      "generated_at_utc": "2026-01-20T22:49:51.991042Z",
+      "expires_at": "2026-01-21T00:59:51.990998+02:00"
     },
     {
       "asset": "USDJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "00:33",
+      "confidence": 0.81,
+      "entry_time": "00:51",
       "duration": 3,
-      "reason": "Короткий аналіз: останні 8 хвилин показують загальний низхідний тренд, EMA9 нижче EMA21, MACD скоріше за все в негативній зоні, RSI близько 45, Bollinger Bands в центрі, стохастик під 50. Остання червона свічка (00:57) продовжує падіння, а зелена 00:58 лише короткочасний відскок без підтвердження. Тому переважає сигнал на продаж.",
-      "timestamp": "2026-01-21 00:31:03",
-      "generated_at": "2026-01-21T00:31:04.990082+02:00",
-      "volatility": 0.0741,
-      "id": "USDJPY_otc_20260121003104",
+      "reason": "RSI≈48 (slightly below 50), MACD line below signal, price trading below EMA9 and EMA21, Bollinger Bands show price near lower band, Stochastic≈42 (bearish zone), recent candles display a modest downtrend with a bearish pin‑bar at 00:17, low volatility supports continuation of short‑term downside",
+      "timestamp": "2026-01-21 00:49:54",
+      "generated_at": "2026-01-21T00:49:55.756508+02:00",
+      "volatility": 0.0817,
+      "id": "USDJPY_otc_20260121004955",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-20T22:31:04.990118Z",
-      "expires_at": "2026-01-21T00:41:04.990082+02:00"
+      "generated_at_utc": "2026-01-20T22:49:55.756548Z",
+      "expires_at": "2026-01-21T00:59:55.756508+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 3,
   "active_signals": 3,
-  "generation_count": 414
+  "generation_count": 415
 }
