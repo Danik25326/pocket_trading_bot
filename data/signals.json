@@ -1,54 +1,54 @@
 {
-  "last_update": "2026-01-21T03:45:47.526034+02:00",
+  "last_update": "2026-01-21T05:23:41.539066+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
       "confidence": 0.82,
-      "entry_time": "03:47",
+      "entry_time": "05:25",
       "duration": 3,
-      "reason": "Ціни демонструють чіткий короткостроковий спад: більшість останніх 1‑хв свічок – bearish, EMA9 < EMA21, MACD вже в негативній зоні, RSI нижче 50 (приблизно 40‑45), Stochastic перебуває в нижній частині діапазону, а ціна торкається нижньої межі Bollinger Bands. Тренд і свічкові патерни підтверджують подальший рух вниз.",
-      "timestamp": "2026-01-21 03:45:36",
-      "generated_at": "2026-01-21T03:45:38.230033+02:00",
-      "volatility": 0.4106,
-      "id": "GBPJPY_otc_20260121034538",
+      "reason": "RSI is approaching oversold levels, MACD histogram is negative and the MACD line is below the signal line, price is trading below both EMA9 and EMA21, Bollinger Bands are tightening with price near the upper band and starting to turn down, Stochastic has crossed down from overbought territory, and recent candles show a bearish pattern (lower closes despite occasional small rallies). These factors together suggest a short‑term down move for the next 3 minutes.",
+      "timestamp": "2026-01-21 05:23:30",
+      "generated_at": "2026-01-21T05:23:32.047337+02:00",
+      "volatility": 0.1565,
+      "id": "GBPJPY_otc_20260121052332",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-21T01:45:38.230077Z",
-      "expires_at": "2026-01-21T03:55:38.230033+02:00"
+      "generated_at_utc": "2026-01-21T03:23:32.047375Z",
+      "expires_at": "2026-01-21T05:33:32.047337+02:00"
     },
     {
       "asset": "EURUSD_otc",
-      "direction": "DOWN",
+      "direction": "UP",
       "confidence": 0.78,
-      "entry_time": "03:47",
+      "entry_time": "05:25",
       "duration": 3,
-      "reason": "Recent candles show slight bearish pressure (04:12 and 04:13 close lower), RSI near 48, MACD below its signal line, price near the lower Bollinger Band, EMA9 is below EMA21, and Stochastic is below 50. Low volatility (0.07%) supports a short‑term down move.",
-      "timestamp": "2026-01-21 03:45:40",
-      "generated_at": "2026-01-21T03:45:42.035338+02:00",
-      "volatility": 0.0685,
-      "id": "EURUSD_otc_20260121034542",
+      "reason": "RSI near oversold, Stochastic crossing upward, MACD histogram turning positive, price touching lower Bollinger Band and EMA9 below EMA21 suggests short‑term rebound; recent candle at 05:51 shows bullish close despite slight downtrend",
+      "timestamp": "2026-01-21 05:23:34",
+      "generated_at": "2026-01-21T05:23:35.748153+02:00",
+      "volatility": 0.0676,
+      "id": "EURUSD_otc_20260121052335",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-21T01:45:42.035382Z",
-      "expires_at": "2026-01-21T03:55:42.035338+02:00"
+      "generated_at_utc": "2026-01-21T03:23:35.748193Z",
+      "expires_at": "2026-01-21T05:33:35.748153+02:00"
     },
     {
       "asset": "USDJPY_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "03:47",
+      "entry_time": "05:25",
       "duration": 3,
-      "reason": "RSI ~48 (neutral), MACD line below signal, EMA9 < EMA21, price trading near lower Bollinger Band, Stochastic ~42 (no overbought), recent candles show slight bearish bias with more down closes than ups and a bearish closing candle at 04:13. Combined indicators suggest a short‑term down move.",
-      "timestamp": "2026-01-21 03:45:44",
-      "generated_at": "2026-01-21T03:45:45.524034+02:00",
-      "volatility": 0.033,
-      "id": "USDJPY_otc_20260121034545",
+      "reason": "Recent candles show a bearish 05:51 candle (O=157.638 C=157.585) after a series of alternating but overall lower closes, EMA9 is likely below EMA21 indicating a downtrend, RSI is probably below 50, Stochastic is descending, and price is near the upper Bollinger Band suggesting a pull‑back. These factors together support a short‑term DOWN move with confidence above the required 75%.",
+      "timestamp": "2026-01-21 05:23:38",
+      "generated_at": "2026-01-21T05:23:39.537268+02:00",
+      "volatility": 0.0698,
+      "id": "USDJPY_otc_20260121052339",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-21T01:45:45.524074Z",
-      "expires_at": "2026-01-21T03:55:45.524034+02:00"
+      "generated_at_utc": "2026-01-21T03:23:39.537306Z",
+      "expires_at": "2026-01-21T05:33:39.537268+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 3,
   "active_signals": 3,
-  "generation_count": 420
+  "generation_count": 421
 }
