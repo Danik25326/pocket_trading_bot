@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "UP",
-    "confidence": 0.86,
-    "entry_time": "23:41",
-    "duration": 3,
-    "reason": "Price has risen from 157.757 to 157.868 in the last 8 min, EMA9 is above EMA21, MACD histogram is positive, RSI is around 62 (bullish but not extreme), Stochastic %K is above %D (~78/70) and price is touching the upper Bollinger Band. A bullish engulfing pattern appears at 00:05‑00:06 and the last candle (00:07) is bullish. All indicators point to a short‑term upward move.",
-    "timestamp": "2026-01-20 23:39:24",
-    "generated_at": "2026-01-20T23:39:25.674200+02:00",
-    "volatility": 0.0963,
-    "id": "USDJPY_otc_20260120233925",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-20T21:39:25.674237Z",
-    "expires_at": "2026-01-20T23:49:25.674200+02:00",
-    "saved_at": "2026-01-20T23:39:27.676760+02:00",
-    "history_id": "USDJPY_otc_20260120233927",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "DOWN",
     "confidence": 0.82,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-21T23:56:13.123356+02:00",
     "saved_at": "2026-01-21T23:46:15.126232+02:00",
     "history_id": "USDJPY_otc_20260121234615",
+    "status": "saved"
+  },
+  {
+    "asset": "GBPJPY_otc",
+    "direction": "UP",
+    "confidence": 0.82,
+    "entry_time": "00:02",
+    "duration": 3,
+    "reason": "Ціна демонструє чіткий висхідний тренд на 1‑хв таймфреймі: більшість останніх свічок – bullish, EMA 9/21 зростають, RSI у зоні 60‑70, MACD позитивний, Bollinger Bands розширені вгору, Stochastic близько 80, а короткочасна корекція (00:26) вже завершилась. Патерн продовження – сильна bullish свічка 00:28, що підтверджує вхід у напрямку UP.",
+    "timestamp": "2026-01-22 00:00:18",
+    "generated_at": "2026-01-22T00:00:20.502242+02:00",
+    "volatility": 0.2921,
+    "id": "GBPJPY_otc_20260122000020",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-21T22:00:20.502280Z",
+    "expires_at": "2026-01-22T00:10:20.502242+02:00",
+    "saved_at": "2026-01-22T00:00:31.711018+02:00",
+    "history_id": "GBPJPY_otc_20260122000031",
     "status": "saved"
   }
 ]
