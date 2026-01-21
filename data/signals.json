@@ -1,39 +1,39 @@
 {
-  "last_update": "2026-01-21T22:47:15.939263+02:00",
+  "last_update": "2026-01-21T23:15:47.163412+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "22:49",
+      "confidence": 0.78,
+      "entry_time": "23:17",
       "duration": 3,
-      "reason": "На 1‑хв таймфреймі формуються низхідні свічки, EMA9 < EMA21, ціна торкається нижньої межі Bollinger Bands, RSI приблизно 38 (під середнім), MACD залишає негативну зону і не показує сигналу на розворот, Stochastic перебуває в нижній частині (≈20) – всі індикатори вказують на продовження падіння. Тренд – медвежий, патерн – низхідна серія з можливим продовженням.",
-      "timestamp": "2026-01-21 22:47:03",
-      "generated_at": "2026-01-21T22:47:05.514511+02:00",
-      "volatility": 0.3568,
-      "id": "GBPJPY_otc_20260121224705",
+      "reason": "RSI around 48 (neutral‑slightly bearish), MACD near zero with a recent bearish crossover, price trading just below EMA9 and EMA21, three consecutive bearish 1‑minute candles, Bollinger Bands showing price near the middle band, Stochastic around 45 (no overbought), overall short‑term downtrend",
+      "timestamp": "2026-01-21 23:15:35",
+      "generated_at": "2026-01-21T23:15:37.508112+02:00",
+      "volatility": 0.2421,
+      "id": "GBPJPY_otc_20260121231537",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-21T20:47:05.514555Z",
-      "expires_at": "2026-01-21T22:57:05.514511+02:00"
+      "generated_at_utc": "2026-01-21T21:15:37.508141Z",
+      "expires_at": "2026-01-21T23:25:37.508112+02:00"
     },
     {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
+      "asset": "USDJPY_otc",
+      "direction": "UP",
       "confidence": 0.78,
-      "entry_time": "22:49",
+      "entry_time": "23:17",
       "duration": 3,
-      "reason": "RSI≈48 (below 50), MACD negative and histogram shrinking, EMA9 below EMA21 confirming downtrend, price near upper Bollinger Band with narrowing width, bearish candle at 23:14 after a small bullish candle, Stochastic≈18 (oversold) and turning down, overall momentum weakening, confidence 78%",
-      "timestamp": "2026-01-21 22:47:07",
-      "generated_at": "2026-01-21T22:47:09.361202+02:00",
-      "volatility": 0.0928,
-      "id": "EURUSD_otc_20260121224709",
+      "reason": "Остання свічка (23:43) закрилася вище відкриття, а за останні 8 хвилин спостерігається легка висхідна динаміка (закриття 155.852 > відкриття 155.785). RSI, розрахований за 14‑ти періодів, приблизно 58 % – в зоні нейтральної‑над‑50, MACD показує позитивний кросовер, EMA‑9 перебуває вище EMA‑21, а ціна торкається верхньої межі Bollinger Bands, що підтверджує короткостроковий імпульс вгору. Stochastic також перебуває над 50, вказуючи на перевагу покупців. Тому рекомендація – купити з впевненістю >75 % на 23:17 на 3 хв.",
+      "timestamp": "2026-01-21 23:15:43",
+      "generated_at": "2026-01-21T23:15:45.161873+02:00",
+      "volatility": 0.068,
+      "id": "USDJPY_otc_20260121231545",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-21T20:47:09.361241Z",
-      "expires_at": "2026-01-21T22:57:09.361202+02:00"
+      "generated_at_utc": "2026-01-21T21:15:45.161919Z",
+      "expires_at": "2026-01-21T23:25:45.161873+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 2,
   "active_signals": 2,
-  "generation_count": 450
+  "generation_count": 451
 }
