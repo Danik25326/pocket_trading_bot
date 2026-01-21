@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "UP",
-    "confidence": 0.78,
-    "entry_time": "14:55",
-    "duration": 3,
-    "reason": "RSI≈55 (slight bullish), MACD line above signal, price above EMA9 and EMA21, trading near Bollinger middle band, Stochastic crossing upward, recent candles show modest net upside, low volatility supports short‑term continuation",
-    "timestamp": "2026-01-13 14:53:19",
-    "generated_at": "2026-01-13T14:53:21.345361+02:00",
-    "volatility": 0.0555,
-    "id": "USDJPY_otc_20260113145321",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-13T12:53:21.345400Z",
-    "expires_at": "2026-01-13T15:03:21.345361+02:00",
-    "saved_at": "2026-01-13T14:53:23.347717+02:00",
-    "history_id": "USDJPY_otc_20260113145323",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "DOWN",
     "confidence": 0.75,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-21T07:12:58.401402+02:00",
     "saved_at": "2026-01-21T07:03:00.404129+02:00",
     "history_id": "USDJPY_otc_20260121070300",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "UP",
+    "confidence": 0.82,
+    "entry_time": "07:44",
+    "duration": 3,
+    "reason": "RSI ~55 (neutral‑slightly bullish), MACD line above signal, price trading near the middle of Bollinger Bands with a slight upward drift, EMA9 is above EMA21, Stochastic around 60 indicating upward momentum, recent candles show more bullish than bearish bodies and no strong reversal pattern – overall short‑term bias is up.",
+    "timestamp": "2026-01-21 07:42:17",
+    "generated_at": "2026-01-21T07:42:18.081662+02:00",
+    "volatility": 0.0605,
+    "id": "USDJPY_otc_20260121074218",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-21T05:42:18.081695Z",
+    "expires_at": "2026-01-21T07:52:18.081662+02:00",
+    "saved_at": "2026-01-21T07:42:20.084272+02:00",
+    "history_id": "USDJPY_otc_20260121074220",
     "status": "saved"
   }
 ]
