@@ -1,8 +1,39 @@
 {
-  "last_update": "2026-01-22T08:30:48.099056+02:00",
-  "signals": [],
+  "last_update": "2026-01-22T09:38:30.435560+02:00",
+  "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "09:40",
+      "duration": 3,
+      "reason": "RSI likely overbought and falling, MACD bearish crossover, price below EMA9/21, Bollinger Bands showing pullback from upper band, Stochastic overbought turning down, bearish engulfing candle at 10:06 indicate short‑term downtrend",
+      "timestamp": "2026-01-22 09:38:19",
+      "generated_at": "2026-01-22T09:38:21.281619+02:00",
+      "volatility": 0.1682,
+      "id": "GBPJPY_otc_20260122093821",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-22T07:38:21.281665Z",
+      "expires_at": "2026-01-22T09:48:21.281619+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "09:40",
+      "duration": 3,
+      "reason": "Recent 1‑minute candles show a marginal bearish bias (price slipped from 156.919 to 156.902), RSI hovers around 48‑52, MACD line is slightly below its signal, Bollinger Bands are tight indicating low volatility, EMA‑9 is marginally under EMA‑21, and Stochastic is near the 40‑50 zone. Combined with the overall downtrend, the setup suggests a short move with confidence above 75%.",
+      "timestamp": "2026-01-22 09:38:27",
+      "generated_at": "2026-01-22T09:38:28.434670+02:00",
+      "volatility": 0.0567,
+      "id": "USDJPY_otc_20260122093828",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-22T07:38:28.434710Z",
+      "expires_at": "2026-01-22T09:48:28.434670+02:00"
+    }
+  ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 0,
-  "active_signals": 0,
-  "generation_count": 464
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 465
 }
