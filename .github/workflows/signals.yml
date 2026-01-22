@@ -13,8 +13,13 @@ on:
           - ru
       trigger_source:
         description: 'Джерело запуску'
-        default: 'manual'
+        required: true
+        default: 'manual_site'
         type: string
+        options:
+          - manual_site
+          - manual_github
+          - schedule
   schedule:
     - cron: '*/10 * * * *'  # Чітко кожні 10 хвилин
 
@@ -24,8 +29,8 @@ permissions:
 jobs:
   generate-signals:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # 🆕 Не дає зависнути
-    concurrency:  # 🆕 Не дозволяє паралельні запуски
+    timeout-minutes: 15
+    concurrency:
       group: generate-signals-${{ github.ref }}
       cancel-in-progress: false
     
@@ -102,7 +107,7 @@ jobs:
         TZ: 'Europe/Kiev'
         POCKET_SSID: ${{ secrets.POCKET_SSID }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        POCKET_DEMO: 'false'
+        POCKET_DEMO: 'true'
         SIGNAL_INTERVAL: '600'
         MIN_CONFIDENCE: '0.75'
         MAX_DURATION: '5.0'
@@ -113,7 +118,7 @@ jobs:
         LOG_LEVEL: 'INFO'
         GROQ_MODEL: 'openai/gpt-oss-120b'
         LANGUAGE: ${{ inputs.language || 'uk' }}
-        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'schedule' }}  # 🆕 Змінив на 'schedule'
+        TRIGGER_SOURCE: ${{ inputs.trigger_source || 'schedule' }}
       run: |
         echo "🚀 ПОЧАТОК ГЕНЕРАЦІЇ СИГНАЛІВ"
         echo "========================================"
@@ -153,7 +158,7 @@ jobs:
         fi
     
     - name: Commit and push all changes
-      if: success()  # 🆕 Тільки при успіху
+      if: success()
       run: |
         echo "💾 Підготовка до коміту..."
         git config --global user.name 'GitHub Actions Bot'
@@ -168,14 +173,14 @@ jobs:
           echo "⚠️ Немає змін для коміту"
         else
           CURRENT_TIME=$(TZ='Europe/Kiev' date '+%H:%M')
-          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [Auto]"
+          git commit -m "🤖 Сигнали: $(date +'%Y-%m-%d %H:%M') [Мова: ${{ inputs.language || 'uk' }}] [Джерело: ${{ inputs.trigger_source || 'schedule' }}]"
           git push origin main
           echo "✅ Зміни закомічено та відправлено"
           echo "🕐 Час коміту (Київ): $CURRENT_TIME"
         fi
     
     - name: Log completion time
-      if: always()  # 🆕 Завжди виконуємо
+      if: always()
       run: |
         echo "========================================"
         echo "🏁 Завершено о $(date '+%H:%M:%S') UTC"
