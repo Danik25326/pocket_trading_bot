@@ -6,6 +6,9 @@ on:
     paths:
       - 'data/signals.json'
       - 'data/history.json'
+      - 'data/feedback.json'
+      - 'data/lessons.json'
+      - 'data/assets_config.json'
       - 'index.html'
       - 'style.css'
       - 'script.js'
@@ -13,7 +16,13 @@ on:
       - 'backend/**'
       - 'utils/**'
       - '.github/workflows/**'
-  workflow_dispatch:  # Додаємо можливість ручного запуску
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Примусовий деплой'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -35,24 +44,43 @@ jobs:
     
     - name: Setup Pages
       uses: actions/configure-pages@v4
-      
+    
     - name: Verify files exist
       run: |
         echo "📁 Перевірка наявності файлів:"
         ls -la data/
-        echo "✅ signals.json: $(wc -l < data/signals.json) рядків"
-        echo "✅ history.json: $(wc -l < data/history.json) записів"
+        
+        if [ -f data/signals.json ]; then
+          SIGNALS_COUNT=$(jq '.signals | length' data/signals.json 2>/dev/null || echo "0")
+          echo "✅ signals.json: $SIGNALS_COUNT сигналів"
+        else
+          echo "⚠️ signals.json не знайдено, створюємо..."
+          echo '{"last_update": null, "signals": [], "timezone": "Europe/Kiev (UTC+2)"}' > data/signals.json
+        fi
+        
+        if [ -f data/history.json ]; then
+          HISTORY_COUNT=$(jq 'length' data/history.json 2>/dev/null || echo "0")
+          echo "✅ history.json: $HISTORY_COUNT записів"
+        else
+          echo '[]' > data/history.json
+        fi
+        
         echo "✅ index.html: $(wc -l < index.html) рядків"
         
         # Перевіряємо вміст signals.json
         echo "📋 Вміст signals.json:"
         cat data/signals.json | jq '.last_update' || echo "Не вдалося прочитати signals.json"
-      
+    
+    - name: Create .nojekyll file
+      run: |
+        touch .nojekyll
+        echo "✅ Створено .nojekyll"
+    
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
         path: '.'
-        
+    
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
@@ -65,9 +93,14 @@ jobs:
         echo "📅 Час Київ: $(TZ='Europe/Kiev' date '+%H:%M:%S')"
         
         # Додаємо перевірку останнього оновлення
-        LAST_UPDATE=$(cat data/signals.json | jq -r '.last_update // empty')
-        if [ -n "$LAST_UPDATE" ]; then
-          echo "🔄 Останнє оновлення сигналів: $LAST_UPDATE"
-        else
-          echo "⚠️ Не знайдено last_update в signals.json"
+        if [ -f data/signals.json ]; then
+          LAST_UPDATE=$(cat data/signals.json | jq -r '.last_update // empty')
+          if [ -n "$LAST_UPDATE" ]; then
+            echo "🔄 Останнє оновлення сигналів: $LAST_UPDATE"
+          else
+            echo "⚠️ Не знайдено last_update в signals.json"
+          fi
         fi
+        
+        # Інформація про версію
+        echo "📊 Версія: 3.0 | Ручна генерація: активна"
