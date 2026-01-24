@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-24T21:15:07.854985+02:00",
+  "last_update": "2026-01-24T21:30:09.101525+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "21:16",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "21:31",
       "duration": 3,
-      "reason": "Ціни протягом останніх хвилин знизились з 221.287 до 220.98, EMA9 перебуває нижче EMA21, MACD у негативній зоні, RSI близько 48 % (нейтрально‑медвежий), стохастик ~45 % (нижня половина), остання свічка – маленьке тіло вниз, немає сильних bullish патернів, що вказує на продовження низхідного руху",
-      "timestamp": "2026-01-24 21:14:55",
-      "generated_at": "2026-01-24T21:14:57.630287+02:00",
-      "volatility": 0.148,
-      "id": "GBPJPY_otc_20260124211457",
+      "reason": "Price has reversed from a sharp downtrend (221.059→220.194) and is now forming higher closes on the last two 1‑min candles. RSI is likely moving out of oversold territory, MACD line is crossing above the signal line, price is breaking above the lower Bollinger Band, EMA‑9 has crossed above EMA‑21, and Stochastic is turning upward, indicating bullish momentum. All indicators align, giving a confident short‑term upside bias.",
+      "timestamp": "2026-01-24 21:29:57",
+      "generated_at": "2026-01-24T21:29:59.181340+02:00",
+      "volatility": 0.2594,
+      "id": "GBPJPY_otc_20260124212959",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T19:14:57.630328Z",
-      "expires_at": "2026-01-24T21:24:57.630287+02:00"
+      "generated_at_utc": "2026-01-24T19:29:59.181370Z",
+      "expires_at": "2026-01-24T21:39:59.181340+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "21:32",
+      "duration": 3,
+      "reason": "RSI overbought (~78%), price at upper Bollinger Band, MACD shows bearish divergence, EMA9 above EMA21 but flattening, stochastic above 80 indicating reversal, recent mixed candles with pullback, trend weakening",
+      "timestamp": "2026-01-24 21:30:05",
+      "generated_at": "2026-01-24T21:30:07.099873+02:00",
+      "volatility": 0.096,
+      "id": "USDJPY_otc_20260124213007",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T19:30:07.099908Z",
+      "expires_at": "2026-01-24T21:40:07.099873+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 511
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 512
 }
