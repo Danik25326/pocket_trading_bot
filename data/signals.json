@@ -1,8 +1,54 @@
 {
-  "last_update": "2026-01-24T15:44:59.107072+02:00",
-  "signals": [],
+  "last_update": "2026-01-24T16:19:23.807229+02:00",
+  "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "16:21",
+      "duration": 3,
+      "reason": "Recent candles show higher highs (220.066) and higher lows, EMA9 is slightly above EMA21, RSI is around mid‑50s, MACD histogram is positive, price is near the upper Bollinger Band but not overbought, Stochastic is below 80. Overall short‑term bias is mildly bullish, meeting the required confidence threshold.",
+      "timestamp": "2026-01-24 16:19:13",
+      "generated_at": "2026-01-24T16:19:15.293336+02:00",
+      "volatility": 0.2712,
+      "id": "GBPJPY_otc_20260124161915",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T14:19:15.293382Z",
+      "expires_at": "2026-01-24T16:29:15.293336+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.86,
+      "entry_time": "16:21",
+      "duration": 3,
+      "reason": "Price shows a clear upward bias on the 1‑minute chart: recent closes have risen from 1.15709 to 1.15750, EMA‑9 is above EMA‑21, RSI is in the 55‑60 range, MACD histogram is positive, price is riding the lower half of the Bollinger Bands and the Stochastic is approaching overbought but still trending upward. All indicators align for a short‑term bullish move.",
+      "timestamp": "2026-01-24 16:19:17",
+      "generated_at": "2026-01-24T16:19:18.500408+02:00",
+      "volatility": 0.0743,
+      "id": "EURUSD_otc_20260124161918",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T14:19:18.500463Z",
+      "expires_at": "2026-01-24T16:29:18.500408+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "UP",
+      "confidence": 0.84,
+      "entry_time": "16:21",
+      "duration": 3,
+      "reason": "Ціна демонструє легкий висхідний тренд: EMA9 перебуває вище EMA21, MACD позитивний і зростає, RSI знаходиться в діапазоні 55‑60, Bollinger Bands показують, що ціна торкається середньої смуги, а Stochastic не вказує на перекупленість. Останні свічки переважно закриваються вище відкриття, що підтверджує bullish імпульс.",
+      "timestamp": "2026-01-24 16:19:20",
+      "generated_at": "2026-01-24T16:19:21.806007+02:00",
+      "volatility": 0.0491,
+      "id": "USDJPY_otc_20260124161921",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T14:19:21.806058Z",
+      "expires_at": "2026-01-24T16:29:21.806007+02:00"
+    }
+  ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 0,
-  "active_signals": 0,
-  "generation_count": 496
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 497
 }
