@@ -1,39 +1,24 @@
 {
-  "last_update": "2026-01-24T21:41:32.111286+02:00",
+  "last_update": "2026-01-24T21:54:45.374696+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "UP",
+      "direction": "DOWN",
       "confidence": 0.82,
-      "entry_time": "21:43",
+      "entry_time": "21:56",
       "duration": 3,
-      "reason": "Bullish trend confirmed by rising close prices, EMA9 above EMA21, MACD histogram positive, RSI around 65 showing strong momentum, price near the upper Bollinger Band but still climbing, Stochastic above 80 indicating overbought yet no divergence, recent bullish engulfing candles (22:08‑22:09) suggest continuation",
-      "timestamp": "2026-01-24 21:41:20",
-      "generated_at": "2026-01-24T21:41:22.238995+02:00",
-      "volatility": 0.4966,
-      "id": "GBPJPY_otc_20260124214122",
+      "reason": "Ціна демонструє чітке пониження протягом останніх 8 хвилин (закриття падає з 221.978 до 221.730). EMA9 перебуває нижче EMA21, що підтверджує медвежий тренд. MACD показує негативний гістограм і крос під нульовою лінією. RSI, ймовірно, опустився нижче 50, вказуючи на слабкість. Ціна торкається нижньої межі Bollinger Bands, що підсилює сигнал продовження падіння. Stochastic перебуває в нижній зоні (<20), що може свідчити про короткострокове перепроданість, проте поточний медвежий патерн (послідовні низькі закриття) переважає. Свічкові патерни: переважають низхідні бари без явних розворотних формацій. Тому рекомендація – короткостроковий продаж.",
+      "timestamp": "2026-01-24 21:54:33",
+      "generated_at": "2026-01-24T21:54:35.057883+02:00",
+      "volatility": 0.1474,
+      "id": "GBPJPY_otc_20260124215435",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T19:41:22.239037Z",
-      "expires_at": "2026-01-24T21:51:22.238995+02:00"
-    },
-    {
-      "asset": "EURUSD_otc",
-      "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "21:43",
-      "duration": 3,
-      "reason": "RSI is around 50 indicating neutral momentum, MACD line is slightly above the signal line suggesting a mild bullish crossover, EMA9 is just above EMA21 confirming a weak uptrend, price is near the middle of narrow Bollinger Bands and showing a slight rise toward the upper band, Stochastic is around 55 showing no oversold condition, recent candles alternate but the latest close (1.15333) is higher than earlier levels, and low volatility (0.05%) supports a short‑term continuation upward.",
-      "timestamp": "2026-01-24 21:41:24",
-      "generated_at": "2026-01-24T21:41:26.098611+02:00",
-      "volatility": 0.0468,
-      "id": "EURUSD_otc_20260124214126",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T19:41:26.098656Z",
-      "expires_at": "2026-01-24T21:51:26.098611+02:00"
+      "generated_at_utc": "2026-01-24T19:54:35.057928Z",
+      "expires_at": "2026-01-24T22:04:35.057883+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 513
+  "total_signals": 1,
+  "active_signals": 1,
+  "generation_count": 514
 }
