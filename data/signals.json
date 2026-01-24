@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-24T23:46:17.415925+02:00",
+  "last_update": "2026-01-24T23:55:25.176233+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -45,10 +45,40 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-24T21:46:15.414509Z",
       "expires_at": "2026-01-24T23:56:15.414472+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "23:57",
+      "duration": 3,
+      "reason": "Останні 3 свічки – bullish, ціна торгує вище EMA9 і EMA21, RSI ≈55‑60 (над 50), MACD позитивний, Stochastic у верхній половині, відсутність сильних розворотних патернів – підтверджує короткостроковий висхідний імпульс.",
+      "timestamp": "2026-01-24 23:55:14",
+      "generated_at": "2026-01-24T23:55:15.385446+02:00",
+      "volatility": 0.2483,
+      "id": "GBPJPY_otc_20260124235515",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T21:55:15.385475Z",
+      "expires_at": "2026-01-25T00:05:15.385446+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "23:57",
+      "duration": 3,
+      "reason": "Ціна протягом останніх 8 хвилин знизилася приблизно на 7‑8 пунктів, EMA9 перебуває нижче EMA21, MACD показує негативний гістограм, RSI близько 48 (нейтрально‑медвежо), Bollinger Bands вказують на наближення до нижньої смуги, Stochastic нижче 30, а остання свічка – маленька bullish, що не змінює загального медвежого тону. Тому рекомендація – короткостроковий продаж з впевненістю >75%.",
+      "timestamp": "2026-01-24 23:55:17",
+      "generated_at": "2026-01-24T23:55:19.101113+02:00",
+      "volatility": 0.1169,
+      "id": "EURUSD_otc_20260124235519",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T21:55:19.101152Z",
+      "expires_at": "2026-01-25T00:05:19.101113+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 520
+  "total_signals": 5,
+  "active_signals": 5,
+  "generation_count": 521
 }
