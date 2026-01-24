@@ -1,39 +1,54 @@
 {
-  "last_update": "2026-01-24T13:40:35.492573+02:00",
+  "last_update": "2026-01-24T13:55:19.906855+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "13:57",
+      "duration": 3,
+      "reason": "RSI near 70 (overbought), MACD histogram turning negative, price touching the upper Bollinger Band, EMA9 crossed below EMA21, Stochastic above 80, bearish engulfing pattern on the last candle, overall slight downtrend.",
+      "timestamp": "2026-01-24 13:55:09",
+      "generated_at": "2026-01-24T13:55:10.865233+02:00",
+      "volatility": 0.1533,
+      "id": "GBPJPY_otc_20260124135510",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T11:55:10.865273Z",
+      "expires_at": "2026-01-24T14:05:10.865233+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
       "direction": "UP",
       "confidence": 0.78,
-      "entry_time": "13:42",
+      "entry_time": "13:57",
       "duration": 3,
-      "reason": "EMA9 (≈220.78) is above EMA21 (≈220.73) indicating short‑term uptrend; RSI ~55 in neutral‑bullish zone; MACD histogram turning positive; price touched lower Bollinger Band at 14:07 and rebounded, forming a bullish pin‑bar at 14:08; overall price action shows higher highs in recent candles despite low volatility (0.14%).",
-      "timestamp": "2026-01-24 13:40:24",
-      "generated_at": "2026-01-24T13:40:26.010851+02:00",
-      "volatility": 0.139,
-      "id": "GBPJPY_otc_20260124134026",
+      "reason": "Ціна демонструє легкий висхідний тренд (EMA9 > EMA21, останні закриття вище відкриттів), RSI в діапазоні 55‑60, Stochastic не надто перекуплений, Bollinger Bands показують, що ціна торкається середньої лінії, а остання свічка – маленька біда, що вказує на можливий продовження росту. При низькій волатильності (0.10%) ризик мінімальний, тому рекомендація – купити.",
+      "timestamp": "2026-01-24 13:55:13",
+      "generated_at": "2026-01-24T13:55:14.231067+02:00",
+      "volatility": 0.1028,
+      "id": "EURUSD_otc_20260124135514",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T11:40:26.010891Z",
-      "expires_at": "2026-01-24T13:50:26.010851+02:00"
+      "generated_at_utc": "2026-01-24T11:55:14.231108Z",
+      "expires_at": "2026-01-24T14:05:14.231067+02:00"
     },
     {
       "asset": "USDJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "13:42",
+      "confidence": 0.78,
+      "entry_time": "13:57",
       "duration": 3,
-      "reason": "RSI≈45 (below 50), MACD histogram negative, EMA9 under EMA21, price trading near/below lower Bollinger Band, Stochastic %K below %D and <20, recent 1‑min candles show consecutive bearish closes with a bearish engulfing at 14:01, confirming short‑term downtrend for the next 3 minutes.",
-      "timestamp": "2026-01-24 13:40:32",
-      "generated_at": "2026-01-24T13:40:33.490883+02:00",
-      "volatility": 0.1177,
-      "id": "USDJPY_otc_20260124134033",
+      "reason": "Recent candles show 3 consecutive bearish closes (14:23, 14:21, 14:20) with decreasing closes, EMA9 has slipped below EMA21, MACD histogram is negative, RSI is around 48 (neutral‑bearish) and Stochastic is near 45, indicating momentum shift to the downside. Bollinger Bands place price near the middle‑lower band, supporting a short‑term pull‑back. Low volatility (0.07%) suggests a bounded move, fitting a 3‑minute trade.",
+      "timestamp": "2026-01-24 13:55:16",
+      "generated_at": "2026-01-24T13:55:17.905588+02:00",
+      "volatility": 0.0743,
+      "id": "USDJPY_otc_20260124135517",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T11:40:33.490918Z",
-      "expires_at": "2026-01-24T13:50:33.490883+02:00"
+      "generated_at_utc": "2026-01-24T11:55:17.905642Z",
+      "expires_at": "2026-01-24T14:05:17.905588+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 492
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 493
 }
