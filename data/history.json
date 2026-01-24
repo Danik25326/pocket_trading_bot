@@ -1,23 +1,5 @@
 [
   {
-    "asset": "GBPJPY_otc",
-    "direction": "DOWN",
-    "confidence": 0.78,
-    "entry_time": "12:36",
-    "duration": 3,
-    "reason": "RSI падає під 50, MACD показує медвежий кросовер, ціна торкається нижньої межі Bollinger Bands, EMA9 розташована нижче EMA21, Stochastic спускається з рівня понад 80, спостерігаються патерни Bearish Engulfing, що підтверджує медвежий тренд",
-    "timestamp": "2026-01-22 12:34:19",
-    "generated_at": "2026-01-22T12:34:21.435290+02:00",
-    "volatility": 0.2119,
-    "id": "GBPJPY_otc_20260122123421",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-22T10:34:21.435328Z",
-    "expires_at": "2026-01-22T12:44:21.435290+02:00",
-    "saved_at": "2026-01-22T12:34:31.199659+02:00",
-    "history_id": "GBPJPY_otc_20260122123431",
-    "status": "saved"
-  },
-  {
     "asset": "EURUSD_otc",
     "direction": "DOWN",
     "confidence": 0.78,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-24T20:05:06.040098+02:00",
     "saved_at": "2026-01-24T19:55:08.042266+02:00",
     "history_id": "USDJPY_otc_20260124195508",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "UP",
+    "confidence": 0.82,
+    "entry_time": "20:28",
+    "duration": 3,
+    "reason": "Price shows slight upward momentum over the last 8 minutes with higher closes, low volatility, bullish EMA9 above EMA21, RSI likely above 50, MACD histogram positive, Bollinger Bands narrowing indicating a potential breakout, and a series of higher highs and higher lows suggesting a bullish candlestick pattern.",
+    "timestamp": "2026-01-24 20:26:02",
+    "generated_at": "2026-01-24T20:26:03.357566+02:00",
+    "volatility": 0.0459,
+    "id": "USDJPY_otc_20260124202603",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-24T18:26:03.357592Z",
+    "expires_at": "2026-01-24T20:36:03.357566+02:00",
+    "saved_at": "2026-01-24T20:26:05.360152+02:00",
+    "history_id": "USDJPY_otc_20260124202605",
     "status": "saved"
   }
 ]
