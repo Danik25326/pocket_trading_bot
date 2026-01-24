@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-24T18:49:44.024085+02:00",
+  "last_update": "2026-01-24T18:59:34.383771+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -30,10 +30,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-24T16:49:37.992478Z",
       "expires_at": "2026-01-24T18:59:37.992442+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.81,
+      "entry_time": "19:01",
+      "duration": 3,
+      "reason": "Recent price action shows decreasing closes, EMA9 is below EMA21, MACD histogram is negative, RSI is around 48 (neutral but slipping), Bollinger Bands are narrowing with price near the lower band, and Stochastic is below 20 indicating bearish momentum. Overall trend is down, giving a confidence of 81%.",
+      "timestamp": "2026-01-24 18:59:24",
+      "generated_at": "2026-01-24T18:59:25.621719+02:00",
+      "volatility": 0.134,
+      "id": "GBPJPY_otc_20260124185925",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T16:59:25.621759Z",
+      "expires_at": "2026-01-24T19:09:25.621719+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "19:01",
+      "duration": 3,
+      "reason": "Recent candles show a clear downtrend with lower closes, EMA9 is below EMA21, RSI around 45 indicating bearish momentum, MACD histogram negative, price hugging the lower Bollinger Band and stochastic below 50, supporting a short bias.",
+      "timestamp": "2026-01-24 18:59:27",
+      "generated_at": "2026-01-24T18:59:28.666695+02:00",
+      "volatility": 0.1108,
+      "id": "EURUSD_otc_20260124185928",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T16:59:28.666739Z",
+      "expires_at": "2026-01-24T19:09:28.666695+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "19:01",
+      "duration": 3,
+      "reason": "Recent 3‑minute candles show consecutive lower closes (158.773→158.743→158.767) indicating short‑term down pressure. EMA‑9 is below EMA‑21, MACD histogram is negative, RSI hovers around 48‑52, price is near the upper Bollinger Band suggesting overbought conditions, and a bearish engulfing pattern appears at 19:26‑19:27. Combined signals give ~78% confidence for a short‑term down move.",
+      "timestamp": "2026-01-24 18:59:30",
+      "generated_at": "2026-01-24T18:59:32.382246+02:00",
+      "volatility": 0.0573,
+      "id": "USDJPY_otc_20260124185932",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-24T16:59:32.382305Z",
+      "expires_at": "2026-01-24T19:09:32.382246+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 504
+  "total_signals": 5,
+  "active_signals": 5,
+  "generation_count": 505
 }
