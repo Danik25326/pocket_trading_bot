@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "DOWN",
-    "confidence": 0.82,
-    "entry_time": "13:00",
-    "duration": 3,
-    "reason": "Bearish short‑term trend confirmed by decreasing EMA9/EMA21, negative MACD histogram, RSI around 48, Stochastic below 50, series of bearish candles and a doji at 13:23 indicating weakening momentum.",
-    "timestamp": "2026-01-22 12:58:06",
-    "generated_at": "2026-01-22T12:58:07.375785+02:00",
-    "volatility": 0.0664,
-    "id": "USDJPY_otc_20260122125807",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-22T10:58:07.375844Z",
-    "expires_at": "2026-01-22T13:08:07.375785+02:00",
-    "saved_at": "2026-01-22T12:58:09.378174+02:00",
-    "history_id": "USDJPY_otc_20260122125809",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "DOWN",
     "confidence": 0.86,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-24T21:02:25.838727+02:00",
     "saved_at": "2026-01-24T20:52:27.840791+02:00",
     "history_id": "USDJPY_otc_20260124205227",
+    "status": "saved"
+  },
+  {
+    "asset": "GBPJPY_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "21:16",
+    "duration": 3,
+    "reason": "Ціни протягом останніх хвилин знизились з 221.287 до 220.98, EMA9 перебуває нижче EMA21, MACD у негативній зоні, RSI близько 48 % (нейтрально‑медвежий), стохастик ~45 % (нижня половина), остання свічка – маленьке тіло вниз, немає сильних bullish патернів, що вказує на продовження низхідного руху",
+    "timestamp": "2026-01-24 21:14:55",
+    "generated_at": "2026-01-24T21:14:57.630287+02:00",
+    "volatility": 0.148,
+    "id": "GBPJPY_otc_20260124211457",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-24T19:14:57.630328Z",
+    "expires_at": "2026-01-24T21:24:57.630287+02:00",
+    "saved_at": "2026-01-24T21:15:07.856128+02:00",
+    "history_id": "GBPJPY_otc_20260124211507",
     "status": "saved"
   }
 ]

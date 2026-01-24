@@ -1,39 +1,24 @@
 {
-  "last_update": "2026-01-24T20:52:27.839634+02:00",
+  "last_update": "2026-01-24T21:15:07.854985+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "20:54",
+      "confidence": 0.78,
+      "entry_time": "21:16",
       "duration": 3,
-      "reason": "Останні 8 хвилинних свічок показують переважаючу понижену ціну (закриття нижче відкриття), короткострокові EMA 9 нижче EMA 21, MACD у негативній зоні, RSI близько 45 (надлишок продажу), Bollinger Bands стискаються з ціною під середньою лінією, а Stochastic вказує на перепроданість. Усі сигнали підтримують низхідний рух, тому рекомендація – короткостроковий SELL з впевненістю ~82%.",
-      "timestamp": "2026-01-24 20:52:17",
-      "generated_at": "2026-01-24T20:52:18.494051+02:00",
-      "volatility": 0.3641,
-      "id": "GBPJPY_otc_20260124205218",
+      "reason": "Ціни протягом останніх хвилин знизились з 221.287 до 220.98, EMA9 перебуває нижче EMA21, MACD у негативній зоні, RSI близько 48 % (нейтрально‑медвежий), стохастик ~45 % (нижня половина), остання свічка – маленьке тіло вниз, немає сильних bullish патернів, що вказує на продовження низхідного руху",
+      "timestamp": "2026-01-24 21:14:55",
+      "generated_at": "2026-01-24T21:14:57.630287+02:00",
+      "volatility": 0.148,
+      "id": "GBPJPY_otc_20260124211457",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T18:52:18.494091Z",
-      "expires_at": "2026-01-24T21:02:18.494051+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "UP",
-      "confidence": 0.84,
-      "entry_time": "20:54",
-      "duration": 3,
-      "reason": "Price shows a clear short‑term uptrend: recent candles are mostly bullish, a strong bullish candle at 21:19 pushes price toward the upper Bollinger Band, EMA‑9 is above EMA‑21, MACD histogram is positive, RSI is in the high‑70s but not yet extreme, and Stochastic is near overbought without a reversal signal. These factors together suggest a continuation upward for the next 3 minutes.",
-      "timestamp": "2026-01-24 20:52:24",
-      "generated_at": "2026-01-24T20:52:25.838727+02:00",
-      "volatility": 0.1105,
-      "id": "USDJPY_otc_20260124205225",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-24T18:52:25.838766Z",
-      "expires_at": "2026-01-24T21:02:25.838727+02:00"
+      "generated_at_utc": "2026-01-24T19:14:57.630328Z",
+      "expires_at": "2026-01-24T21:24:57.630287+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 510
+  "total_signals": 1,
+  "active_signals": 1,
+  "generation_count": 511
 }
