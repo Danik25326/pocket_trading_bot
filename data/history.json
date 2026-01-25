@@ -1,23 +1,5 @@
 [
   {
-    "asset": "EURUSD_otc",
-    "direction": "DOWN",
-    "confidence": 0.82,
-    "entry_time": "15:46",
-    "duration": 3,
-    "reason": "Recent candles show decreasing closes, EMA9 is below EMA21, MACD histogram is negative with a bearish crossover, RSI is near 45 indicating weakening momentum, price is near the lower Bollinger Band and a bearish engulfing pattern appeared, all pointing to a short bias.",
-    "timestamp": "2026-01-24 15:44:52",
-    "generated_at": "2026-01-24T15:44:53.700281+02:00",
-    "volatility": 0.0467,
-    "id": "EURUSD_otc_20260124154453",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-24T13:44:53.700321Z",
-    "expires_at": "2026-01-24T15:54:53.700281+02:00",
-    "saved_at": "2026-01-24T15:44:59.108479+02:00",
-    "history_id": "EURUSD_otc_20260124154459",
-    "status": "saved"
-  },
-  {
     "asset": "USDJPY_otc",
     "direction": "DOWN",
     "confidence": 0.86,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-25T09:10:24.797275+02:00",
     "saved_at": "2026-01-25T09:00:26.800064+02:00",
     "history_id": "USDJPY_otc_20260125090026",
+    "status": "saved"
+  },
+  {
+    "asset": "EURUSD_otc",
+    "direction": "UP",
+    "confidence": 0.84,
+    "entry_time": "09:31",
+    "duration": 3,
+    "reason": "RSI≈58 (mild bullish), MACD histogram turning positive, price above EMA9 and EMA21, Bollinger Bands show price near upper band but still inside, Stochastic≈68 (approaching overbought but not extreme), recent candles display higher highs with a bullish engulfing at 09:54, indicating a short‑term uptrend",
+    "timestamp": "2026-01-25 09:29:27",
+    "generated_at": "2026-01-25T09:29:28.677736+02:00",
+    "volatility": 0.1386,
+    "id": "EURUSD_otc_20260125092928",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-25T07:29:28.677774Z",
+    "expires_at": "2026-01-25T09:39:28.677736+02:00",
+    "saved_at": "2026-01-25T09:29:34.803260+02:00",
+    "history_id": "EURUSD_otc_20260125092934",
     "status": "saved"
   }
 ]
