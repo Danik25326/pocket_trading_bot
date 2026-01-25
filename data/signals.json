@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-26T01:50:01.969530+02:00",
+  "last_update": "2026-01-26T01:59:08.045490+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -45,10 +45,40 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-25T23:49:59.968473Z",
       "expires_at": "2026-01-26T01:59:59.968439+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "02:00",
+      "duration": 3,
+      "reason": "Ціна після різкого падіння на 02:25 (219.345→219.110) швидко відскочила вгору на 02:26 (219.106→219.275), що разом з короткостроковим EMA‑9, який тепер розташований вище EMA‑21, вказує на можливий початок короткострокового підйому. RSI перебуває в діапазоні 55‑60, не досягнувши перекупленості, а MACD показує позитивний гістограмний розрив, підтверджуючи імпульс. Стохастик формує підвищувальний кросовер під 80, а ціна торкається нижньої межі Bollinger Bands, що слугує підтримкою. При такій конфігурації з волатильністю 0.18 % і мінімальною впевненістю 75 % рекомендується купити.",
+      "timestamp": "2026-01-26 01:58:56",
+      "generated_at": "2026-01-26T01:58:58.228709+02:00",
+      "volatility": 0.1797,
+      "id": "GBPJPY_otc_20260126015858",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-25T23:58:58.228749Z",
+      "expires_at": "2026-01-26T02:08:58.228709+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "02:01",
+      "duration": 3,
+      "reason": "RSI ~48 (neutral‑slightly bearish), MACD line below signal, EMA9 < EMA21, price hugging middle Bollinger Band, Stochastic ~42 (below 50), recent candles are small‑body dojis showing indecision with slight downward pressure – overall bias downwards with confidence above 75%",
+      "timestamp": "2026-01-26 01:59:00",
+      "generated_at": "2026-01-26T01:59:01.954813+02:00",
+      "volatility": 0.0649,
+      "id": "EURUSD_otc_20260126015901",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-25T23:59:01.954854Z",
+      "expires_at": "2026-01-26T02:09:01.954813+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 587
+  "total_signals": 5,
+  "active_signals": 5,
+  "generation_count": 588
 }
