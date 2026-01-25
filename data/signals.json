@@ -1,24 +1,54 @@
 {
-  "last_update": "2026-01-25T09:29:34.801848+02:00",
+  "last_update": "2026-01-25T09:43:56.255034+02:00",
   "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "09:45",
+      "duration": 3,
+      "reason": "RSI ~58 (neutral‑bullish), MACD line above signal, histogram positive; price sits near the middle of Bollinger Bands with slight upward drift; EMA9 is above EMA21 indicating short‑term uptrend; Stochastic around 65‑70 showing momentum but not overbought; recent candles show a bullish continuation pattern (small bullish engulfing after a brief pull‑back). Combined signals give a confident long bias for the next 3 minutes.",
+      "timestamp": "2026-01-25 09:43:45",
+      "generated_at": "2026-01-25T09:43:46.748550+02:00",
+      "volatility": 0.1417,
+      "id": "GBPJPY_otc_20260125094346",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-25T07:43:46.748588Z",
+      "expires_at": "2026-01-25T09:53:46.748550+02:00"
+    },
     {
       "asset": "EURUSD_otc",
       "direction": "UP",
-      "confidence": 0.84,
-      "entry_time": "09:31",
+      "confidence": 0.78,
+      "entry_time": "09:45",
       "duration": 3,
-      "reason": "RSI≈58 (mild bullish), MACD histogram turning positive, price above EMA9 and EMA21, Bollinger Bands show price near upper band but still inside, Stochastic≈68 (approaching overbought but not extreme), recent candles display higher highs with a bullish engulfing at 09:54, indicating a short‑term uptrend",
-      "timestamp": "2026-01-25 09:29:27",
-      "generated_at": "2026-01-25T09:29:28.677736+02:00",
-      "volatility": 0.1386,
-      "id": "EURUSD_otc_20260125092928",
+      "reason": "Ціна коливається в вузькому діапазоні з низькою волатильністю (0.07%). Останні закриття поступово підвищуються (1.14693 → 1.14724). EMA 9/21 показує легкий підйом, MACD‑лінія перебуває вище сигнальної, а RSI (приблизно 55‑60) знаходиться в нейтральній‑позитивній зоні. Bollinger Bands стискаються, що вказує на можливий прорив. Свічкові патерни (небагато, але остання свічка – слабкий bullish) підтримують короткостроковий висхідний рух. При вході о 09:45 очікуємо короткостроковий підйом протягом 3 хвилин.",
+      "timestamp": "2026-01-25 09:43:48",
+      "generated_at": "2026-01-25T09:43:50.342764+02:00",
+      "volatility": 0.068,
+      "id": "EURUSD_otc_20260125094350",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-25T07:29:28.677774Z",
-      "expires_at": "2026-01-25T09:39:28.677736+02:00"
+      "generated_at_utc": "2026-01-25T07:43:50.342804Z",
+      "expires_at": "2026-01-25T09:53:50.342764+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "09:45",
+      "duration": 3,
+      "reason": "Останні 8 хвилинних свічок показують переважаючу висхідну динаміку: 2 останні свічки (10:10, 10:11) – бичі, закриття вище відкриття, а EMA‑9 вже перетнула EMA‑21 зверху вниз, що вказує на короткостроковий підйом. RSI (≈55) знаходиться вище 50, MACD‑лінія позитивна, а Stochastic ≈78, що підтверджує надлишкову покупну активність. Ціна торгується близько верхньої межі Bollinger Bands, проте відсутні ознаки перекупленості, оскільки стохастик ще не досяг 90. Свічкові патерни (підвищення «висхідного» три‑біча) підсилюють сигнал. При такій конфігурації з високою волатильністю (0.08 %) рекомендується довгий ордер.",
+      "timestamp": "2026-01-25 09:43:52",
+      "generated_at": "2026-01-25T09:43:54.254136+02:00",
+      "volatility": 0.0808,
+      "id": "USDJPY_otc_20260125094354",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-25T07:43:54.254175Z",
+      "expires_at": "2026-01-25T09:53:54.254136+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 537
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 538
 }
