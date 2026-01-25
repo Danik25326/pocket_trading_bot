@@ -1,23 +1,5 @@
 [
   {
-    "asset": "EURUSD_otc",
-    "direction": "DOWN",
-    "confidence": 0.85,
-    "entry_time": "11:59",
-    "duration": 3,
-    "reason": "Останні 8 хвилинних свічок показують послідовність падіння (12:24, 12:25 – bearish), EMA9 перебуває нижче EMA21, RSI < 50, MACD в негативній зоні, ціна торкається нижньої межі Bollinger Bands, Stochastic близько до нижньої межі, що підтверджує переважаючий медвежий тренд при низькій волатильності 0.09%.",
-    "timestamp": "2026-01-25 11:57:43",
-    "generated_at": "2026-01-25T11:57:45.400420+02:00",
-    "volatility": 0.0915,
-    "id": "EURUSD_otc_20260125115745",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-25T09:57:45.400461Z",
-    "expires_at": "2026-01-25T12:07:45.400420+02:00",
-    "saved_at": "2026-01-25T11:57:51.415414+02:00",
-    "history_id": "EURUSD_otc_20260125115751",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "UP",
     "confidence": 0.81,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-26T01:05:56.825711+02:00",
     "saved_at": "2026-01-26T00:55:58.828582+02:00",
     "history_id": "USDJPY_otc_20260126005558",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "01:21",
+    "duration": 3,
+    "reason": "EMA9 та EMA21 схиляються вниз, RSI близько 48 % (середина), MACD показує негативний гістограм і сигнальна лінія нижче, Stochastic під 40 % – сигнал надлишкової продажу, ціна торкається нижньої межі Bollinger Bands, останні свічки переважно червоні, тож очікуємо подальший спад",
+    "timestamp": "2026-01-26 01:19:02",
+    "generated_at": "2026-01-26T01:19:03.844949+02:00",
+    "volatility": 0.048,
+    "id": "USDJPY_otc_20260126011903",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-25T23:19:03.844987Z",
+    "expires_at": "2026-01-26T01:29:03.844949+02:00",
+    "saved_at": "2026-01-26T01:19:05.847322+02:00",
+    "history_id": "USDJPY_otc_20260126011905",
     "status": "saved"
   }
 ]
