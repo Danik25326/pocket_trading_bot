@@ -1,54 +1,39 @@
 {
-  "last_update": "2026-01-25T22:20:50.301900+02:00",
+  "last_update": "2026-01-25T22:44:46.390606+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "22:22",
+      "confidence": 0.82,
+      "entry_time": "22:46",
       "duration": 3,
-      "reason": "Ціни коливаються в вузькому діапазоні з низькою волатильністю (0.13%). EMA9 перебуває під EMA21, що вказує на слабкий медвежий тренд. MACD‑лінія майже рівна сигнальній, RSI близько 48‑52 (нейтральний). Bollinger Bands стискаються, ціна торкається нижньої смуги, а стохастик піднімається до 80, що свідчить про можливе короткострокове відкатання вниз. Після декількох чергувань висхідних і низхідних свічок остання (22:48) закрилася нижче відкриття, підтверджуючи легку перевагу продажу. Тому рекомендовано коротку позицію вниз на 3 хвилини з впевненістю >75%.",
-      "timestamp": "2026-01-25 22:20:39",
-      "generated_at": "2026-01-25T22:20:40.717400+02:00",
-      "volatility": 0.1308,
-      "id": "GBPJPY_otc_20260125222040",
+      "reason": "Price rose sharply to 221.27, RSI ~78 (overbought), Stochastic >80, Bollinger Bands show price at upper band, EMA9 above EMA21 but MACD histogram turned negative indicating divergence, bearish engulfing pattern observed at 23:05‑23:06, suggesting a short‑term reversal. High confidence for a 3‑minute down move.",
+      "timestamp": "2026-01-25 22:44:35",
+      "generated_at": "2026-01-25T22:44:36.601579+02:00",
+      "volatility": 0.3404,
+      "id": "GBPJPY_otc_20260125224436",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-25T20:20:40.717424Z",
-      "expires_at": "2026-01-25T22:30:40.717400+02:00"
-    },
-    {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "22:22",
-      "duration": 3,
-      "reason": "Останні 3 свічки (22:46‑22:48) закриваються нижче відкриття, EMA9 пробила нижче EMA21, ціна торгує біля нижньої смуги Bollinger, RSI ≈45 (середній, схильний до падіння), Stochastic <20 – сигналізує про можливе подальше зниження в умовах низької волатильності 0.07%.",
-      "timestamp": "2026-01-25 22:20:43",
-      "generated_at": "2026-01-25T22:20:44.347836+02:00",
-      "volatility": 0.0732,
-      "id": "EURUSD_otc_20260125222044",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-25T20:20:44.347877Z",
-      "expires_at": "2026-01-25T22:30:44.347836+02:00"
+      "generated_at_utc": "2026-01-25T20:44:36.601615Z",
+      "expires_at": "2026-01-25T22:54:36.601579+02:00"
     },
     {
       "asset": "USDJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "22:22",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "22:46",
       "duration": 3,
-      "reason": "RSI нижче 50 (≈40), MACD негативний, EMA9 під EMA21, ціна падає під середню лінію Bollinger Bands, Stochastic спускається нижче 20 – ознаки перепроданості, а останні три свічки (22:46‑22:48) – слабкі медвежі, можливий bearish engulfing. Усі сигнали вказують на короткостроковий спад протягом 3 хвилин.",
-      "timestamp": "2026-01-25 22:20:46",
-      "generated_at": "2026-01-25T22:20:48.300985+02:00",
-      "volatility": 0.1032,
-      "id": "USDJPY_otc_20260125222048",
+      "reason": "RSI appears to be rising from oversold levels, MACD histogram turned positive, price is above EMA9 and EMA21, Bollinger Bands are narrowing with price near the lower band suggesting a bounce, Stochastic %K crossed above %D, and a small bullish engulfing pattern formed, indicating a short‑term uptrend.",
+      "timestamp": "2026-01-25 22:44:43",
+      "generated_at": "2026-01-25T22:44:44.388797+02:00",
+      "volatility": 0.0594,
+      "id": "USDJPY_otc_20260125224444",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-25T20:20:48.301024Z",
-      "expires_at": "2026-01-25T22:30:48.300985+02:00"
+      "generated_at_utc": "2026-01-25T20:44:44.388838Z",
+      "expires_at": "2026-01-25T22:54:44.388797+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 575
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 576
 }
