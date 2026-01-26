@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-26T13:49:01.199714+02:00",
+  "last_update": "2026-01-26T13:57:52.566004+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -30,10 +30,40 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-26T11:48:55.175382Z",
       "expires_at": "2026-01-26T13:58:55.175342+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "13:59",
+      "duration": 3,
+      "reason": "RSI ~48 (near‑mid range, slight bearish bias), MACD histogram negative and diverging, EMA9 below EMA21 indicating downtrend, Bollinger Bands showing price hugging the upper band then breaking lower, Stochastic %K below %D and falling below 50, recent candles 14:24‑14:25 are bearish with small bodies and no strong reversal patterns. Combined signals give >75% confidence for a short move.",
+      "timestamp": "2026-01-26 13:57:45",
+      "generated_at": "2026-01-26T13:57:46.760447+02:00",
+      "volatility": 0.122,
+      "id": "EURUSD_otc_20260126135746",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T11:57:46.760495Z",
+      "expires_at": "2026-01-26T14:07:46.760447+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.86,
+      "entry_time": "13:59",
+      "duration": 3,
+      "reason": "Short‑term downtrend confirmed by lower highs and lower lows across the last 8 one‑minute candles, bearish EMA9 below EMA21, price trading below the middle Bollinger Band, RSI likely below 50, MACD histogram negative, Stochastic in oversold‑down area, and a bearish engulfing pattern at 14:25. Combined signals give high confidence for a short‑term sell.",
+      "timestamp": "2026-01-26 13:57:48",
+      "generated_at": "2026-01-26T13:57:50.564183+02:00",
+      "volatility": 0.1928,
+      "id": "USDJPY_otc_20260126135750",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T11:57:50.564244Z",
+      "expires_at": "2026-01-26T14:07:50.564183+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 605
+  "total_signals": 4,
+  "active_signals": 4,
+  "generation_count": 606
 }
