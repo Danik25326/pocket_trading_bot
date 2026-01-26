@@ -1,39 +1,54 @@
 {
-  "last_update": "2026-01-26T08:00:52.387684+02:00",
+  "last_update": "2026-01-26T08:54:31.072296+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "UP",
-      "confidence": 0.86,
-      "entry_time": "08:02",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "08:56",
       "duration": 3,
-      "reason": "EMA9 crossed above EMA21, price trading above both EMAs, RSI ~58 indicating bullish momentum, MACD histogram turning positive, Bollinger Bands showing price near upper‑mid band, bullish engulfing pattern at 08:22‑08:23, overall uptrend confirmed by higher highs in recent candles",
-      "timestamp": "2026-01-26 08:00:40",
-      "generated_at": "2026-01-26T08:00:42.493939+02:00",
-      "volatility": 0.1271,
-      "id": "GBPJPY_otc_20260126080042",
+      "reason": "Ціна поступово знижується: останні 8 хвилин показують спад з 219.706 до 219.472. MACD перебуває під нульовою лінією, EMA9 нижче EMA21, RSI приблизно 45 % (нейтрально, без перегріву). Ціна торкається нижньої межі Bollinger Bands, що вказує на можливе продовження корекції. Stochastic знаходиться нижче 20 % і падає, підтверджуючи слабкість. Свічкові патерни (бичі у 09:22, 09:20, проти ведмичних у 09:21, 09:19) не створюють сильного сигналу на розворот, тому переважає короткостроковий медвежий тиск.",
+      "timestamp": "2026-01-26 08:54:19",
+      "generated_at": "2026-01-26T08:54:21.562492+02:00",
+      "volatility": 0.2191,
+      "id": "GBPJPY_otc_20260126085421",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-26T06:00:42.493964Z",
-      "expires_at": "2026-01-26T08:10:42.493939+02:00"
+      "generated_at_utc": "2026-01-26T06:54:21.562520Z",
+      "expires_at": "2026-01-26T09:04:21.562492+02:00"
     },
     {
       "asset": "EURUSD_otc",
-      "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "08:02",
+      "direction": "DOWN",
+      "confidence": 0.84,
+      "entry_time": "08:56",
       "duration": 3,
-      "reason": "Короткий аналіз: на 1‑хв таймфреймі спостерігається легка висхідна динаміка (закриття 08:27 = 1.15678 – максимум за період, останнє закриття 08:28 = 1.15647 близьке до цього максимуму). RSI, MACD та Stochastic, розраховані за доступними 8 свічками, знаходяться в нейтральній‑верхній зоні, EMA9 перебуває вище EMA21, а ціна торкається верхньої межі смуги Боллінджера, що вказує на можливий короткостроковий підйом. Волатильність низька (0.06 %), тому ризик обмежений.",
-      "timestamp": "2026-01-26 08:00:44",
-      "generated_at": "2026-01-26T08:00:46.285518+02:00",
-      "volatility": 0.0553,
-      "id": "EURUSD_otc_20260126080046",
+      "reason": "RSI≈48 (neutral‑slightly bearish), MACD histogram negative, price below EMA9 and EMA21 with EMA9 crossing under EMA21, Bollinger Bands tightening and price near lower band, Stochastic <50 and falling, recent candles show bearish closes and a small bearish engulfing pattern – all indicating a short‑term downtrend.",
+      "timestamp": "2026-01-26 08:54:23",
+      "generated_at": "2026-01-26T08:54:25.121077+02:00",
+      "volatility": 0.0718,
+      "id": "EURUSD_otc_20260126085425",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-26T06:00:46.285559Z",
-      "expires_at": "2026-01-26T08:10:46.285518+02:00"
+      "generated_at_utc": "2026-01-26T06:54:25.121113Z",
+      "expires_at": "2026-01-26T09:04:25.121077+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "08:56",
+      "duration": 3,
+      "reason": "Останні 8 хвилин показали переважаючу низхідну динаміку (від 154.258 до 154.111). RSI, розрахований за 14‑періодом, перебуває нижче 50 (≈45), MACD має негативний гістограм і MACD‑лінія нижче сигнальної. EMA9 залишається під EMA21, що підтверджує медвежий тренд. Ціна торкається нижньої межі Bollinger Bands, а Stochastic перебуває в зоні перепроданості (<20) з незначним підйомом, що може вказувати на короткостроковий відкат, проте загальна картина залишається медвежою. Свічкові патерни (послідовність довгих низхідних та декілька малих підйомних) підтверджують продовження падіння.",
+      "timestamp": "2026-01-26 08:54:27",
+      "generated_at": "2026-01-26T08:54:29.071535+02:00",
+      "volatility": 0.0792,
+      "id": "USDJPY_otc_20260126085429",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T06:54:29.071571Z",
+      "expires_at": "2026-01-26T09:04:29.071535+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 593
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 594
 }
