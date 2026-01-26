@@ -1,39 +1,39 @@
 {
-  "last_update": "2026-01-26T18:03:12.689164+02:00",
+  "last_update": "2026-01-26T18:51:07.127103+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "18:05",
+      "confidence": 0.78,
+      "entry_time": "18:52",
       "duration": 3,
-      "reason": "RSI≈38 (below 50), MACD histogram negative, price trading below EMA9 and EMA21 (short‑term EMA under long‑term EMA), price near lower Bollinger Band, Stochastic in oversold zone with no bullish cross, bearish engulfing candle at 18:26‑18:27 and consecutive down candles reinforce bearish momentum.",
-      "timestamp": "2026-01-26 18:03:00",
-      "generated_at": "2026-01-26T18:03:02.859021+02:00",
-      "volatility": 0.3112,
-      "id": "GBPJPY_otc_20260126180302",
+      "reason": "Остання свічка (19:18) закрилася нижче відкриття, а середня ціна за останні 5 хвилин знизилась (219.221 → 219.081). EMA 9 перебуває під EMA 21, що вказує на медвежий тренд. RSI, розрахований за останні 14 періодів, знаходиться близько 45‑50, тобто немає сильного перекуплення, але тенденція до падіння. MACD показує негативний гістограму, а Stochastic перебуває під 50 і схиляється вниз. Bollinger Bands розширені, а ціна торкається нижньої межі, що підтверджує можливий подальший спад. Тому рекомендація – короткостроковий продаж на 3 хвилини.",
+      "timestamp": "2026-01-26 18:50:54",
+      "generated_at": "2026-01-26T18:50:56.891987+02:00",
+      "volatility": 0.1849,
+      "id": "GBPJPY_otc_20260126185056",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-26T16:03:02.859062Z",
-      "expires_at": "2026-01-26T18:13:02.859021+02:00"
+      "generated_at_utc": "2026-01-26T16:50:56.892029Z",
+      "expires_at": "2026-01-26T19:00:56.891987+02:00"
     },
     {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
+      "asset": "USDJPY_otc",
+      "direction": "UP",
       "confidence": 0.78,
-      "entry_time": "18:05",
+      "entry_time": "18:53",
       "duration": 3,
-      "reason": "RSI~48, MACD negative, price торкається нижньої межі Bollinger Bands, EMA9 нижче EMA21, Stochastic в нижній половині, медвежий тренд, останні свічки показують низхідний патерн",
-      "timestamp": "2026-01-26 18:03:05",
-      "generated_at": "2026-01-26T18:03:06.587315+02:00",
-      "volatility": 0.059,
-      "id": "EURUSD_otc_20260126180306",
+      "reason": "RSI~mid‑50s indicating slight bullish momentum, MACD line above signal, EMA9 above EMA21, price holding near the upper Bollinger Band but not overbought, Stochastic around 60‑70, recent bullish candle at 19:18 and overall upward bias in closes. Combined signals give a confident short‑term up move.",
+      "timestamp": "2026-01-26 18:51:03",
+      "generated_at": "2026-01-26T18:51:05.126074+02:00",
+      "volatility": 0.0798,
+      "id": "USDJPY_otc_20260126185105",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-26T16:03:06.587352Z",
-      "expires_at": "2026-01-26T18:13:06.587315+02:00"
+      "generated_at_utc": "2026-01-26T16:51:05.126114Z",
+      "expires_at": "2026-01-26T19:01:05.126074+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 2,
   "active_signals": 2,
-  "generation_count": 614
+  "generation_count": 615
 }
