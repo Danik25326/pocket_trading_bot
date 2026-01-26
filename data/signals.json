@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-01-26T21:50:54.707704+02:00",
+  "last_update": "2026-01-26T21:59:14.054943+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -30,10 +30,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-01-26T19:50:52.706815Z",
       "expires_at": "2026-01-26T22:00:52.706777+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "1‑min candles show slight upward bias after a recent low at 218.149; EMA‑9 is above EMA‑21, Bollinger Bands are expanding upward, RSI near neutral‑slightly bullish, MACD histogram turning positive, stochastic above 50. Low volatility (0.13%) supports a short‑term continuation.",
+      "timestamp": "2026-01-26 21:59:03",
+      "generated_at": "2026-01-26T21:59:04.638838+02:00",
+      "volatility": 0.1306,
+      "id": "GBPJPY_otc_20260126215904",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T19:59:04.638880Z",
+      "expires_at": "2026-01-26T22:09:04.638838+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "Recent candles show a shift from slight downtrend to bullish pressure. EMA9 crossed above EMA21 near 22:00, RSI is around 55 and Stochastic is rising, indicating growing upward momentum. Price is near the middle of Bollinger Bands, suggesting room to move higher. These factors together support a short‑term up move with confidence above 75%.",
+      "timestamp": "2026-01-26 21:59:07",
+      "generated_at": "2026-01-26T21:59:08.341153+02:00",
+      "volatility": 0.0718,
+      "id": "EURUSD_otc_20260126215908",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T19:59:08.341194Z",
+      "expires_at": "2026-01-26T22:09:08.341153+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.81,
+      "entry_time": "22:01",
+      "duration": 3,
+      "reason": "RSI≈28 (oversold), MACD histogram negative, price below EMA9/21, touching lower Bollinger Band, Stochastic <20, descending EMA trend and recent bearish candles (22:27, 22:24) indicate short‑term down pressure",
+      "timestamp": "2026-01-26 21:59:10",
+      "generated_at": "2026-01-26T21:59:12.053022+02:00",
+      "volatility": 0.0896,
+      "id": "USDJPY_otc_20260126215912",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-26T19:59:12.053060Z",
+      "expires_at": "2026-01-26T22:09:12.053022+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 621
+  "total_signals": 5,
+  "active_signals": 5,
+  "generation_count": 622
 }
