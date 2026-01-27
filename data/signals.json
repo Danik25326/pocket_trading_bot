@@ -1,39 +1,54 @@
 {
-  "last_update": "2026-01-27T06:33:15.883387+02:00",
+  "last_update": "2026-01-27T07:04:53.424764+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "UP",
-      "confidence": 0.82,
-      "entry_time": "06:35",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "07:06",
       "duration": 3,
-      "reason": "Бичий тренд: ціна перебуває вище EMA9 (≈213.05) і EMA21 (≈212.95), RSI≈62 % (понад 50), MACD позитивний з ростом гістограми, Bollinger Bands показують ціну біля верхньої смуги, стохастик у зоні перекупленості (~78 %), спостерігається bullish engulfing на 06:59. Усі сигнали вказують на подальший підйом.",
-      "timestamp": "2026-01-27 06:33:04",
-      "generated_at": "2026-01-27T06:33:05.799987+02:00",
-      "volatility": 0.253,
-      "id": "GBPJPY_otc_20260127063305",
+      "reason": "Короткий аналіз: останні 8 хвилин показують загальний висхідний тренд (EMA 9/21 підвищуються, MACD у позитивній зоні), проте остання свічка 07:31 – сильний медвежий бар після трьох підйомних барів, RSI приблизно 62 (підтримує можливість корекції), Stochastic близько 85 (перепроданість). Bollinger Bands вказують, що ціна торкається верхньої смуги, що підвищує ймовірність короткострокового відкату. Через це рекомендується коротка позиція на 3 хвилини з рівнем впевненості 78%.",
+      "timestamp": "2026-01-27 07:04:42",
+      "generated_at": "2026-01-27T07:04:44.444540+02:00",
+      "volatility": 0.2213,
+      "id": "GBPJPY_otc_20260127070444",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T04:33:05.800029Z",
-      "expires_at": "2026-01-27T06:43:05.799987+02:00"
+      "generated_at_utc": "2026-01-27T05:04:44.444578Z",
+      "expires_at": "2026-01-27T07:14:44.444540+02:00"
     },
     {
       "asset": "EURUSD_otc",
       "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "06:35",
+      "confidence": 0.84,
+      "entry_time": "07:06",
       "duration": 3,
-      "reason": "EMA9 (≈1.19665) is above EMA21 (≈1.19655), price is trading above both EMAs. RSI (≈55) indicates mild bullish momentum, MACD line is slightly above signal line, histogram positive. Bollinger Bands show price near the middle band with slight upward drift. Stochastic %K is around 62, above the 50 level. Recent 1‑minute candles are predominantly bullish (5 bullish vs 1 bearish) and the overall close moved from 1.19610 (06:53) to 1.19677 (07:00), suggesting a short‑term uptrend. Confidence meets the 75% minimum.",
-      "timestamp": "2026-01-27 06:33:08",
-      "generated_at": "2026-01-27T06:33:09.773720+02:00",
-      "volatility": 0.0677,
-      "id": "EURUSD_otc_20260127063309",
+      "reason": "Price rose steadily from 1.19719 to 1.19898 over the last 8 one‑minute candles, EMA 9 stays above EMA 21 indicating short‑term uptrend, MACD histogram is positive and widening, RSI is around 62 % showing bullish momentum, Stochastic is near 78 % (still below extreme overbought), price is touching the upper Bollinger Band but not breaking, and a bullish continuation pattern (small bullish candle after a larger bullish candle) appears at 07:31‑07:32.",
+      "timestamp": "2026-01-27 07:04:46",
+      "generated_at": "2026-01-27T07:04:48.097512+02:00",
+      "volatility": 0.126,
+      "id": "EURUSD_otc_20260127070448",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T04:33:09.773758Z",
-      "expires_at": "2026-01-27T06:43:09.773720+02:00"
+      "generated_at_utc": "2026-01-27T05:04:48.097551Z",
+      "expires_at": "2026-01-27T07:14:48.097512+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "07:06",
+      "duration": 3,
+      "reason": "Price shows slight downtrend: recent closes are below opens, EMA9 is below EMA21, RSI is around 48 (neutral‑slightly bearish), MACD histogram is negative, price is touching the lower Bollinger Band, a bearish engulfing pattern appears at 07:32, and Stochastic is near the upper zone indicating potential reversal. All signals point to a short move for the next 3 minutes.",
+      "timestamp": "2026-01-27 07:04:50",
+      "generated_at": "2026-01-27T07:04:51.423499+02:00",
+      "volatility": 0.126,
+      "id": "USDJPY_otc_20260127070451",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-27T05:04:51.423539Z",
+      "expires_at": "2026-01-27T07:14:51.423499+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 635
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 636
 }
