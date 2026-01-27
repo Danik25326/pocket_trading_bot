@@ -1,39 +1,24 @@
 {
-  "last_update": "2026-01-27T09:17:06.992178+02:00",
+  "last_update": "2026-01-27T09:44:15.664476+02:00",
   "signals": [
     {
       "asset": "EURUSD_otc",
       "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "09:19",
-      "duration": 3,
-      "reason": "На 1‑хв таймфреймі ціна коливається в межах вузького діапазону (волатильність 0.06%). RSI≈50, MACD≈0, Bollinger Bands – ціна біля середньої смуги. EMA‑9 трохи вище EMA‑21, що вказує на легку висхідну тенденцію. Stochastic≈50, без явних перекуплених/перепроданих зон. Остання свічка (09:44) – маленьке підвищення (O=1.19680, C=1.19695) після короткочасного падіння, що підтримує можливий короткостроковий рух вгору. При такій нейтральній картині з невеликим імпульсом вгору, впевненість 78% задовольняє мінімум 75%.",
-      "timestamp": "2026-01-27 09:16:59",
-      "generated_at": "2026-01-27T09:17:01.256664+02:00",
-      "volatility": 0.0635,
-      "id": "EURUSD_otc_20260127091701",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T07:17:01.256693Z",
-      "expires_at": "2026-01-27T09:27:01.256664+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "UP",
       "confidence": 0.82,
-      "entry_time": "09:19",
+      "entry_time": "09:46",
       "duration": 3,
-      "reason": "RSI ~58 (bullish), MACD slight positive, price above EMA9 and EMA9 above EMA21, Bollinger Bands middle, bullish engulfing at 09:44, stochastic ~65, short‑term uptrend confirmed by recent candles",
-      "timestamp": "2026-01-27 09:17:03",
-      "generated_at": "2026-01-27T09:17:04.990843+02:00",
-      "volatility": 0.0674,
-      "id": "USDJPY_otc_20260127091704",
+      "reason": "Price shows a slight bullish bias: EMA9 is above EMA21, MACD histogram is marginally positive, RSI is around 55‑60, Stochastic is near 70, and the last candle (10:11) forms a bullish engulfing after a small pull‑back. Bollinger Bands indicate price near the upper band but not extreme, supporting a short‑term upside move. Confidence meets the 75% minimum.",
+      "timestamp": "2026-01-27 09:44:08",
+      "generated_at": "2026-01-27T09:44:09.545144+02:00",
+      "volatility": 0.1303,
+      "id": "EURUSD_otc_20260127094409",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T07:17:04.990882Z",
-      "expires_at": "2026-01-27T09:27:04.990843+02:00"
+      "generated_at_utc": "2026-01-27T07:44:09.545179Z",
+      "expires_at": "2026-01-27T09:54:09.545144+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 640
+  "total_signals": 1,
+  "active_signals": 1,
+  "generation_count": 641
 }
