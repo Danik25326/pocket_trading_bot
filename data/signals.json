@@ -1,54 +1,39 @@
 {
-  "last_update": "2026-01-27T16:48:11.186361+02:00",
+  "last_update": "2026-01-27T17:18:13.968516+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "UP",
       "confidence": 0.82,
-      "entry_time": "16:50",
+      "entry_time": "17:19",
       "duration": 3,
-      "reason": "RSI≈55 (neutral‑bullish), MACD line above signal with positive histogram, price above EMA9 and EMA21 indicating uptrend, Bollinger Bands show price near upper band but not breaking, Stochastic >80 showing strong momentum, recent candles display higher highs/lows and a bullish engulfing at 17:13, overall bullish bias",
-      "timestamp": "2026-01-27 16:48:00",
-      "generated_at": "2026-01-27T16:48:01.805527+02:00",
-      "volatility": 0.1566,
-      "id": "GBPJPY_otc_20260127164801",
+      "reason": "RSI (≈68) показує перекупленість, але ще не в зоні надмірного, MACD позитивний і розходить, EMA9 вище EMA21, що підтверджує висхідний тренд. Bollinger Bands вказують, що ціна торкається верхньої смуги, а Stochastic ≈85 – сигналізує про можливу короткострокову корекцію, проте загальна динаміка свічок (переважають bullish, лише один невеликий bearish на 17:43) вказує на продовження росту. Тому рекомендація – купити на 17:19 з тривалістю 3 хв, впевненість 82%.",
+      "timestamp": "2026-01-27 17:17:56",
+      "generated_at": "2026-01-27T17:17:58.145383+02:00",
+      "volatility": 0.3725,
+      "id": "GBPJPY_otc_20260127171758",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T14:48:01.805566Z",
-      "expires_at": "2026-01-27T16:58:01.805527+02:00"
+      "generated_at_utc": "2026-01-27T15:17:58.145423Z",
+      "expires_at": "2026-01-27T17:27:58.145383+02:00"
     },
     {
       "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "16:50",
-      "duration": 3,
-      "reason": "RSI≈48 (neutral‑slightly oversold), MACD histogram negative, price below EMA9 and EMA21, Bollinger Bands price near middle band, Stochastic below 50, recent 1‑minute candles show more down closes than up, indicating a short‑term bearish bias",
-      "timestamp": "2026-01-27 16:48:04",
-      "generated_at": "2026-01-27T16:48:05.185646+02:00",
-      "volatility": 0.0527,
-      "id": "EURUSD_otc_20260127164805",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T14:48:05.185686Z",
-      "expires_at": "2026-01-27T16:58:05.185646+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
       "direction": "UP",
       "confidence": 0.78,
-      "entry_time": "16:50",
+      "entry_time": "17:20",
       "duration": 3,
-      "reason": "Short‑term bullish bias: recent 1‑minute candles show 5 up moves vs 2 down, EMA9 is slightly above EMA21 indicating a mild uptrend, MACD histogram has turned positive, RSI is around 58 (neutral‑bullish), price sits in the upper half of Bollinger Bands but not at the extreme, and Stochastic is near 65 (below overbought). Combined signals suggest a modest upside over the next 3 minutes.",
-      "timestamp": "2026-01-27 16:48:07",
-      "generated_at": "2026-01-27T16:48:09.185065+02:00",
-      "volatility": 0.0907,
-      "id": "USDJPY_otc_20260127164809",
+      "reason": "RSI≈50 (neutral), MACD flat, Bollinger Bands tight (low volatility 0.02%), EMA9≈EMA21 showing no strong divergence, Stochastic around 50, mixed candlesticks but recent price recovered from a brief dip (17:41‑17:42) and closed higher on 17:45, indicating slight upward bias.",
+      "timestamp": "2026-01-27 17:18:00",
+      "generated_at": "2026-01-27T17:18:06.204984+02:00",
+      "volatility": 0.0243,
+      "id": "EURUSD_otc_20260127171806",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T14:48:09.185123Z",
-      "expires_at": "2026-01-27T16:58:09.185065+02:00"
+      "generated_at_utc": "2026-01-27T15:18:06.205025Z",
+      "expires_at": "2026-01-27T17:28:06.204984+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
-  "generation_count": 654
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 655
 }
