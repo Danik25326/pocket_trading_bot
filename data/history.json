@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "UP",
-    "confidence": 0.82,
-    "entry_time": "21:36",
-    "duration": 3,
-    "reason": "Price shows a clear uptrend over the last 8 one‑minute candles, EMA9 is above EMA21, MACD histogram is expanding positive, RSI is around 65 indicating momentum, Bollinger Bands place price near the upper band but still within limits, and bullish candle patterns (higher highs and higher lows) dominate. The slight pull‑back at 22:01 appears as a micro‑correction, supporting continuation up for the next 3 minutes.",
-    "timestamp": "2026-01-26 21:34:00",
-    "generated_at": "2026-01-26T21:34:02.060948+02:00",
-    "volatility": 0.0791,
-    "id": "USDJPY_otc_20260126213402",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-26T19:34:02.060989Z",
-    "expires_at": "2026-01-26T21:44:02.060948+02:00",
-    "saved_at": "2026-01-26T21:34:04.064689+02:00",
-    "history_id": "USDJPY_otc_20260126213404",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "UP",
     "confidence": 0.78,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-27T20:12:11.023341+02:00",
     "saved_at": "2026-01-27T20:02:13.026532+02:00",
     "history_id": "USDJPY_otc_20260127200213",
+    "status": "saved"
+  },
+  {
+    "asset": "GBPJPY_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "20:57",
+    "duration": 3,
+    "reason": "Bearish momentum: price below EMA9/21, declining RSI, negative MACD, lower lows and bearish candlesticks suggest continuation downwards.",
+    "timestamp": "2026-01-27 20:55:55",
+    "generated_at": "2026-01-27T20:55:57.074075+02:00",
+    "volatility": 0.1762,
+    "id": "GBPJPY_otc_20260127205557",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-27T18:55:57.074116Z",
+    "expires_at": "2026-01-27T21:05:57.074075+02:00",
+    "saved_at": "2026-01-27T20:56:08.741697+02:00",
+    "history_id": "GBPJPY_otc_20260127205608",
     "status": "saved"
   }
 ]
