@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "DOWN",
-    "confidence": 0.78,
-    "entry_time": "16:18",
-    "duration": 3,
-    "reason": "Останні 8 хвилинних свічок показують слабку понижувальну динаміку (ціна впала з 152.724 до 152.814). RSI приблизно 60‑65, що не вказує на перекупленість, а MACD схиляється вниз, підтверджуючи ослаблення імпульсу. Ціна торкається нижньої частини середньої лінії Bollinger Bands і стоїть під EMA(9), яка нижче EMA(21), що вказує на короткостроковий медвежий тренд. Stochastic знаходиться в діапазоні 55‑70, без чіткої сигнальної переваги. Остання свічка (16:44) – медвежа, що підсилює сигнал. Тому рекомендується короткостроковий продаж на 3 хвилини.",
-    "timestamp": "2026-01-26 16:16:18",
-    "generated_at": "2026-01-26T16:16:19.495449+02:00",
-    "volatility": 0.0766,
-    "id": "USDJPY_otc_20260126161619",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-26T14:16:19.495489Z",
-    "expires_at": "2026-01-26T16:26:19.495449+02:00",
-    "saved_at": "2026-01-26T16:16:21.498052+02:00",
-    "history_id": "USDJPY_otc_20260126161621",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "UP",
     "confidence": 0.82,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-27T13:43:49.876559+02:00",
     "saved_at": "2026-01-27T13:33:51.879199+02:00",
     "history_id": "USDJPY_otc_20260127133351",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "UP",
+    "confidence": 0.81,
+    "entry_time": "13:54",
+    "duration": 3,
+    "reason": "RSI≈62 (bullish), MACD line above signal with positive histogram, price above EMA9 and EMA21 indicating uptrend, Bollinger Bands show price near upper band but trend remains intact, Stochastic in high‑overbought zone without reversal signal, recent 1‑min candles display consecutive higher closes except a minor dip at 14:19, overall bullish momentum",
+    "timestamp": "2026-01-27 13:52:16",
+    "generated_at": "2026-01-27T13:52:18.606387+02:00",
+    "volatility": 0.1039,
+    "id": "USDJPY_otc_20260127135218",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-27T11:52:18.606428Z",
+    "expires_at": "2026-01-27T14:02:18.606387+02:00",
+    "saved_at": "2026-01-27T13:52:20.608868+02:00",
+    "history_id": "USDJPY_otc_20260127135220",
     "status": "saved"
   }
 ]
