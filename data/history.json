@@ -1,23 +1,5 @@
 [
   {
-    "asset": "GBPJPY_otc",
-    "direction": "UP",
-    "confidence": 0.82,
-    "entry_time": "06:35",
-    "duration": 3,
-    "reason": "Бичий тренд: ціна перебуває вище EMA9 (≈213.05) і EMA21 (≈212.95), RSI≈62 % (понад 50), MACD позитивний з ростом гістограми, Bollinger Bands показують ціну біля верхньої смуги, стохастик у зоні перекупленості (~78 %), спостерігається bullish engulfing на 06:59. Усі сигнали вказують на подальший підйом.",
-    "timestamp": "2026-01-27 06:33:04",
-    "generated_at": "2026-01-27T06:33:05.799987+02:00",
-    "volatility": 0.253,
-    "id": "GBPJPY_otc_20260127063305",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-27T04:33:05.800029Z",
-    "expires_at": "2026-01-27T06:43:05.799987+02:00",
-    "saved_at": "2026-01-27T06:33:15.884589+02:00",
-    "history_id": "GBPJPY_otc_20260127063315",
-    "status": "saved"
-  },
-  {
     "asset": "EURUSD_otc",
     "direction": "UP",
     "confidence": 0.78,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-28T05:35:51.363296+02:00",
     "saved_at": "2026-01-28T05:25:53.365680+02:00",
     "history_id": "USDJPY_otc_20260128052553",
+    "status": "saved"
+  },
+  {
+    "asset": "GBPJPY_otc",
+    "direction": "UP",
+    "confidence": 0.86,
+    "entry_time": "06:32",
+    "duration": 3,
+    "reason": "Price shows steady upward movement across last candles, EMA9 is above EMA21, price trading above the middle Bollinger Band, RSI likely above 50, MACD histogram positive, Stochastic in bullish zone, and a bullish engulfing pattern appears at 06:58, all indicating a short‑term long bias.",
+    "timestamp": "2026-01-28 06:30:49",
+    "generated_at": "2026-01-28T06:30:50.620495+02:00",
+    "volatility": 0.3385,
+    "id": "GBPJPY_otc_20260128063050",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-28T04:30:50.620534Z",
+    "expires_at": "2026-01-28T06:40:50.620495+02:00",
+    "saved_at": "2026-01-28T06:31:03.803638+02:00",
+    "history_id": "GBPJPY_otc_20260128063103",
     "status": "saved"
   }
 ]
