@@ -1,39 +1,39 @@
 {
-  "last_update": "2026-01-28T01:56:34.808906+02:00",
+  "last_update": "2026-01-28T03:44:37.019749+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "UP",
+      "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "01:58",
+      "entry_time": "03:46",
       "duration": 3,
-      "reason": "RSI appears low (near oversold) on limited data, MACD line is approaching zero from below, EMA9 is still below EMA21 indicating a longer‑term downtrend but recent three candles (02:22‑02:24) are bullish, price is near the lower Bollinger Band suggesting room to rise, and stochastic hints at upward momentum – together these give a short‑term upside bias.",
-      "timestamp": "2026-01-28 01:56:22",
-      "generated_at": "2026-01-28T01:56:24.657220+02:00",
-      "volatility": 0.1635,
-      "id": "GBPJPY_otc_20260128015624",
+      "reason": "RSI≈48 (near‑oversold), MACD slightly negative, price trading just below the middle Bollinger Band, EMA9 is below EMA21 indicating short‑term bearish bias, Stochastic around 45 showing weakening momentum, recent candles show two consecutive down closes after a brief up move – all pointing to a short‑term down move.",
+      "timestamp": "2026-01-28 03:44:25",
+      "generated_at": "2026-01-28T03:44:26.862040+02:00",
+      "volatility": 0.2003,
+      "id": "GBPJPY_otc_20260128034426",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T23:56:24.657254Z",
-      "expires_at": "2026-01-28T02:06:24.657220+02:00"
+      "generated_at_utc": "2026-01-28T01:44:26.862075Z",
+      "expires_at": "2026-01-28T03:54:26.862040+02:00"
     },
     {
       "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "01:58",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "03:46",
       "duration": 3,
-      "reason": "RSI≈48 (neutral), MACD line below signal indicating bearish momentum, price touching/just below the upper Bollinger Band suggesting overbought condition, EMA9 crossed under EMA21 on the 1‑min chart, Stochastic≈55 (no clear bullish signal), recent candles show a small bearish engulfing pattern (02:24) and overall slight downtrend after a brief rally at 02:22. Combined indicators give a >75% confidence for a short move.",
-      "timestamp": "2026-01-28 01:56:26",
-      "generated_at": "2026-01-28T01:56:28.427422+02:00",
-      "volatility": 0.0867,
-      "id": "EURUSD_otc_20260128015628",
+      "reason": "RSI≈58 (neutral‑bullish), MACD shows bullish crossover, price trading above EMA9 and EMA21 indicating uptrend, price near middle of Bollinger Bands with slight upward bias, Stochastic≈62 (bullish), recent bullish candle after small pullback, overall momentum upward",
+      "timestamp": "2026-01-28 03:44:29",
+      "generated_at": "2026-01-28T03:44:30.541049+02:00",
+      "volatility": 0.0665,
+      "id": "EURUSD_otc_20260128034430",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-27T23:56:28.427460Z",
-      "expires_at": "2026-01-28T02:06:28.427422+02:00"
+      "generated_at_utc": "2026-01-28T01:44:30.541087Z",
+      "expires_at": "2026-01-28T03:54:30.541049+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 2,
   "active_signals": 2,
-  "generation_count": 676
+  "generation_count": 677
 }
