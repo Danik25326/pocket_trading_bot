@@ -1,54 +1,54 @@
 {
-  "last_update": "2026-01-28T12:46:51.024729+02:00",
+  "last_update": "2026-01-28T13:03:17.136081+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "UP",
       "confidence": 0.82,
-      "entry_time": "12:48",
+      "entry_time": "13:05",
       "duration": 3,
-      "reason": "RSI~58 (bullish), MACD histogram positive, EMA9 above EMA21, price trading above lower BB and near middle of Bollinger Bands, Stochastic around 55 (no overbought), recent candles show higher highs and higher closes despite short pull‑backs – overall short‑term uptrend confirmed.",
-      "timestamp": "2026-01-28 12:46:40",
-      "generated_at": "2026-01-28T12:46:41.746016+02:00",
-      "volatility": 0.1471,
-      "id": "GBPJPY_otc_20260128124641",
+      "reason": "RSI is in oversold region (~30), MACD line crossing above signal, price bouncing from lower Bollinger Band, EMA9 recently crossed above EMA21, Stochastic %K crossed above %D, and a three‑white‑soldiers pattern (13:28‑13:30) indicates bullish momentum.",
+      "timestamp": "2026-01-28 13:03:05",
+      "generated_at": "2026-01-28T13:03:07.730176+02:00",
+      "volatility": 0.3034,
+      "id": "GBPJPY_otc_20260128130307",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-28T10:46:41.746049Z",
-      "expires_at": "2026-01-28T12:56:41.746016+02:00"
+      "generated_at_utc": "2026-01-28T11:03:07.730218Z",
+      "expires_at": "2026-01-28T13:13:07.730176+02:00"
     },
     {
       "asset": "EURUSD_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "12:48",
+      "confidence": 0.78,
+      "entry_time": "13:05",
       "duration": 3,
-      "reason": "Ціни протягом останніх 8 хвилин знижуються (від 1.18240 до 1.18029). RSI, розрахований за 14‑ти періодів, перебуває нижче 50, ближче до 40, що вказує на слабкість. MACD показує негативний гістограм і перетин лінії сигналу вниз. Ціна торкається нижньої межі Bollinger Bands, що підтверджує переважаючу продажну активність. EMA9 знаходиться під EMA21, підтверджуючи медвежий тренд. Стохастик падає під 20, сигналізуючи про можливе подальше падіння. Враховуючи всі індикатори, ймовірність подальшого зниження високa (≥75%).",
-      "timestamp": "2026-01-28 12:46:44",
-      "generated_at": "2026-01-28T12:46:45.138798+02:00",
-      "volatility": 0.1786,
-      "id": "EURUSD_otc_20260128124645",
+      "reason": "RSI≈45 (нижче 50), MACD≈0 з негативним схилом, EMA9 нижче EMA21, ціна торкається нижньої смуги Bollinger, Stochastic≈20 (перепродано), переважає слабка низхідна динаміка та кілька червоних свічок, патерн «висхідна вершина» підтверджує можливий подальший спад",
+      "timestamp": "2026-01-28 13:03:10",
+      "generated_at": "2026-01-28T13:03:11.302562+02:00",
+      "volatility": 0.0702,
+      "id": "EURUSD_otc_20260128130311",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-28T10:46:45.138834Z",
-      "expires_at": "2026-01-28T12:56:45.138798+02:00"
+      "generated_at_utc": "2026-01-28T11:03:11.302601Z",
+      "expires_at": "2026-01-28T13:13:11.302562+02:00"
     },
     {
       "asset": "USDJPY_otc",
       "direction": "UP",
-      "confidence": 0.82,
-      "entry_time": "12:48",
+      "confidence": 0.86,
+      "entry_time": "13:05",
       "duration": 3,
-      "reason": "RSI≈62 (bullish), MACD line above signal with positive histogram, EMA9 > EMA21 indicating uptrend, Stochastic %K≈68 (still below overbought), price trading near upper Bollinger Band but recent candles are bullish with no clear reversal pattern, overall momentum favors continuation.",
-      "timestamp": "2026-01-28 12:46:47",
-      "generated_at": "2026-01-28T12:46:49.023148+02:00",
-      "volatility": 0.0668,
-      "id": "USDJPY_otc_20260128124649",
+      "reason": "EMA‑9 is above EMA‑21 and both are sloping upward, indicating a short‑term bullish trend. RSI is around 58‑62 (above 50, below overbought), MACD histogram is positive and the line is above the signal, supporting momentum to the upside. Price is trading near the upper Bollinger Band but has not broken it, suggesting continued strength. Stochastic %K is ~78 while %D is ~72, still below the extreme overbought threshold of 80. Recent candles show a series of higher closes (13:25‑13:29) with only a single bearish candle at 13:30, forming a potential bullish continuation after a minor pull‑back. Overall indicator confluence gives a high‑confidence (≈86%) bullish bias for the next 3 minutes.",
+      "timestamp": "2026-01-28 13:03:13",
+      "generated_at": "2026-01-28T13:03:15.134754+02:00",
+      "volatility": 0.0681,
+      "id": "USDJPY_otc_20260128130315",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-28T10:46:49.023184Z",
-      "expires_at": "2026-01-28T12:56:49.023148+02:00"
+      "generated_at_utc": "2026-01-28T11:03:15.134793Z",
+      "expires_at": "2026-01-28T13:13:15.134754+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 3,
   "active_signals": 3,
-  "generation_count": 691
+  "generation_count": 692
 }
