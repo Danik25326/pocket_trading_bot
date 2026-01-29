@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-29T16:41:37.818833+02:00",
+  "last_update": "2026-01-29T17:20:55.333449+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "DOWN",
-      "confidence": 0.81,
-      "entry_time": "16:43",
+      "confidence": 0.78,
+      "entry_time": "17:22",
       "duration": 3,
-      "reason": "Ціни протягом останніх 8 хвилин знижуються: максимум 214.477 (17:07) до мінімуму 214.189 (17:03). EMA9 перебуває нижче EMA21, RSI, ймовірно, нижче 50, MACD у негативній зоні, а остання свічка (17:09) – бичача, проте закривається нижче попередньої. Bollinger Bands стискаються, ціна ближче до нижньої смуги, що вказує на подальший тиск вниз. При низькій волатильності (0.18 %) та підтвердженні медвежих індикаторів, рекомендація – коротка позиція.",
-      "timestamp": "2026-01-29 16:41:25",
-      "generated_at": "2026-01-29T16:41:26.796618+02:00",
-      "volatility": 0.1764,
-      "id": "GBPJPY_otc_20260129164126",
+      "reason": "RSI ~50, MACD near zero, price below EMA9/EMA21, Bollinger Bands middle‑band pressure, Stochastic around 45‑55, mixed candles with recent bearish close and small‑body doji indicating weakening momentum.",
+      "timestamp": "2026-01-29 17:20:43",
+      "generated_at": "2026-01-29T17:20:44.893647+02:00",
+      "volatility": 0.1028,
+      "id": "GBPJPY_otc_20260129172044",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-29T14:41:26.796647Z",
-      "expires_at": "2026-01-29T16:51:26.796618+02:00"
+      "generated_at_utc": "2026-01-29T15:20:44.893687Z",
+      "expires_at": "2026-01-29T17:30:44.893647+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "17:22",
+      "duration": 3,
+      "reason": "Ціни поступово знижуються з 1.18822 до 1.18773, EMA 9 та EMA 21 нахилені вниз, RSI близько 48‑50 (нейтраль‑знижений), Stochastic ~45‑55, Bollinger Bands стискаються навколо середньої лінії, остання свічка 17:48 – майже дожі, що вказує на можливу подальшу слабкість. При низькій волатильності (0.07%) та короткому таймфреймі (1 хв) переважає короткостроковий медвежий тренд.",
+      "timestamp": "2026-01-29 17:20:47",
+      "generated_at": "2026-01-29T17:20:48.479531+02:00",
+      "volatility": 0.0707,
+      "id": "EURUSD_otc_20260129172048",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-29T15:20:48.479568Z",
+      "expires_at": "2026-01-29T17:30:48.479531+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 731
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 732
 }
