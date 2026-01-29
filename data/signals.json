@@ -1,39 +1,54 @@
 {
-  "last_update": "2026-01-29T21:02:50.804636+02:00",
+  "last_update": "2026-01-29T21:39:30.416559+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
       "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "21:04",
+      "confidence": 0.82,
+      "entry_time": "21:41",
       "duration": 3,
-      "reason": "Price is trading just above EMA9 and EMA9 is above EMA21, indicating a mild uptrend. RSI is around the mid‑50s (neither overbought nor oversold) and MACD histogram is slightly positive, supporting bullish momentum. Bollinger Bands show price near the middle band with a slight bias toward the upper band. Stochastic is in the 60‑70 range, not yet overbought. Recent candles show a strong bullish candle at 21:29 followed by a small bearish candle, suggesting continuation rather than reversal. Overall technical picture points to a short‑term upward move.",
-      "timestamp": "2026-01-29 21:02:38",
-      "generated_at": "2026-01-29T21:02:40.909343+02:00",
-      "volatility": 0.1782,
-      "id": "GBPJPY_otc_20260129210240",
+      "reason": "RSI~65 (підтримує висхідний імпульс), MACD позитивний і недавно перетнув сигнальну лінію вверх, Bollinger Bands показують ціну біля верхньої смуги, EMA9 > EMA21 підтверджує восходящий тренд, Stochastic ~78 (підтверджує силу, але ще не надто перекуплений). Останні свічки демонструють низку bullish engulfing та підвищення цін (22:06‑22:07), що вказує на продовження руху вгору. Враховуючи низьку волатильність (0.16 %) і короткостроковий таймфрейм, сигнал на BUY з високою впевненістю.",
+      "timestamp": "2026-01-29 21:39:19",
+      "generated_at": "2026-01-29T21:39:21.589629+02:00",
+      "volatility": 0.1617,
+      "id": "GBPJPY_otc_20260129213921",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-29T19:02:40.909382Z",
-      "expires_at": "2026-01-29T21:12:40.909343+02:00"
+      "generated_at_utc": "2026-01-29T19:39:21.589667Z",
+      "expires_at": "2026-01-29T21:49:21.589629+02:00"
     },
     {
       "asset": "EURUSD_otc",
       "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "21:04",
+      "confidence": 0.86,
+      "entry_time": "21:41",
       "duration": 3,
-      "reason": "RSI≈50, MACD slightly positive, price above EMA9 and EMA9 above EMA21, Bollinger Bands narrow (low volatility), bullish engulfing candle at 21:30, overall short‑term uptrend",
-      "timestamp": "2026-01-29 21:02:43",
-      "generated_at": "2026-01-29T21:02:44.787022+02:00",
-      "volatility": 0.0504,
-      "id": "EURUSD_otc_20260129210244",
+      "reason": "Ціни протягом останніх 8 хвилин підвищуються (від 1.19221 до 1.19294). EMA‑9 і EMA‑21 розташовані під поточною ціною, що вказує на висхідний тренд. MACD показує позитивний гистограм і перетин лінії сигналу вгору. RSI (≈66) і Stochastic (≈78) знаходяться в зоні перекупленості, проте ще не досягли критичних рівнів, тому ризик обмежений. Bollinger Bands показують, що ціна торкається верхньої смуги, підтверджуючи силу руху. Свічкові патерни – послідовність підвищувальних барів без значних падінь, що підсилює сигнал на купівлю. При цьому волатильність низька (0.08 %), що дозволяє короткострокову позицію на 3 хвилини.",
+      "timestamp": "2026-01-29 21:39:23",
+      "generated_at": "2026-01-29T21:39:25.299172+02:00",
+      "volatility": 0.0788,
+      "id": "EURUSD_otc_20260129213925",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-29T19:02:44.787062Z",
-      "expires_at": "2026-01-29T21:12:44.787022+02:00"
+      "generated_at_utc": "2026-01-29T19:39:25.299210Z",
+      "expires_at": "2026-01-29T21:49:25.299172+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "21:41",
+      "duration": 3,
+      "reason": "Price shows a gradual rise from 151.952 to 152.132, EMA9 is above EMA21, MACD histogram is positive, RSI is around mid‑50s, Stochastic near 70 but not overbought, Bollinger Bands indicate price near the upper band without breaking, and recent candles include bullish engulfing patterns. All indicators point to short‑term upward momentum.",
+      "timestamp": "2026-01-29 21:39:27",
+      "generated_at": "2026-01-29T21:39:28.415341+02:00",
+      "volatility": 0.0769,
+      "id": "USDJPY_otc_20260129213928",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-29T19:39:28.415365Z",
+      "expires_at": "2026-01-29T21:49:28.415341+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 737
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 738
 }
