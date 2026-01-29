@@ -1,39 +1,24 @@
 {
-  "last_update": "2026-01-29T22:59:19.248792+02:00",
+  "last_update": "2026-01-29T23:34:49.284255+02:00",
   "signals": [
     {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "23:01",
-      "duration": 3,
-      "reason": "Price shows a slight bearish bias on the 1‑minute chart: recent closes are lower than opens, EMA9 is below EMA21, RSI is drifting below 50, MACD histogram is negative, stochastic is moving down from overbought levels, and the price is touching the lower Bollinger Band, suggesting further downside over the next 3 minutes.",
-      "timestamp": "2026-01-29 22:59:11",
-      "generated_at": "2026-01-29T22:59:13.051642+02:00",
-      "volatility": 0.0396,
-      "id": "EURUSD_otc_20260129225913",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-29T20:59:13.051676Z",
-      "expires_at": "2026-01-29T23:09:13.051642+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
+      "asset": "GBPJPY_otc",
       "direction": "UP",
-      "confidence": 0.84,
-      "entry_time": "23:01",
+      "confidence": 0.78,
+      "entry_time": "23:36",
       "duration": 3,
-      "reason": "RSI ~58 (neutral‑bullish), MACD histogram turning positive, EMA9 above EMA21 with slight upward slope, price trading near the middle of Bollinger Bands and moving toward the upper band, Stochastic %K≈62/%D≈57 (no overbought), recent candles show a shift from a down‑trend (23:23‑23:24) to small bullish candles (23:25‑23:26) forming a potential bullish reversal (pin‑bar). All indicators point to a short‑term upward move.",
-      "timestamp": "2026-01-29 22:59:15",
-      "generated_at": "2026-01-29T22:59:17.247767+02:00",
-      "volatility": 0.0775,
-      "id": "USDJPY_otc_20260129225917",
+      "reason": "RSI≈34 (oversold) while price shows slight downtrend on 1‑min candles; low volatility suggests a short‑term bounce. EMA9/EMA21 still above price but converging, supporting a brief upward move.",
+      "timestamp": "2026-01-29 23:34:37",
+      "generated_at": "2026-01-29T23:34:39.198286+02:00",
+      "volatility": 0.0885,
+      "id": "GBPJPY_otc_20260129233439",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-29T20:59:17.247815Z",
-      "expires_at": "2026-01-29T23:09:17.247767+02:00"
+      "generated_at_utc": "2026-01-29T21:34:39.198324Z",
+      "expires_at": "2026-01-29T23:44:39.198286+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 741
+  "total_signals": 1,
+  "active_signals": 1,
+  "generation_count": 742
 }
