@@ -1,39 +1,38 @@
 {
-  "last_update": "2026-01-30T13:25:51.670726+02:00",
+  "last_update": "2026-01-30T13:50:08.701549+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "DOWN",
+      "direction": "UP",
       "confidence": 0.82,
-      "entry_time": "13:27",
+      "entry_time": "13:51",
       "duration": 3,
-      "reason": "Price is in a short‑term downtrend: EMA9 is below EMA21, MACD histogram is negative, RSI is around mid‑40s, price sits near the lower Bollinger Band and Stochastic is sliding down. Recent candles show a bearish engulfing (13:46) and lower highs after a brief bullish spike at 13:49, confirming downside pressure.",
-      "timestamp": "2026-01-30 13:25:40",
-      "generated_at": "2026-01-30T13:25:42.033979+02:00",
-      "volatility": 0.1878,
-      "id": "GBPJPY_otc_20260130132542",
+      "reason": "EMA9 і EMA21 показують висхідний тренд, ціна торгується вище обох EMA, остання свічка 14:17 – bullish (закриття вище відкриття) і формує bullish engulfing з 14:13‑14:14. RSI та Stochastic перебувають у верхньому діапазоні, що підтверджує сильний імпульс, а MACD показує позитивний гістограм і недавнє перетинання сигнальної лінії вгору. Bollinger Bands розширені, ціна ближче до верхньої смуги, що вказує на продовження руху.\">2026-01-30 13:49:57",
+      "generated_at": "2026-01-30T13:49:59.160709+02:00",
+      "volatility": 0.2101,
+      "id": "GBPJPY_otc_20260130134959",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-30T11:25:42.034019Z",
-      "expires_at": "2026-01-30T13:35:42.033979+02:00"
+      "generated_at_utc": "2026-01-30T11:49:59.160749Z",
+      "expires_at": "2026-01-30T13:59:59.160709+02:00"
     },
     {
-      "asset": "USDJPY_otc",
+      "asset": "EURUSD_otc",
       "direction": "DOWN",
-      "confidence": 0.81,
-      "entry_time": "13:27",
+      "confidence": 0.82,
+      "entry_time": "13:52",
       "duration": 3,
-      "reason": "Bearish momentum: EMA9 has crossed below EMA21, RSI≈48 (neutral‑slightly bearish), MACD histogram negative, price touching lower Bollinger Band, recent candles show more closes below opens.",
-      "timestamp": "2026-01-30 13:25:48",
-      "generated_at": "2026-01-30T13:25:49.669068+02:00",
-      "volatility": 0.0665,
-      "id": "USDJPY_otc_20260130132549",
+      "reason": "Ціна продовжує низхідний рух: більшість останніх 1‑хв свічок закриваються нижче відкриття, EMA 9/21 нахилені вниз, Bollinger Bands вказують на торкання нижньої смуги, RSI та Stochastic перебувають у зоні перепроданості, що підтверджує подальший спад",
+      "timestamp": "2026-01-30 13:50:01",
+      "generated_at": "2026-01-30T13:50:02.718412+02:00",
+      "volatility": 0.0922,
+      "id": "EURUSD_otc_20260130135002",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-30T11:25:49.669112Z",
-      "expires_at": "2026-01-30T13:35:49.669068+02:00"
+      "generated_at_utc": "2026-01-30T11:50:02.718452Z",
+      "expires_at": "2026-01-30T14:00:02.718412+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 2,
   "active_signals": 2,
-  "generation_count": 759
+  "generation_count": 760
 }
