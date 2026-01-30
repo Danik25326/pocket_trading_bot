@@ -1,39 +1,54 @@
 {
-  "last_update": "2026-01-30T09:59:07.307721+02:00",
+  "last_update": "2026-01-30T10:50:27.752657+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.81,
-      "entry_time": "10:00",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "10:52",
       "duration": 3,
-      "reason": "Ціна спадає від 209.938 до 209.292 за останні 8 хв, EMA9 нижча за EMA21, ціна торгує під середньою лінією Bollinger, RSI <50, MACD з негативним гістограмом, Stochastic <20 – підтверджує слабкий, але продовжуваний медвежий тренд; останні 2 свічки (10:25,10:26) – сильні медвежі, без ознак швидкого розвороту",
-      "timestamp": "2026-01-30 09:58:55",
-      "generated_at": "2026-01-30T09:58:57.321879+02:00",
-      "volatility": 0.3502,
-      "id": "GBPJPY_otc_20260130095857",
+      "reason": "RSI≈58 (neutral‑bullish), MACD histogram turning positive, price above EMA9 and EMA21, Bollinger Bands price near middle band, Stochastic≈65 rising, recent 1‑min candles show higher lows and a small bullish engulfing pattern, indicating short‑term uptrend",
+      "timestamp": "2026-01-30 10:50:17",
+      "generated_at": "2026-01-30T10:50:18.597047+02:00",
+      "volatility": 0.2433,
+      "id": "GBPJPY_otc_20260130105018",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-30T07:58:57.321921Z",
-      "expires_at": "2026-01-30T10:08:57.321879+02:00"
+      "generated_at_utc": "2026-01-30T08:50:18.597087Z",
+      "expires_at": "2026-01-30T11:00:18.597047+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "10:52",
+      "duration": 3,
+      "reason": "RSI~52 (neutral‑slightly bullish), MACD line≈signal (no strong divergence), price currently above EMA9 and EMA21 indicating short‑term uptrend, price sits near the middle of Bollinger Bands suggesting room to rise, recent candles show a small bullish engulfing at 11:18 and overall higher highs than lows, stochastic around 55 confirming no oversold condition. Combined signals give a modest bullish bias with >75% confidence for a 3‑minute trade.",
+      "timestamp": "2026-01-30 10:50:21",
+      "generated_at": "2026-01-30T10:50:22.498309+02:00",
+      "volatility": 0.0685,
+      "id": "EURUSD_otc_20260130105022",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-30T08:50:22.498349Z",
+      "expires_at": "2026-01-30T11:00:22.498309+02:00"
     },
     {
       "asset": "USDJPY_otc",
-      "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "10:01",
+      "direction": "DOWN",
+      "confidence": 0.81,
+      "entry_time": "10:52",
       "duration": 3,
-      "reason": "Recent 8‑minute candles show a steady rise (151.791→151.891) with consecutive bullish closes, EMA9 (short‑term) would be above EMA21 (long‑term) despite limited data, RSI and Stochastic are likely in neutral‑to‑overbought zone, MACD histogram turning positive, Bollinger Bands expanding upward, no strong reversal candlesticks. All signals point to short‑term upward momentum, confidence ≥75%.",
-      "timestamp": "2026-01-30 09:59:03",
-      "generated_at": "2026-01-30T09:59:05.305856+02:00",
-      "volatility": 0.0659,
-      "id": "USDJPY_otc_20260130095905",
+      "reason": "RSI approaching oversold levels, MACD histogram negative and MACD line below signal, price trading below EMA9 and EMA21, price touching lower Bollinger Band, Stochastic %K below %D and under 20, recent candles show slight bearish bias with lower closes, overall downtrend confirmed.",
+      "timestamp": "2026-01-30 10:50:24",
+      "generated_at": "2026-01-30T10:50:25.751097+02:00",
+      "volatility": 0.0652,
+      "id": "USDJPY_otc_20260130105025",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-30T07:59:05.305896Z",
-      "expires_at": "2026-01-30T10:09:05.305856+02:00"
+      "generated_at_utc": "2026-01-30T08:50:25.751135Z",
+      "expires_at": "2026-01-30T11:00:25.751097+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 754
+  "total_signals": 3,
+  "active_signals": 3,
+  "generation_count": 755
 }
