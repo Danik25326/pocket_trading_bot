@@ -1,23 +1,5 @@
 [
   {
-    "asset": "GBPJPY_otc",
-    "direction": "UP",
-    "confidence": 0.78,
-    "entry_time": "12:06",
-    "duration": 3,
-    "reason": "RSI≈55 (neutral‑bullish), MACD line slightly above signal, EMA9 is above EMA21 indicating short‑term uptrend, price is near the lower Bollinger Band suggesting room to rise, Stochastic is climbing above 50, recent candles show three of four bullish closes with a bullish continuation pattern, overall momentum points upward.",
-    "timestamp": "2026-01-29 12:04:22",
-    "generated_at": "2026-01-29T12:04:24.645576+02:00",
-    "volatility": 0.1583,
-    "id": "GBPJPY_otc_20260129120424",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-29T10:04:24.645614Z",
-    "expires_at": "2026-01-29T12:14:24.645576+02:00",
-    "saved_at": "2026-01-29T12:04:33.496385+02:00",
-    "history_id": "GBPJPY_otc_20260129120433",
-    "status": "saved"
-  },
-  {
     "asset": "EURUSD_otc",
     "direction": "UP",
     "confidence": 0.82,
@@ -1796,6 +1778,24 @@
     "expires_at": "2026-01-30T19:06:39.538794+02:00",
     "saved_at": "2026-01-30T18:56:41.541048+02:00",
     "history_id": "USDJPY_otc_20260130185641",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "UP",
+    "confidence": 0.82,
+    "entry_time": "19:35",
+    "duration": 3,
+    "reason": "Ціна демонструє чіткий висхідний тренд на 1‑хв таймфреймі: EMA9 перебуває вище EMA21, MACD позитивний, RSI близько 68 % (під рівнем перекупленості), Stochastic ~78 % і ціна торкається верхньої межі Bollinger Bands, що підтверджує силу руху. Останні свічки показують послідовне підвищення закриття, лише незначне корекційне падіння в 20:01, що виглядає як короткочасна консолидація. При такій конфігурації з високою впевненістю (≥75 %) рекомендується купити на рівні 19:35 на 3‑хв період.",
+    "timestamp": "2026-01-30 19:33:49",
+    "generated_at": "2026-01-30T19:33:51.289514+02:00",
+    "volatility": 0.106,
+    "id": "USDJPY_otc_20260130193351",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-30T17:33:51.289549Z",
+    "expires_at": "2026-01-30T19:43:51.289514+02:00",
+    "saved_at": "2026-01-30T19:33:53.292509+02:00",
+    "history_id": "USDJPY_otc_20260130193353",
     "status": "saved"
   }
 ]
