@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-31T21:11:14.917790+02:00",
+  "last_update": "2026-01-31T21:34:59.687876+02:00",
   "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.81,
+      "entry_time": "21:36",
+      "duration": 3,
+      "reason": "RSI≈45 (below 50) shows bearish momentum; MACD histogram negative and MACD line below signal; price trading below EMA9 (~212.30) and EMA21 (~212.35) indicating downtrend; Bollinger Bands narrowing with price near lower band; Stochastic below 20 suggesting oversold but still downward pressure; recent two consecutive bearish candles (22:02 and 22:01) form a bearish continuation pattern; overall trend appears bearish.",
+      "timestamp": "2026-01-31 21:34:48",
+      "generated_at": "2026-01-31T21:34:50.133410+02:00",
+      "volatility": 0.1676,
+      "id": "GBPJPY_otc_20260131213450",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-31T19:34:50.133463Z",
+      "expires_at": "2026-01-31T21:44:50.133410+02:00"
+    },
     {
       "asset": "EURUSD_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "21:13",
+      "entry_time": "21:36",
       "duration": 3,
-      "reason": "RSI≈48 (neutral‑slightly bearish), MACD≈0 (no bullish momentum), price hugging the upper Bollinger Band then slipping below, EMA9 has crossed under EMA21 indicating a short‑term downtrend, Stochastic≈45 (below 50), recent candles show a bearish engulf (21:31‑21:32) and consecutive lower closes (21:36‑21:38) with no bullish reversal pattern. Combined signals give >75% confidence for a short‑term down move.",
-      "timestamp": "2026-01-31 21:11:06",
-      "generated_at": "2026-01-31T21:11:08.330500+02:00",
-      "volatility": 0.0304,
-      "id": "EURUSD_otc_20260131211108",
+      "reason": "Слабка низхідна динаміка на 1‑хв таймфреймі, EMA9 нижче EMA21, ціна ближче до нижньої межі Bollinger Bands, Stochastic показує надмірну продаж, RSI трохи нижче 50, MACD з негативним гістограмом. Умови вказують на короткострокове падіння.",
+      "timestamp": "2026-01-31 21:34:52",
+      "generated_at": "2026-01-31T21:34:53.458598+02:00",
+      "volatility": 0.1065,
+      "id": "EURUSD_otc_20260131213453",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T19:11:08.330532Z",
-      "expires_at": "2026-01-31T21:21:08.330500+02:00"
+      "generated_at_utc": "2026-01-31T19:34:53.458636Z",
+      "expires_at": "2026-01-31T21:44:53.458598+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 813
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 814
 }
