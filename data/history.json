@@ -1,23 +1,5 @@
 [
   {
-    "asset": "USDJPY_otc",
-    "direction": "DOWN",
-    "confidence": 0.81,
-    "entry_time": "10:52",
-    "duration": 3,
-    "reason": "RSI approaching oversold levels, MACD histogram negative and MACD line below signal, price trading below EMA9 and EMA21, price touching lower Bollinger Band, Stochastic %K below %D and under 20, recent candles show slight bearish bias with lower closes, overall downtrend confirmed.",
-    "timestamp": "2026-01-30 10:50:24",
-    "generated_at": "2026-01-30T10:50:25.751097+02:00",
-    "volatility": 0.0652,
-    "id": "USDJPY_otc_20260130105025",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-30T08:50:25.751135Z",
-    "expires_at": "2026-01-30T11:00:25.751097+02:00",
-    "saved_at": "2026-01-30T10:50:27.753861+02:00",
-    "history_id": "USDJPY_otc_20260130105027",
-    "status": "saved"
-  },
-  {
     "asset": "GBPJPY_otc",
     "direction": "DOWN",
     "confidence": 0.82,
@@ -1796,6 +1778,24 @@
     "expires_at": "2026-01-31T14:06:25.840961+02:00",
     "saved_at": "2026-01-31T13:56:27.843316+02:00",
     "history_id": "USDJPY_otc_20260131135627",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "14:46",
+    "duration": 3,
+    "reason": "Останні 8 свічок показують короткостроковий підйом до верхньої межі Bollinger Bands, RSI та Stochastic перебувають у зоні перекупленості (>70). EMA 9/21 підтверджує висхідний тренд, проте різке падіння на 15:06 та зниження ціни на 15:09‑15:10 вказують на можливу корекцію. Тому вважаємо, що протягом наступних 3 хвилин ймовірний короткостроковий розворот вниз.",
+    "timestamp": "2026-01-31 14:44:50",
+    "generated_at": "2026-01-31T14:44:51.874201+02:00",
+    "volatility": 0.0745,
+    "id": "USDJPY_otc_20260131144451",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-31T12:44:51.874234Z",
+    "expires_at": "2026-01-31T14:54:51.874201+02:00",
+    "saved_at": "2026-01-31T14:44:53.876626+02:00",
+    "history_id": "USDJPY_otc_20260131144453",
     "status": "saved"
   }
 ]
