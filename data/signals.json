@@ -1,39 +1,39 @@
 {
-  "last_update": "2026-01-31T19:50:11.471990+02:00",
+  "last_update": "2026-01-31T20:00:44.407932+02:00",
   "signals": [
     {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "19:52",
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.84,
+      "entry_time": "20:02",
       "duration": 3,
-      "reason": "RSI~48 (neutral‑slightly bearish), MACD line below signal, price trading below EMA9 and EMA21, Stochastic ~45 indicating down‑trend momentum, Bollinger Bands tight (volatility 0.04%) and recent candles show bearish pressure (20:16 bearish candle and 20:11 down candle). Combined signals give a modest bearish bias with >75% confidence.",
-      "timestamp": "2026-01-31 19:50:05",
-      "generated_at": "2026-01-31T19:50:06.311716+02:00",
-      "volatility": 0.038,
-      "id": "EURUSD_otc_20260131195006",
+      "reason": "Price is above EMA9 and EMA9 is above EMA21, indicating a short‑term uptrend. Recent candles show higher highs and a bullish engulfing at 20:28. RSI is likely in the 60‑70 range, MACD histogram is positive, and price sits near the upper Bollinger Band but still has room to run. Stochastic is turning down from overbought, supporting a brief continuation. All signals point to a bullish move with >75% confidence.",
+      "timestamp": "2026-01-31 20:00:33",
+      "generated_at": "2026-01-31T20:00:34.821953+02:00",
+      "volatility": 0.3111,
+      "id": "GBPJPY_otc_20260131200034",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T17:50:06.311744Z",
-      "expires_at": "2026-01-31T20:00:06.311716+02:00"
+      "generated_at_utc": "2026-01-31T18:00:34.821990Z",
+      "expires_at": "2026-01-31T20:10:34.821953+02:00"
     },
     {
       "asset": "USDJPY_otc",
       "direction": "DOWN",
       "confidence": 0.78,
-      "entry_time": "19:52",
+      "entry_time": "20:02",
       "duration": 3,
-      "reason": "RSI ~50, MACD near zero, price trading around middle Bollinger Band, EMA9 slightly below EMA21, Stochastic around 45‑55, recent candles show slight bearish pressure with the last 1‑minute candle closing lower; overall mixed but bias to downside.",
-      "timestamp": "2026-01-31 19:50:08",
-      "generated_at": "2026-01-31T19:50:09.471020+02:00",
-      "volatility": 0.1035,
-      "id": "USDJPY_otc_20260131195009",
+      "reason": "RSI≈50, MACD≈0, price торкається нижньої частини вузького Bollinger Band, EMA9 нижче EMA21, Stochastic≈45‑55, остання свічка 20:28 – bearish, без чітких bullish патернів – слабкий медвежий сигнал",
+      "timestamp": "2026-01-31 20:00:41",
+      "generated_at": "2026-01-31T20:00:42.406551+02:00",
+      "volatility": 0.0511,
+      "id": "USDJPY_otc_20260131200042",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T17:50:09.471058Z",
-      "expires_at": "2026-01-31T20:00:09.471020+02:00"
+      "generated_at_utc": "2026-01-31T18:00:42.406589Z",
+      "expires_at": "2026-01-31T20:10:42.406551+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
   "total_signals": 2,
   "active_signals": 2,
-  "generation_count": 810
+  "generation_count": 811
 }
