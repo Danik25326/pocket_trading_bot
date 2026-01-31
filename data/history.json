@@ -1,23 +1,5 @@
 [
   {
-    "asset": "GBPJPY_otc",
-    "direction": "UP",
-    "confidence": 0.78,
-    "entry_time": "20:04",
-    "duration": 3,
-    "reason": "Ціни демонструють легкий висхідний тренд: EMA9 перебуває вище EMA21, RSI ~55‑60 (не перекуплений), MACD позитивний, Stochastic ~60 (підтримує bullish momentum). Останні свічки показують чергування, але остання (20:30) закрита вище попередньої, а Bollinger Bands розширюються, що вказує на можливий подальший рух вгору. При низькій волатильності (0.22%) ризик обмежений, тому рекомендація – купити.",
-    "timestamp": "2026-01-30 20:02:42",
-    "generated_at": "2026-01-30T20:02:43.856586+02:00",
-    "volatility": 0.2243,
-    "id": "GBPJPY_otc_20260130200243",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-30T18:02:43.856614Z",
-    "expires_at": "2026-01-30T20:12:43.856586+02:00",
-    "saved_at": "2026-01-30T20:02:53.762453+02:00",
-    "history_id": "GBPJPY_otc_20260130200253",
-    "status": "saved"
-  },
-  {
     "asset": "USDJPY_otc",
     "direction": "DOWN",
     "confidence": 0.82,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-01-31T20:59:31.908762+02:00",
     "saved_at": "2026-01-31T20:49:33.911328+02:00",
     "history_id": "USDJPY_otc_20260131204933",
+    "status": "saved"
+  },
+  {
+    "asset": "EURUSD_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "21:13",
+    "duration": 3,
+    "reason": "RSI≈48 (neutral‑slightly bearish), MACD≈0 (no bullish momentum), price hugging the upper Bollinger Band then slipping below, EMA9 has crossed under EMA21 indicating a short‑term downtrend, Stochastic≈45 (below 50), recent candles show a bearish engulf (21:31‑21:32) and consecutive lower closes (21:36‑21:38) with no bullish reversal pattern. Combined signals give >75% confidence for a short‑term down move.",
+    "timestamp": "2026-01-31 21:11:06",
+    "generated_at": "2026-01-31T21:11:08.330500+02:00",
+    "volatility": 0.0304,
+    "id": "EURUSD_otc_20260131211108",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-31T19:11:08.330532Z",
+    "expires_at": "2026-01-31T21:21:08.330500+02:00",
+    "saved_at": "2026-01-31T21:11:14.918977+02:00",
+    "history_id": "EURUSD_otc_20260131211114",
     "status": "saved"
   }
 ]

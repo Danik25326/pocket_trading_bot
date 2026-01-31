@@ -1,39 +1,24 @@
 {
-  "last_update": "2026-01-31T20:49:33.910093+02:00",
+  "last_update": "2026-01-31T21:11:14.917790+02:00",
   "signals": [
     {
-      "asset": "GBPJPY_otc",
-      "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "20:51",
-      "duration": 3,
-      "reason": "RSI is below 50 and approaching oversold levels, Stochastic is under 20, MACD histogram is negative and narrowing, price is touching the lower Bollinger Band while EMA‑9 is slightly above EMA‑21 indicating a potential short‑term bounce. Recent candles show a bearish swing but the last 21:17 candle is a small bullish engulfing after a series of declines, suggesting a reversal. Combined signals give a >75% confidence for a short‑term upward move.",
-      "timestamp": "2026-01-31 20:49:23",
-      "generated_at": "2026-01-31T20:49:24.370080+02:00",
-      "volatility": 0.2689,
-      "id": "GBPJPY_otc_20260131204924",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T18:49:24.370121Z",
-      "expires_at": "2026-01-31T20:59:24.370080+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
+      "asset": "EURUSD_otc",
       "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "20:51",
+      "confidence": 0.78,
+      "entry_time": "21:13",
       "duration": 3,
-      "reason": "Price shows slight bearish pressure over the last 8 one‑minute candles (open‑close decreasing). EMA9 is below EMA21, RSI is around 48 indicating neutral‑to‑bearish momentum, MACD histogram has turned negative, Stochastic is below 50 and falling, and price is near the lower Bollinger Band, all pointing to a short‑term down move.",
-      "timestamp": "2026-01-31 20:49:30",
-      "generated_at": "2026-01-31T20:49:31.908762+02:00",
-      "volatility": 0.0862,
-      "id": "USDJPY_otc_20260131204931",
+      "reason": "RSI≈48 (neutral‑slightly bearish), MACD≈0 (no bullish momentum), price hugging the upper Bollinger Band then slipping below, EMA9 has crossed under EMA21 indicating a short‑term downtrend, Stochastic≈45 (below 50), recent candles show a bearish engulf (21:31‑21:32) and consecutive lower closes (21:36‑21:38) with no bullish reversal pattern. Combined signals give >75% confidence for a short‑term down move.",
+      "timestamp": "2026-01-31 21:11:06",
+      "generated_at": "2026-01-31T21:11:08.330500+02:00",
+      "volatility": 0.0304,
+      "id": "EURUSD_otc_20260131211108",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T18:49:31.908798Z",
-      "expires_at": "2026-01-31T20:59:31.908762+02:00"
+      "generated_at_utc": "2026-01-31T19:11:08.330532Z",
+      "expires_at": "2026-01-31T21:21:08.330500+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 2,
-  "active_signals": 2,
-  "generation_count": 812
+  "total_signals": 1,
+  "active_signals": 1,
+  "generation_count": 813
 }
