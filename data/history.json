@@ -1,23 +1,5 @@
 [
   {
-    "asset": "EURUSD_otc",
-    "direction": "UP",
-    "confidence": 0.78,
-    "entry_time": "00:24",
-    "duration": 3,
-    "reason": "RSI ~55, MACD near zero, price near middle of Bollinger Bands, EMA9 slightly above EMA21, stochastic around 55, recent bullish candle after slight pullback indicating short‑term uptrend.",
-    "timestamp": "2026-01-31 00:22:00",
-    "generated_at": "2026-01-31T00:22:01.353280+02:00",
-    "volatility": 0.0639,
-    "id": "EURUSD_otc_20260131002201",
-    "entry_delay": 2,
-    "generated_at_utc": "2026-01-30T22:22:01.353314Z",
-    "expires_at": "2026-01-31T00:32:01.353280+02:00",
-    "saved_at": "2026-01-31T00:22:07.049428+02:00",
-    "history_id": "EURUSD_otc_20260131002207",
-    "status": "saved"
-  },
-  {
     "asset": "USDJPY_otc",
     "direction": "DOWN",
     "confidence": 0.78,
@@ -1797,6 +1779,24 @@
     "expires_at": "2026-02-01T00:29:41.603273+02:00",
     "saved_at": "2026-02-01T00:19:43.606577+02:00",
     "history_id": "USDJPY_otc_20260201001943",
+    "status": "saved"
+  },
+  {
+    "asset": "USDJPY_otc",
+    "direction": "DOWN",
+    "confidence": 0.78,
+    "entry_time": "00:46",
+    "duration": 3,
+    "reason": "Ціна показує слабкий низхідний імпульс: EMA9 нижче EMA21, MACD лінія під сигнальним рівнем, RSI ~48 (нейтрально‑нижче), остання свічка – бичача, але закривається нижче відкриття, Bollinger Bands вузькі і ціна торкається нижньої частини діапазону, Stochastic нижче 40. Усі індикатори вказують на продовження падіння.",
+    "timestamp": "2026-02-01 00:44:47",
+    "generated_at": "2026-02-01T00:44:48.480389+02:00",
+    "volatility": 0.0512,
+    "id": "USDJPY_otc_20260201004448",
+    "entry_delay": 2,
+    "generated_at_utc": "2026-01-31T22:44:48.480438Z",
+    "expires_at": "2026-02-01T00:54:48.480389+02:00",
+    "saved_at": "2026-02-01T00:44:50.483079+02:00",
+    "history_id": "USDJPY_otc_20260201004450",
     "status": "saved"
   }
 ]
