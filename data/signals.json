@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-31T22:50:01.864920+02:00",
+  "last_update": "2026-01-31T23:01:01.938801+02:00",
   "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "23:02",
+      "duration": 3,
+      "reason": "EMA9 is above EMA21 indicating bullish crossover, RSI around 55‑60 showing momentum, MACD line above signal, price trading near the middle of Bollinger Bands with slight upward bias, stochastic near 70 but not overbought, and recent candles show a series of bullish closes (23:24, 23:25, 23:27, 23:28) suggesting continuation of uptrend.",
+      "timestamp": "2026-01-31 23:00:39",
+      "generated_at": "2026-01-31T23:00:40.801983+02:00",
+      "volatility": 0.1403,
+      "id": "GBPJPY_otc_20260131230040",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-31T21:00:40.802024Z",
+      "expires_at": "2026-01-31T23:10:40.801983+02:00"
+    },
     {
       "asset": "EURUSD_otc",
       "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "22:51",
+      "confidence": 0.82,
+      "entry_time": "23:02",
       "duration": 3,
-      "reason": "EMA9 is below EMA21, RSI around 48 showing slight bearish pressure, MACD histogram is negative, price is near the lower Bollinger Band, Stochastic is below 50, recent candles exhibit lower highs and occasional bearish candlesticks – all pointing to a short‑term down move",
-      "timestamp": "2026-01-31 22:49:53",
-      "generated_at": "2026-01-31T22:49:55.186348+02:00",
-      "volatility": 0.0509,
-      "id": "EURUSD_otc_20260131224955",
+      "reason": "Recent candles show a clear downtrend (price fell from 1.17995 to 1.17862), EMA9 is likely below EMA21, RSI is probably below 50, MACD histogram turning negative, price touching/near the lower Bollinger Band and bearish candlestick patterns (lower closes). Combined indicators give >75% confidence for a short move.",
+      "timestamp": "2026-01-31 23:00:43",
+      "generated_at": "2026-01-31T23:00:55.846289+02:00",
+      "volatility": 0.1264,
+      "id": "EURUSD_otc_20260131230055",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T20:49:55.186387Z",
-      "expires_at": "2026-01-31T22:59:55.186348+02:00"
+      "generated_at_utc": "2026-01-31T21:00:55.846329Z",
+      "expires_at": "2026-01-31T23:10:55.846289+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 818
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 819
 }
