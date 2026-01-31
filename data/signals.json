@@ -1,24 +1,39 @@
 {
-  "last_update": "2026-01-31T10:54:40.175277+02:00",
+  "last_update": "2026-01-31T11:25:31.146966+02:00",
   "signals": [
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "DOWN",
+      "confidence": 0.82,
+      "entry_time": "11:27",
+      "duration": 3,
+      "reason": "Свічковий патерн показує низхідний тренд після підйому до 11:49, RSI та Stochastic перебувають у зоні перекупленості і починають падати, MACD формує медвежий кросовер, ціна торкається верхньої лінії Bollinger Bands і починає відхилятись вниз, EMA9 нижче EMA21, що підтверджує спад. Всі індикатори вказують на можливий короткостроковий продаж.",
+      "timestamp": "2026-01-31 11:25:20",
+      "generated_at": "2026-01-31T11:25:21.512259+02:00",
+      "volatility": 0.2657,
+      "id": "GBPJPY_otc_20260131112521",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-01-31T09:25:21.512305Z",
+      "expires_at": "2026-01-31T11:35:21.512259+02:00"
+    },
     {
       "asset": "USDJPY_otc",
       "direction": "UP",
-      "confidence": 0.78,
-      "entry_time": "10:56",
+      "confidence": 0.82,
+      "entry_time": "11:27",
       "duration": 3,
-      "reason": "Ціна демонструє легкий висхідний імпульс: EMA9 перебуває вище EMA21, MACD показує позитивний гістограм і недавнє перетинання сигнальної лінії вгору, RSI знаходиться в нейтральній зоні (~55) без ознак перекупленості, Bollinger Bands стискаються, що вказує на можливий прорив, а останні свічки формують підвищувальний патерн (підвищення закриття з 149.526 до 149.590). Враховуючи низьку волатильність (0.07 %) і короткостроковий таймфрейм, ймовірність подальшого зростання протягом 3 хв становить >75 %.",
-      "timestamp": "2026-01-31 10:54:37",
-      "generated_at": "2026-01-31T10:54:38.173420+02:00",
-      "volatility": 0.0662,
-      "id": "USDJPY_otc_20260131105438",
+      "reason": "RSI is above 50 and rising, MACD line has crossed above its signal, price is moving from the lower Bollinger Band toward the middle, EMA‑9 is above EMA‑21 indicating bullish momentum, Stochastic %K crossed above %D from oversold region, and a bullish engulfing pattern appeared at 11:51‑11:52. All indicators point to a short‑term upward move.",
+      "timestamp": "2026-01-31 11:25:27",
+      "generated_at": "2026-01-31T11:25:29.145133+02:00",
+      "volatility": 0.079,
+      "id": "USDJPY_otc_20260131112529",
       "entry_delay": 2,
-      "generated_at_utc": "2026-01-31T08:54:38.173462Z",
-      "expires_at": "2026-01-31T11:04:38.173420+02:00"
+      "generated_at_utc": "2026-01-31T09:25:29.145173Z",
+      "expires_at": "2026-01-31T11:35:29.145133+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 791
+  "total_signals": 2,
+  "active_signals": 2,
+  "generation_count": 792
 }
