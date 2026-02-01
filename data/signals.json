@@ -1,54 +1,8 @@
 {
   "last_update": "2026-02-01T11:48:14.462189+02:00",
-  "signals": [
-    {
-      "asset": "GBPJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.82,
-      "entry_time": "11:50",
-      "duration": 3,
-      "reason": "RSI≈73 (overbought), MACD histogram negative, price touching upper Bollinger Band, EMA9 below EMA21, bearish 1‑min candle (211.489‑211.363) and recent down‑trend after a short rally; stochastic >80 confirming overbought",
-      "timestamp": "2026-02-01 11:48:04",
-      "generated_at": "2026-02-01T11:48:05.489659+02:00",
-      "volatility": 0.2584,
-      "id": "GBPJPY_otc_20260201114805",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-02-01T09:48:05.489697Z",
-      "expires_at": "2026-02-01T11:58:05.489659+02:00"
-    },
-    {
-      "asset": "EURUSD_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "11:50",
-      "duration": 3,
-      "reason": "RSI ~50, MACD near zero with slight negative histogram, price below EMA9/EMA21, Bollinger Bands tight with price near upper band but recent closes trending lower, Stochastic around 45 indicating no overbought, mixed candles show recent down pressure. Combined signals suggest a modest bearish bias for the next 3 minutes.",
-      "timestamp": "2026-02-01 11:48:07",
-      "generated_at": "2026-02-01T11:48:08.684393+02:00",
-      "volatility": 0.0474,
-      "id": "EURUSD_otc_20260201114808",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-02-01T09:48:08.684431Z",
-      "expires_at": "2026-02-01T11:58:08.684393+02:00"
-    },
-    {
-      "asset": "USDJPY_otc",
-      "direction": "DOWN",
-      "confidence": 0.78,
-      "entry_time": "11:50",
-      "duration": 3,
-      "reason": "На 1‑хв таймфреймі останні 8 свічок показують змішаний, але переважає низхідний рух: 3 з 4 останніх закриттів нижчі за попереднє. EMA9 перебуває під EMA21, що вказує на короткостроковий медвежий тренд. MACD лінія нижче сигнальної, гістограма негативна – підтверджує слабкість. RSI приблизно 45‑48, ближче до нейтрального, без явного перекупленості. Stochastic знаходиться в діапазоні 40‑55, без сигналу на підйом. Ціна торкається нижньої межі Bollinger Bands, що може слугувати додатковим сигналом до подальшого падіння. Враховуючи всі індикатори та низьку волатильність (0.09 %), ймовірність подальшого падіння протягом наступних 3 хвилин оцінюється як 78 %.",
-      "timestamp": "2026-02-01 11:48:10",
-      "generated_at": "2026-02-01T11:48:12.461048+02:00",
-      "volatility": 0.0875,
-      "id": "USDJPY_otc_20260201114812",
-      "entry_delay": 2,
-      "generated_at_utc": "2026-02-01T09:48:12.461088Z",
-      "expires_at": "2026-02-01T11:58:12.461048+02:00"
-    }
-  ],
+  "signals": [],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 3,
-  "active_signals": 3,
+  "total_signals": 0,
+  "active_signals": 0,
   "generation_count": 836
 }
