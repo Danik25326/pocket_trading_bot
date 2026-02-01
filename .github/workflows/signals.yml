@@ -20,8 +20,6 @@ on:
           - manual_site
           - manual_github
           - schedule
-  schedule:
-    - cron: '*/10 * * * *'  # Чітко кожні 10 хвилин
 
 permissions:
   contents: write
