@@ -1,5 +1,5 @@
 {
-  "last_update": "2026-02-03T16:36:04.190749+02:00",
+  "last_update": "2026-02-03T16:41:23.941639+02:00",
   "signals": [
     {
       "asset": "GBPJPY_otc",
@@ -15,10 +15,55 @@
       "entry_delay": 2,
       "generated_at_utc": "2026-02-03T14:35:53.829403Z",
       "expires_at": "2026-02-03T16:45:53.829361+02:00"
+    },
+    {
+      "asset": "GBPJPY_otc",
+      "direction": "UP",
+      "confidence": 0.78,
+      "entry_time": "16:43",
+      "duration": 3,
+      "reason": "RSI around 50, MACD near zero with slight bullish crossover, price bouncing off lower Bollinger Band, EMA9 above EMA21 indicating short‑term uptrend, Stochastic near 50 moving upward, recent bullish candles after a brief dip suggest reversal",
+      "timestamp": "2026-02-03 16:41:13",
+      "generated_at": "2026-02-03T16:41:14.403833+02:00",
+      "volatility": 0.1745,
+      "id": "GBPJPY_otc_20260203164114",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-02-03T14:41:14.403869Z",
+      "expires_at": "2026-02-03T16:51:14.403833+02:00"
+    },
+    {
+      "asset": "EURUSD_otc",
+      "direction": "DOWN",
+      "confidence": 0.78,
+      "entry_time": "16:43",
+      "duration": 3,
+      "reason": "RSI around 50, MACD negative, price near lower Bollinger Band, EMA9 below EMA21, recent candles show lower highs and a brief pull‑back, stochastic edging oversold, low volatility supports continuation of slight bearish pressure",
+      "timestamp": "2026-02-03 16:41:16",
+      "generated_at": "2026-02-03T16:41:18.363976+02:00",
+      "volatility": 0.0684,
+      "id": "EURUSD_otc_20260203164118",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-02-03T14:41:18.364015Z",
+      "expires_at": "2026-02-03T16:51:18.363976+02:00"
+    },
+    {
+      "asset": "USDJPY_otc",
+      "direction": "UP",
+      "confidence": 0.82,
+      "entry_time": "16:43",
+      "duration": 3,
+      "reason": "Recent candles show a clear short‑term uptrend (price moved from 153.927 to 153.951 over the last 4 minutes) with low volatility, suggesting continuation. EMA‑9 is likely above EMA‑21, MACD histogram is positive, Bollinger Bands are expanding upward, and stochastic is in the 70‑80 range but not yet overbought, supporting a bullish bias.",
+      "timestamp": "2026-02-03 16:41:20",
+      "generated_at": "2026-02-03T16:41:21.939978+02:00",
+      "volatility": 0.0455,
+      "id": "USDJPY_otc_20260203164121",
+      "entry_delay": 2,
+      "generated_at_utc": "2026-02-03T14:41:21.940018Z",
+      "expires_at": "2026-02-03T16:51:21.939978+02:00"
     }
   ],
   "timezone": "Europe/Kiev (UTC+2)",
-  "total_signals": 1,
-  "active_signals": 1,
-  "generation_count": 838
+  "total_signals": 4,
+  "active_signals": 4,
+  "generation_count": 839
 }
